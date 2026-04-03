@@ -683,12 +683,12 @@
 
             const handleGoogleAuth = () => {
                 console.log('GOOGLE_AUTH_CLICKED', data);
-                window.location.href = 'https://tools.inclusifund.co.uk/dashboard?auth=google';
+                window.location.href = 'dashboard-2.0.html?auth=google';
             };
 
             const handleLinkedInAuth = () => {
                 console.log('LINKEDIN_AUTH_CLICKED', data);
-                window.location.href = 'https://tools.inclusifund.co.uk/dashboard?auth=linkedin';
+                window.location.href = 'dashboard-2.0.html?auth=linkedin';
             };
 
             return (
@@ -794,7 +794,7 @@
                     const sessionUser = window.InclusiFundAuth ? InclusiFundAuth.checkSession() : null;
                     if (sessionUser && sessionUser.onboardingComplete === true) {
                         console.log("[onboarding-dark] User already onboarded, redirecting to dashboard");
-                        window.location.href = '/dashboard';
+                        window.location.href = 'dashboard-2.0.html';
                         return;
                     }
 
@@ -803,7 +803,7 @@
                         const parsed = JSON.parse(storedUser);
                         if (parsed.onboardingComplete === true) {
                             console.log("[onboarding-dark] Stored user already onboarded, redirecting to dashboard");
-                            window.location.href = '/dashboard';
+                            window.location.href = 'dashboard-2.0.html';
                             return;
                         }
 
@@ -813,7 +813,7 @@
                                 .then(status => {
                                     if (status && status.onboardingComplete === true) {
                                         console.log("[onboarding-dark] Convex confirmed onboarding complete, redirecting");
-                                        window.location.href = '/dashboard';
+                                        window.location.href = 'dashboard-2.0.html';
                                     }
                                 })
                                 .catch(err => console.warn("[onboarding-dark] Convex check failed (non-blocking):", err));
@@ -844,7 +844,7 @@
 
                 if (!email) {
                     console.warn("No email found — redirecting to login");
-                    window.location.href = '/dashboard';
+                    window.location.href = 'dashboard-2.0.html';
                     return;
                 }
 
@@ -883,7 +883,7 @@
                     console.error("Convex save failed (non-blocking):", err);
                 }
 
-                window.location.href = '/dashboard';
+                window.location.href = 'dashboard-2.0.html';
             };
 
             const CurrentScreen = [
@@ -998,6 +998,7 @@
             setTimeout(function(){ r.remove() }, 500);
         });
     </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
 </body>
 
 </html>

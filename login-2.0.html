@@ -510,9 +510,9 @@
                 console.log("Session set for:", user.email, "Tier:", user.tier, "Onboarded:", user.onboardingComplete);
 
                 if (user.onboardingComplete) {
-                    window.location.href = '/dashboard';
+                    window.location.href = 'dashboard-2.0.html';
                 } else {
-                    window.location.href = '/welcome';
+                    window.location.href = 'onboarding-2.0.html';
                 }
 
             } catch (error) {
@@ -583,6 +583,7 @@
         // Logo injection disabled as per user request to remove logo
         // document.querySelectorAll(".app-logo").forEach(img => img.src = window.INCLUSIFUND_LOGO_BASE64);
     </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
 </body>
 
 </html>

@@ -386,14 +386,14 @@
                         const user = InclusiFundAuth.checkSession();
                         if (!user) {
                             setAuthState('redirecting');
-                            window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account?redirect=compliance-onboarding';
+                            window.location.href = 'login-2.0.html?redirect=compliance-onboarding';
                             return;
                         }
                         setAuthState('ready');
                     } catch (err) {
                         console.error('Auth init error:', err);
                         setAuthState('redirecting');
-                        window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account?redirect=compliance-onboarding';
+                        window.location.href = 'login-2.0.html?redirect=compliance-onboarding';
                     }
                 };
                 init();
@@ -507,7 +507,7 @@
 
                     const params = new URLSearchParams(window.location.search);
                     const returnTo = params.get('returnTo');
-                    window.location.href = returnTo || 'https://tools.inclusifund.co.uk/compliance-calendar';
+                    window.location.href = returnTo || 'compliance-calendar-2.0.html';
                 } catch (e) {
                     console.error("Submission error:", e);
                     setLoading(false);
@@ -581,7 +581,7 @@
                                         Continue to Timeline <ChevronRight size={20} />
                                     </Button>
                                     <button
-                                        onClick={() => window.location.href = 'https://tools.inclusifund.co.uk/dashboard'}
+                                        onClick={() => window.location.href = 'dashboard-2.0.html'}
                                         className="w-full text-center text-sm text-slate-500 hover:text-white py-2 transition-colors font-medium"
                                     >
                                         Cancel & Return to Hub
@@ -727,6 +727,7 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<ComplianceOnboarding />);
     </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
 </body>
 
 </html>
