@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund | Upgrade to Pro</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/shim.css">
+
+    <style>
+        body {
+            background-color: var(--bg-page);
+        }
+
+        .upgrade-hero {
+            background-color: var(--color-primary-surface);
+            padding: 8rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .benefit-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            border: 1px solid var(--border-light);
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-8px);
+            border-color: var(--color-primary);
+        }
+
+        .pricing-section {
+            background: var(--color-primary-dark);
+            color: #fff;
+            padding: 6rem 2rem;
+            margin: 4rem 0;
+            border-radius: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="light-mode">
+    <div class="upgrade-hero">
+        <div class="max-w-4xl mx-auto px-6">
+            <h1 class="heading-1 text-primary mb-6">Master Your CIC Infrastructure</h1>
+            <p class="text-xl md:text-2xl text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
+                Unlock the complete suite of professional tools designed specifically for Community Interest Companies.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#pricing" class="btn-primary px-8 py-4 text-lg">View Launch Offer →</a>
+                <a href="dashboard.html" class="btn-secondary px-8 py-4 text-lg">Back to Free Tools</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-6 py-20">
+        <div class="text-center mb-16">
+            <h2 class="heading-2 mb-4">Everything You Need to Scale</h2>
+            <p class="text-secondary text-lg">Replace manual admin with automated infrastructure.</p>
+        </div>
+
+        <div class="grid grid-3 gap-8">
+            <div class="benefit-card">
+                <div class="text-4xl mb-6">🗓️</div>
+                <h3 class="heading-4 mb-3">Compliance Calendar</h3>
+                <p class="text-secondary text-sm leading-relaxed">Automated reminders for CIC34, Accounts, and
+                    Confirmation Statements. Zero missed deadlines.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="text-4xl mb-6">📄</div>
+                <h3 class="heading-4 mb-3">Board Pack Builder</h3>
+                <p class="text-secondary text-sm leading-relaxed">Generate professional meeting agendas, minutes, and
+                    decision records in minutes.</p>
+            </div>
+            <div class="benefit-card">
+                <div class="text-4xl mb-6">🔍</div>
+                <h3 class="heading-4 mb-3">Grant Discovery</h3>
+                <p class="text-secondary text-sm leading-relaxed">Access a curated database of 2000+ UK grants with AI
+                    eligibility matching.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="pricing" class="max-w-5xl mx-auto px-6 pb-20">
+        <div class="pricing-section text-center shadow-2xl">
+            <div
+                class="inline-block bg-accent px-4 py-1.5 rounded-full text-xs font-bold text-primary-dark uppercase tracking-widest mb-8">
+                Launch Offer
+            </div>
+            <h2 class="font-heading font-bold text-5xl mb-4 text-white">£297 Lifetime</h2>
+            <p class="text-xl opacity-80 mb-10 font-medium">One-time payment • No subscriptions • Forever access</p>
+
+            <div class="max-w-md mx-auto space-y-4 mb-12 text-left bg-white/5 p-8 rounded-xl border border-white/10">
+                <div class="flex items-center gap-3">
+                    <span class="text-accent font-bold">✓</span>
+                    <span class="text-white">Full Board Pack Automation</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-accent font-bold">✓</span>
+                    <span class="text-white">Exclusive Grant Search Filters</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-accent font-bold">✓</span>
+                    <span class="text-white">Priority Support Access</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-accent font-bold">✓</span>
+                    <span class="text-white">All Future Tool Updates</span>
+                </div>
+            </div>
+
+            <a href="https://admin.inclusifund.co.uk/payment-link/697ffe1a6503ca7b2c7df004"
+                class="btn bg-white text-primary-dark hover:bg-surface-alt px-12 py-5 text-xl font-bold rounded-xl shadow-lg inline-block transition-transform hover:scale-105">
+                Get Early Access Now
+            </a>
+            <p class="mt-6 text-sm opacity-60">30-day money-back guarantee</p>
+        </div>
+    </div>
+
+    <footer class="text-center py-12 text-muted text-sm px-6 border-t border-border-light mt-12 bg-surface-alt">
+        <p class="mb-2">© 2026 InclusiFund CIC. Professional tools for professional missions.</p>
+        <a href="support.html" class="text-primary hover:underline font-bold">Help & Support</a>
+    </footer>
+</body>
+
+</html>

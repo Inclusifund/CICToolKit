@@ -1,0 +1,333 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+    :root {
+        --color-primary-light: var(--brand-teal);
+        --radius-lg: 1.5rem;
+        --shadow-sm: var(--shadow-sm);
+        --shadow-md: var(--shadow-md);
+        --shadow-lg: var(--shadow-lg);
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: var(--brand-bg-page);
+    }
+
+    details summary {
+        list-style: none;
+    }
+
+    details summary::-webkit-details-marker {
+        display: none;
+    }
+</style>
+
+<div class="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 py-20 px-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-gray-800 mb-4">
+                Upgrade to Full CIC Toolkit
+            </h1>
+            <p class="text-2xl text-gray-600">
+                Everything you need to run your CIC professionally
+            </p>
+        </div>
+
+        <!-- Pricing Card -->
+        <div class="card p-12 mb-12 border-4 border-emerald-500">
+            <div class="text-center mb-8">
+                <div class="inline-block bg-emerald-100 text-emerald-600 px-4 py-2 rounded-full text-sm font-semibold mb-4">
+                    🎉 EXCLUSIVE OFFER - Save £200
+                </div>
+                <div class="text-gray-500 text-xl mb-2 line-through">Was £397</div>
+                <div class="text-6xl font-bold text-emerald-600 mb-2">£197</div>
+                <div class="text-gray-600 text-lg">Lifetime Access &bull; No Monthly Fees &bull; One-Time Payment</div>
+            </div>
+
+            <!-- What's Included -->
+            <div class="space-y-4 mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">What You Get:</h3>
+
+                <div class="flex items-start gap-3 p-4 bg-emerald-50 rounded-lg">
+                    <span class="text-green-600 text-2xl flex-shrink-0">✓</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Compliance Calendar</div>
+                        <div class="text-gray-600">Never miss a deadline &bull; Automated reminders &bull; Avoid £1000+ penalties</div>
+                        <div class="text-sm text-emerald-600 mt-1">Saves 10+ hours/year</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-emerald-50 rounded-lg">
+                    <span class="text-green-600 text-2xl flex-shrink-0">✓</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">CIC34 Annual Report Generator</div>
+                        <div class="text-gray-600">Professional reports in 30 mins &bull; CIC Regulator compliant &bull; Auto-formatting</div>
+                        <div class="text-sm text-emerald-600 mt-1">Saves 8+ hours/year</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-emerald-50 rounded-lg">
+                    <span class="text-green-600 text-2xl flex-shrink-0">✓</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Board Meeting Pack Builder</div>
+                        <div class="text-gray-600">Professional agendas &bull; Decision papers &bull; Minutes templates &bull; Conflict checks</div>
+                        <div class="text-sm text-emerald-600 mt-1">Saves 3+ hours per meeting</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-emerald-50 rounded-lg">
+                    <span class="text-green-600 text-2xl flex-shrink-0">✓</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Grant Discovery Tool</div>
+                        <div class="text-gray-600">AI-powered matching &bull; 2000+ UK grants &bull; Deadline tracking &bull; Success predictor</div>
+                        <div class="text-sm text-emerald-600 mt-1">Find grants worth £50K+</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-emerald-50 rounded-lg">
+                    <span class="text-green-600 text-2xl flex-shrink-0">✓</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Plus 15 More Tools</div>
+                        <div class="text-gray-600">Income planner &bull; Capacity tool &bull; Impact framework &bull; Financial controls &bull; And more</div>
+                        <div class="text-sm text-emerald-600 mt-1">Complete CIC management suite</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value Calculation -->
+            <div class="bg-teal-50 border-2 border-teal-200 rounded-xl p-6 mb-8">
+                <h4 class="font-bold text-gray-800 mb-3">💰 Return on Investment:</h4>
+                <div class="space-y-2 text-gray-700">
+                    <div class="flex justify-between">
+                        <span>Time saved annually:</span>
+                        <span class="font-semibold">25+ hours</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Your time value (£30/hour):</span>
+                        <span class="font-semibold">£750</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Penalties avoided:</span>
+                        <span class="font-semibold">£1000+</span>
+                    </div>
+                    <div class="flex justify-between border-t-2 border-teal-300 pt-2 mt-2">
+                        <span class="font-bold">Total annual value:</span>
+                        <span class="font-bold text-xl text-teal-600">£1,750+</span>
+                    </div>
+                    <div class="text-sm text-gray-600 mt-3 text-center">
+                        You break even in just 6 weeks 📈
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <a href="https://admin.inclusifund.co.uk/payment-link/69a01b502ecba827379bd022"
+                class="block w-full bg-emerald-600 hover:bg-emerald-700 text-white text-2xl font-bold py-6 rounded-2xl text-center shadow-lg transition-all transform hover:scale-105 mb-4">
+                Get Lifetime Access - £197
+            </a>
+
+            <p class="text-center text-gray-500 text-sm">
+                🔒 Secure payment via Stripe &bull; 30-day money-back guarantee &bull; Instant access
+            </p>
+            <p class="text-center text-gray-400 text-xs mt-2">
+                ⚠️ Please note: payments via Klarna, Starling, Monzo, or Revolut may experience issues. We recommend using a standard debit or credit card.
+            </p>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="card p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Free vs. Pro</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2">
+                            <th class="text-left py-4 px-4 text-gray-700">Feature</th>
+                            <th class="text-center py-4 px-4 text-gray-700">Free</th>
+                            <th class="text-center py-4 px-4 bg-emerald-50 text-emerald-700">Pro</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b">
+                            <td class="py-4 px-4">Eligibility Checker</td>
+                            <td class="text-center py-4 px-4 text-green-600 text-xl">✓</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-green-600 text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-4 px-4">Benefit Statement Writer</td>
+                            <td class="text-center py-4 px-4 text-green-600 text-xl">✓</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-green-600 text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-4 px-4">Business Model Tester</td>
+                            <td class="text-center py-4 px-4 text-green-600 text-xl">✓</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-green-600 text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b bg-yellow-50">
+                            <td class="py-4 px-4 font-semibold">⭐ Compliance Calendar</td>
+                            <td class="text-center py-4 px-4 text-gray-400">—</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-emerald-600 font-bold text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b bg-yellow-50">
+                            <td class="py-4 px-4 font-semibold">⭐ CIC34 Generator</td>
+                            <td class="text-center py-4 px-4 text-gray-400">—</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-emerald-600 font-bold text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b bg-yellow-50">
+                            <td class="py-4 px-4 font-semibold">⭐ Board Pack Builder</td>
+                            <td class="text-center py-4 px-4 text-gray-400">—</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-emerald-600 font-bold text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b bg-yellow-50">
+                            <td class="py-4 px-4 font-semibold">⭐ Grant Finder (2000+ grants)</td>
+                            <td class="text-center py-4 px-4 text-gray-400">—</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-emerald-600 font-bold text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b bg-yellow-50">
+                            <td class="py-4 px-4 font-semibold">⭐ 15+ Additional Tools</td>
+                            <td class="text-center py-4 px-4 text-gray-400">—</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-emerald-600 font-bold text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-4 px-4">Email reminders</td>
+                            <td class="text-center py-4 px-4 text-gray-400">—</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-emerald-600 text-xl">✓</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-4 px-4">Priority support</td>
+                            <td class="text-center py-4 px-4 text-gray-400">—</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 text-emerald-600 text-xl">✓</td>
+                        </tr>
+                        <tr>
+                            <td class="py-4 px-4 font-bold">Total Cost</td>
+                            <td class="text-center py-4 px-4 font-bold text-green-600">£0</td>
+                            <td class="text-center py-4 px-4 bg-emerald-50 font-bold text-emerald-600">£197 once</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Social Proof -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Trusted by CIC Founders</h3>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-emerald-600 mb-2">500+</div>
+                    <div class="text-gray-600">CICs using our tools</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-emerald-600 mb-2">25hrs</div>
+                    <div class="text-gray-600">Average time saved/year</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-emerald-600 mb-2">£1.7K</div>
+                    <div class="text-gray-600">Average value delivered</div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="text-4xl">👤</div>
+                        <div>
+                            <div class="font-semibold text-gray-800 mb-2">Sarah Chen, Community Kitchen Leeds</div>
+                            <p class="text-gray-600 italic">"The compliance calendar saved us from a £1,000 penalty. Worth every penny just for that!"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="text-4xl">👤</div>
+                        <div>
+                            <div class="font-semibold text-gray-800 mb-2">James Okafor, Youth Futures CIC</div>
+                            <p class="text-gray-600 italic">"The grant finder helped us discover £80K in funding we didn't know existed. Game-changer."</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="text-4xl">👤</div>
+                        <div>
+                            <div class="font-semibold text-gray-800 mb-2">Priya Sharma, Green Spaces CIC</div>
+                            <p class="text-gray-600 italic">"CIC34 used to take me 8 hours. Now it's done in 30 minutes. Brilliant tool."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="space-y-4 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Frequently Asked Questions</h3>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">Is this really a one-time payment?</summary>
+                <p class="mt-4 text-gray-600">
+                    Yes! Pay £197 once and get lifetime access to all current and future Pro tools. No monthly fees, no hidden costs, no surprises.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">What if I'm not satisfied?</summary>
+                <p class="mt-4 text-gray-600">
+                    30-day money-back guarantee, no questions asked. If the tools don't save you time and stress, we'll refund you in full.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">How quickly can I access the tools?</summary>
+                <p class="mt-4 text-gray-600">
+                    Instant access after payment. You'll receive login details immediately and can start using all Pro tools right away.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">Can I use this for multiple CICs?</summary>
+                <p class="mt-4 text-gray-600">
+                    Yes! Your license covers all CICs you're involved with. Perfect if you're a director of multiple organizations.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">Do you offer nonprofit discounts?</summary>
+                <p class="mt-4 text-gray-600">
+                    The £197 price already includes our exclusive discount (regularly £397). We believe in making professional tools accessible to grassroots organizations.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">What payment methods do you accept?</summary>
+                <p class="mt-4 text-gray-600">
+                    We accept all major credit/debit cards via Stripe (Visa, Mastercard, Amex). Please note that Klarna, Starling, Monzo, and Revolut may experience issues — we recommend using a standard debit or credit card for a smooth checkout.
+                </p>
+            </details>
+        </div>
+
+        <!-- Final CTA -->
+        <div class="card bg-gradient-to-r from-emerald-600 to-teal-600 p-12 text-white text-center">
+            <h2 class="text-4xl font-bold mb-4">Ready to run your CIC professionally?</h2>
+            <p class="text-xl mb-8 opacity-90">
+                Join 500+ CIC founders who never miss a deadline
+            </p>
+            <a href="https://admin.inclusifund.co.uk/payment-link/69a01b502ecba827379bd022"
+                class="inline-block bg-white text-emerald-600 hover:bg-gray-100 py-4 px-10 rounded-2xl text-xl font-bold shadow-lg transition-all transform hover:scale-105">
+                Get Lifetime Access - £197
+            </a>
+            <p class="text-sm mt-4 opacity-75">30-day guarantee &bull; Instant access &bull; Cancel anytime</p>
+        </div>
+
+        <!-- Back to Free Tools -->
+        <div class="text-center mt-12">
+            <a href="https://tools.inclusifund.co.uk/dashboard"
+                class="text-emerald-600 hover:text-emerald-700 font-semibold">
+                ← Back to free tools
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund Tools | Account Settings</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+        :root {
+            --color-brand-tropical-teal: #6BB6B6;
+            --color-brand-dark-teal: #005461;
+            --color-brand-teal: #008080;
+            --color-brand-light-cyan: #D5ECEC;
+            --color-brand-shadow-grey: #1F2232;
+            --color-brand-card-bg: #2A2F42;
+            --color-brand-border: #3A3F52;
+            --color-brand-premium-gold: #d4a853;
+            --color-text-primary: #1F2232;
+            --color-text-secondary: #4B5563;
+            --color-bg-primary: #FAFBFD;
+            --color-bg-secondary: #F3F4F6;
+            --color-white: #FFFFFF;
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+            --spacing-section: 6rem;
+            --spacing-grid: 2rem;
+        }
+
+        /* Reset & Base */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s;
+        }
+
+        /* ─── Scroll Reveal ─── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── Button Ripple ─── */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple-span {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* ─── Progress Bar ─── */
+        .profile-progress {
+            background: var(--color-white);
+            border-radius: 1rem;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--color-text-primary);
+        }
+
+        .progress-percent {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--color-brand-teal);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--color-bg-secondary);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--color-brand-teal), var(--color-brand-tropical-teal));
+            border-radius: 999px;
+            transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .progress-hint {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--color-brand-dark-teal);
+        }
+
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.25rem; }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--color-text-secondary);
+        }
+
+        /* Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-dark-teal));
+            color: var(--color-white);
+            box-shadow: 0 4px 6px rgba(0, 128, 128, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 128, 128, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--color-brand-teal);
+            color: var(--color-brand-teal);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-brand-light-cyan);
+        }
+
+        /* ─── APP LAYOUT ─── */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            background-color: var(--color-bg-secondary);
+        }
+
+        .app-sidebar {
+            background: #1F2232;
+            color: var(--color-white);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--color-brand-tropical-teal);
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+        }
+
+        .nav-item.active {
+            background: var(--color-brand-teal);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--color-brand-tropical-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-brand-dark-teal);
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        /* ─── Tier Badge ─── */
+        .tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+        }
+
+        .tier-badge.free {
+            background: rgba(107, 182, 182, 0.15);
+            color: var(--color-brand-tropical-teal);
+        }
+
+        .tier-badge.premium {
+            background: rgba(212, 168, 83, 0.18);
+            color: var(--color-brand-premium-gold);
+        }
+
+        .app-main {
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: var(--color-brand-dark-teal);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .settings-card {
+            background: var(--color-white);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .settings-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--color-brand-dark-teal);
+            border-bottom: 1px solid var(--color-bg-secondary);
+            padding-bottom: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group-app {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label-app {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input-app {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            background: #F9FAFB;
+            font-family: inherit;
+        }
+
+        .form-input-app:focus {
+            outline: none;
+            background: var(--color-white);
+            border-color: var(--color-brand-teal);
+            box-shadow: 0 0 0 3px var(--color-brand-light-cyan);
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .toggle-switch:last-child {
+            border-bottom: none;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E5E7EB;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--color-brand-teal);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* ─── Loss Aversion for Notifications ─── */
+        .loss-hint {
+            font-size: 0.78rem;
+            color: #DC2626;
+            font-weight: 500;
+            margin-top: 0.25rem;
+            display: none;
+        }
+
+        .toggle-switch:has(input:not(:checked)) .loss-hint {
+            display: block;
+        }
+
+        /* ─── Success Toast ─── */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: var(--color-brand-teal);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 24px rgba(0, 128, 128, 0.25);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .danger-zone {
+            border: 1px solid #FECACA;
+            background: #FEF2F2;
+        }
+
+        .danger-zone .settings-section-title {
+            color: #DC2626;
+            border-color: #FECACA;
+        }
+
+        .btn-danger {
+            background: #DC2626;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                display: none;
+            }
+
+            .app-main {
+                padding: 1.5rem;
+            }
+
+            .toast {
+                right: 1rem;
+                left: 1rem;
+                top: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Success Toast -->
+    <div class="toast" id="successToast">
+        &#10003; Changes saved successfully
+    </div>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-logo">
+                InclusiFund
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="https://tools.inclusifund.co.uk/dashboard/user-account" class="nav-item">
+                    <span>&#128202;</span> Dashboard
+                </a>
+                <a href="https://tools.inclusifund.co.uk/dashboard" class="nav-item">
+                    <span>&#128193;</span> Tools
+                </a>
+                <a href="https://tools.inclusifund.co.uk/subscription/user-account" class="nav-item">
+                    <span>&#128179;</span> Subscription
+                </a>
+                <a href="https://tools.inclusifund.co.uk/settings/user-account" class="nav-item active">
+                    <span>&#9881;&#65039;</span> Settings
+                </a>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar" id="sidebarAvatar">?</div>
+                <div style="font-size: 0.875rem;">
+                    <div style="font-weight: 600;" id="sidebarName">Loading...</div>
+                    <div id="sidebarTier"><span class="tier-badge free">Free</span></div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <a href="#" id="logoutBtn" class="nav-item" style="color: #ef4444;">
+                    <span>&#128682;</span> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <header class="app-header reveal">
+                <div>
+                    <h1 class="page-title">Account Settings</h1>
+                    <p class="page-subtitle">Manage your profile and preferences.</p>
+                </div>
+            </header>
+
+            <!-- Profile Completion Progress -->
+            <div class="profile-progress reveal" id="profileProgress">
+                <div class="progress-header">
+                    <span class="progress-title">Profile Completion</span>
+                    <span class="progress-percent" id="completionPercent">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="completionFill"></div>
+                </div>
+                <div class="progress-hint" id="progressHint">Complete your profile to get personalised grant recommendations.</div>
+            </div>
+
+            <!-- Profile Settings -->
+            <div class="settings-card reveal">
+                <div class="settings-section-title">Profile Information</div>
+                <div class="form-grid">
+                    <div class="form-group-app">
+                        <label class="form-label-app">Full Name</label>
+                        <input type="text" class="form-input-app" id="fullNameInput" value="">
+                    </div>
+                    <div class="form-group-app">
+                        <label class="form-label-app">Email Address</label>
+                        <input type="email" class="form-input-app" id="emailInput" value="" disabled
+                            style="background-color: var(--color-bg-secondary); cursor: not-allowed;">
+                    </div>
+                    <div class="form-group-app">
+                        <label class="form-label-app">CIC Name</label>
+                        <input type="text" class="form-input-app" id="cicNameInput" value="">
+                    </div>
+                    <div class="form-group-app">
+                        <label class="form-label-app">Company Number</label>
+                        <input type="text" class="form-input-app" id="companyNumberInput" value="" disabled
+                            style="background-color: var(--color-bg-secondary); cursor: not-allowed;">
+                    </div>
+                </div>
+                <div
+                    style="display: flex; justify-content: flex-end; align-items: center; margin-top: 1rem; gap: 1rem;">
+                    <button id="saveProfileBtn" class="btn btn-primary btn-ripple"
+                        style="padding: 0.5rem 1.5rem; font-size: 0.875rem;">Save Changes</button>
+                </div>
+            </div>
+
+            <!-- Email Preferences -->
+            <div class="settings-card reveal">
+                <div class="settings-section-title">Notifications</div>
+
+                <div class="toggle-switch">
+                    <div>
+                        <div style="font-weight: 500;">Governance Alerts</div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Get notified about
+                            upcoming statutory deadlines.</div>
+                        <div class="loss-hint">Turning this off means you could miss critical filing deadlines.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="govAlertsToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div>
+                        <div style="font-weight: 500;">Grant Opportunities</div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">Weekly digest of new
+                            matched funding.</div>
+                        <div class="loss-hint">You may miss time-sensitive funding rounds worth thousands.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="grantOppsToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="toggle-switch">
+                    <div>
+                        <div style="font-weight: 500;">Marketing Updates</div>
+                        <div style="font-size: 0.875rem; color: var(--color-text-secondary);">News about new features
+                            and products.</div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="marketingToggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="settings-card reveal">
+                <div class="settings-section-title">Security</div>
+                <div class="form-grid">
+                    <div class="form-group-app">
+                        <label class="form-label-app">Current Password</label>
+                        <input type="password" class="form-input-app">
+                    </div>
+                    <div class="form-group-app">
+                        <label class="form-label-app">New Password</label>
+                        <input type="password" class="form-input-app">
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 1rem;">
+                    <button class="btn btn-secondary btn-ripple" style="padding: 0.5rem 1.5rem; font-size: 0.875rem;">Update
+                        Password</button>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="settings-card danger-zone reveal">
+                <div class="settings-section-title">Danger Zone</div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 600; color: #DC2626;">Delete Account</div>
+                        <div style="font-size: 0.875rem; color: #B91C1C;">Once you delete your account, there is no
+                            going back. Please be certain.</div>
+                    </div>
+                    <button class="btn-danger">Delete Account</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <script src="assets/js/auth.js"></script>
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script>
+        // ─── Scroll Reveal ───
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ─── Button Ripple ───
+        document.querySelectorAll('.btn-ripple').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-span');
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // ─── Toast Helper ───
+        function showToast(message) {
+            const toast = document.getElementById('successToast');
+            toast.textContent = '\u2713 ' + (message || 'Changes saved successfully');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // ─── Profile Completion Calculator ───
+        function updateProfileCompletion() {
+            const fields = [
+                document.getElementById('fullNameInput').value,
+                document.getElementById('emailInput').value,
+                document.getElementById('cicNameInput').value,
+                document.getElementById('companyNumberInput').value
+            ];
+
+            const filled = fields.filter(v => v && v.trim().length > 0).length;
+            const percent = Math.round((filled / fields.length) * 100);
+
+            document.getElementById('completionPercent').textContent = percent + '%';
+            document.getElementById('completionFill').style.width = percent + '%';
+
+            const hint = document.getElementById('progressHint');
+            if (percent === 100) {
+                hint.textContent = 'Profile complete. You are getting the most relevant recommendations.';
+                hint.style.color = '#008080';
+            } else if (percent >= 50) {
+                hint.textContent = 'Almost there. Add your CIC details for tailored grant matches.';
+            } else {
+                hint.textContent = 'Complete your profile to get personalised grant recommendations.';
+            }
+        }
+
+        // ─── Main Init ───
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!InclusiFundAuth.requireAuth()) return;
+
+            // Immediately populate sidebar from localStorage
+            const session = InclusiFundAuth.checkSession();
+            if (session) {
+                document.getElementById('sidebarName').textContent = session.name || session.email.split('@')[0];
+
+                // Tier badge
+                const tierEl = document.getElementById('sidebarTier');
+                if (session.tier === 'premium') {
+                    tierEl.innerHTML = '<span class="tier-badge premium">Premium</span>';
+                } else {
+                    tierEl.innerHTML = '<span class="tier-badge free">Free</span>';
+                }
+
+                const initials = (session.name || session.email).substring(0, 2).toUpperCase();
+                document.getElementById('sidebarAvatar').textContent = initials;
+                document.getElementById('emailInput').value = session.email;
+            }
+
+            const userEmail = session.email;
+            const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+
+            // Fetch user profile from Convex
+            try {
+                const user = await convexClient.query("users:getUser", { email: userEmail });
+                if (user) {
+                    document.getElementById('fullNameInput').value = user.fullName || '';
+                    document.getElementById('emailInput').value = user.email || userEmail;
+                    document.getElementById('cicNameInput').value = user.organizationName || '';
+                    document.getElementById('companyNumberInput').value = user.companyNumber || '';
+
+                    document.getElementById('sidebarName').textContent = user.fullName || userEmail.split('@')[0];
+
+                    const tierEl = document.getElementById('sidebarTier');
+                    if (user.tier === 'premium') {
+                        tierEl.innerHTML = '<span class="tier-badge premium">Premium</span>';
+                    } else {
+                        tierEl.innerHTML = '<span class="tier-badge free">Free</span>';
+                    }
+
+                    const initials = (user.fullName || userEmail).substring(0, 2).toUpperCase();
+                    document.getElementById('sidebarAvatar').textContent = initials;
+
+                    // Update completion bar after data loads
+                    updateProfileCompletion();
+                }
+            } catch (error) {
+                console.error("Error loading profile:", error);
+                updateProfileCompletion();
+            }
+
+            // Fetch settings from Convex
+            try {
+                const settings = await convexClient.query("settings:getSettingsByEmail", { email: userEmail });
+                if (settings) {
+                    document.getElementById('govAlertsToggle').checked = settings.emailNotifications ?? true;
+                    document.getElementById('marketingToggle').checked = settings.marketingEmails ?? false;
+                    document.getElementById('grantOppsToggle').checked = settings.weeklyDigest ?? true;
+                }
+            } catch (error) {
+                console.error("Error loading settings:", error);
+            }
+
+            // Listen for input changes on profile fields to update progress
+            ['fullNameInput', 'cicNameInput'].forEach(id => {
+                document.getElementById(id).addEventListener('input', updateProfileCompletion);
+            });
+
+            // Save Profile Handler
+            document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+                const btn = document.getElementById('saveProfileBtn');
+                btn.textContent = 'Saving...';
+                btn.disabled = true;
+
+                try {
+                    const fullName = document.getElementById('fullNameInput').value;
+                    const organizationName = document.getElementById('cicNameInput').value;
+
+                    await convexClient.mutation("users:updateProfileByEmail", {
+                        email: userEmail,
+                        fullName,
+                        organizationName
+                    });
+
+                    document.getElementById('sidebarName').textContent = fullName || userEmail.split('@')[0];
+                    const initials = (fullName || userEmail).substring(0, 2).toUpperCase();
+                    document.getElementById('sidebarAvatar').textContent = initials;
+
+                    updateProfileCompletion();
+                    showToast('Profile updated successfully');
+                } catch (error) {
+                    console.error("Error saving profile:", error);
+                    showToast('Failed to save changes');
+                } finally {
+                    btn.textContent = 'Save Changes';
+                    btn.disabled = false;
+                }
+            });
+
+            // Toggle Settings Handlers
+            const updateSetting = async (key, value) => {
+                try {
+                    await convexClient.mutation("settings:updateSettingsByEmail", {
+                        email: userEmail,
+                        [key]: value
+                    });
+                    showToast('Preference updated');
+                } catch (error) {
+                    console.error("Error updating setting:", error);
+                }
+            };
+
+            document.getElementById('govAlertsToggle').addEventListener('change', (e) => {
+                updateSetting('emailNotifications', e.target.checked);
+            });
+            document.getElementById('grantOppsToggle').addEventListener('change', (e) => {
+                updateSetting('weeklyDigest', e.target.checked);
+            });
+            document.getElementById('marketingToggle').addEventListener('change', (e) => {
+                updateSetting('marketingEmails', e.target.checked);
+            });
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                InclusiFundAuth.logout();
+            });
+
+            // Animate progress bar on load
+            setTimeout(() => updateProfileCompletion(), 500);
+        });
+    </script>
+</body>
+
+</html>

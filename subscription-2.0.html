@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund Tools | Subscription</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+        :root {
+            --color-brand-tropical-teal: #6BB6B6;
+            --color-brand-dark-teal: #005461;
+            --color-brand-teal: #008080;
+            --color-brand-light-cyan: #D5ECEC;
+            --color-brand-shadow-grey: #1F2232;
+            --color-brand-card-bg: #2A2F42;
+            --color-brand-border: #3A3F52;
+            --color-brand-premium: #d4a853;
+            --color-text-primary: #1F2232;
+            --color-text-secondary: #4B5563;
+            --color-bg-primary: #FAFBFD;
+            --color-bg-secondary: #F3F4F6;
+            --color-white: #FFFFFF;
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+            --spacing-section: 6rem;
+            --spacing-grid: 2rem;
+        }
+
+        /* Reset & Base */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--color-brand-dark-teal);
+        }
+
+        h1 { font-size: 3rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 1.75rem; }
+        h4 { font-size: 1.25rem; }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--color-text-secondary);
+        }
+
+        .text-center { text-align: center; }
+        .text-brand { color: var(--color-brand-teal); }
+        .text-highlight { color: var(--color-brand-tropical-teal); }
+
+        /* Layout Utilities */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-dark-teal));
+            color: var(--color-white);
+            box-shadow: 0 4px 6px rgba(0, 128, 128, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 128, 128, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--color-brand-teal);
+            color: var(--color-brand-teal);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-brand-light-cyan);
+        }
+
+        /* Button Ripple Effect */
+        .btn-ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Scroll Reveal */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Scarcity Meter */
+        .scarcity-meter {
+            background: linear-gradient(135deg, #FFF7ED, #FFFBEB);
+            border: 1px solid #FED7AA;
+            border-radius: 1rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scarcity-meter-bar {
+            height: 8px;
+            background: #F3F4F6;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 0.75rem;
+        }
+
+        .scarcity-meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-brand-premium), #e6b968);
+            border-radius: 999px;
+            transition: width 1.5s ease-out;
+            width: 0%;
+        }
+
+        .scarcity-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+        }
+
+        .scarcity-label {
+            font-weight: 700;
+            color: #92400E;
+        }
+
+        .scarcity-count {
+            color: #B45309;
+            font-weight: 600;
+        }
+
+        /* Urgency Badge */
+        .urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            animation: urgencyPulse 2s ease-in-out infinite;
+        }
+
+        .urgency-badge--gold {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #92400E;
+            border: 1px solid #F59E0B;
+        }
+
+        @keyframes urgencyPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Loss Aversion Warning */
+        .loss-warning {
+            background: linear-gradient(135deg, #FEF2F2, #FFF1F2);
+            border: 1px solid #FECACA;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-out;
+        }
+
+        .loss-warning.visible {
+            opacity: 1;
+            max-height: 200px;
+            padding: 1rem 1.25rem;
+        }
+
+        .loss-warning-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .loss-warning-text {
+            font-size: 0.8125rem;
+            color: #991B1B;
+            line-height: 1.5;
+        }
+
+        .loss-warning-text strong {
+            font-weight: 700;
+        }
+
+        /* DASHBOARD / APP STYLES */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            background-color: var(--color-bg-secondary);
+        }
+
+        .app-sidebar {
+            background: #1F2232;
+            color: var(--color-white);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--color-brand-tropical-teal);
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+        }
+
+        .nav-item.active {
+            background: var(--color-brand-teal);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--color-brand-tropical-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-brand-dark-teal);
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .app-main {
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: var(--color-brand-dark-teal);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .settings-card {
+            background: var(--color-white);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .settings-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--color-brand-dark-teal);
+            border-bottom: 1px solid var(--color-bg-secondary);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Premium Plan Glow */
+        .plan-card-premium {
+            border: 2px solid var(--color-brand-teal);
+            position: relative;
+        }
+
+        .plan-card-premium::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, rgba(0, 128, 128, 0.1), rgba(212, 168, 83, 0.08));
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        /* Feature included list */
+        .features-row {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .feature-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9375rem;
+        }
+
+        .feature-tag-check {
+            color: var(--color-brand-teal);
+            font-weight: 700;
+        }
+
+        /* Tier Comparison */
+        .tier-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .tier-card {
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .tier-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .tier-card--active {
+            border-color: var(--color-brand-teal);
+            background: linear-gradient(180deg, rgba(213, 236, 236, 0.2) 0%, transparent 100%);
+        }
+
+        .tier-card--active::after {
+            content: 'CURRENT';
+            position: absolute;
+            top: -0.625rem;
+            right: 1rem;
+            background: var(--color-brand-teal);
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            letter-spacing: 0.08em;
+        }
+
+        .tier-card-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-brand-dark-teal);
+            margin-bottom: 0.25rem;
+        }
+
+        .tier-card-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .tier-card-price span {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--color-text-secondary);
+        }
+
+        .tier-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tier-list li {
+            font-size: 0.8125rem;
+            color: var(--color-text-secondary);
+            padding: 0.35rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tier-list li::before {
+            content: '\2713';
+            color: var(--color-brand-teal);
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        .tier-card--locked .tier-list li.locked-feature {
+            opacity: 0.4;
+        }
+
+        .tier-card--locked .tier-list li.locked-feature::before {
+            content: '\2717';
+            color: #9CA3AF;
+        }
+
+        /* Invoice Table */
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9375rem;
+        }
+
+        .invoice-table th {
+            text-align: left;
+            padding: 1rem;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            border-bottom: 1px solid var(--color-bg-secondary);
+        }
+
+        .invoice-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--color-bg-secondary);
+            color: var(--color-text-primary);
+        }
+
+        .invoice-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-paid {
+            background-color: #ECFDF5;
+            color: #059669;
+        }
+
+        /* Testimonial Strip */
+        .testimonial-strip {
+            background: linear-gradient(135deg, var(--color-brand-dark-teal), #003640);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .testimonial-strip-quote {
+            flex: 1;
+        }
+
+        .testimonial-strip-quote blockquote {
+            font-size: 1rem;
+            font-style: italic;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+            opacity: 0.95;
+        }
+
+        .testimonial-strip-quote cite {
+            font-size: 0.8125rem;
+            opacity: 0.7;
+            font-style: normal;
+        }
+
+        .testimonial-strip-stat {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .testimonial-strip-stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-brand-premium);
+            line-height: 1;
+        }
+
+        .testimonial-strip-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 0.25rem;
+        }
+
+        .danger-zone {
+            border: 1px solid #FECACA;
+            background: #FEF2F2;
+        }
+
+        .danger-zone .settings-section-title {
+            color: #DC2626;
+            border-color: #FECACA;
+        }
+
+        .btn-danger {
+            background: #DC2626;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 2rem; }
+
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                display: none;
+            }
+
+            .app-main {
+                padding: 1.5rem;
+            }
+
+            .tier-compare {
+                grid-template-columns: 1fr;
+            }
+
+            .testimonial-strip {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .features-row {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-logo">
+                InclusiFund
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="https://tools.inclusifund.co.uk/dashboard/user-account" class="nav-item">
+                    <span>&#x1F4CA;</span> Dashboard
+                </a>
+                <a href="https://tools.inclusifund.co.uk/dashboard" class="nav-item">
+                    <span>&#x1F4C1;</span> Tools
+                </a>
+                <a href="https://tools.inclusifund.co.uk/subscription/user-account" class="nav-item active">
+                    <span>&#x1F4B3;</span> Subscription
+                </a>
+                <a href="https://tools.inclusifund.co.uk/settings/user-account" class="nav-item">
+                    <span>&#x2699;&#xFE0F;</span> Settings
+                </a>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar" id="sidebarAvatar">?</div>
+                <div style="font-size: 0.875rem;">
+                    <div style="font-weight: 600;" id="sidebarName">Loading...</div>
+                    <div style="opacity: 0.7;" id="sidebarOrg">Loading...</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <a href="#" id="logoutBtn" class="nav-item" style="color: #ef4444;">
+                    <span>&#x1F6AA;</span> Logout
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <header class="app-header scroll-reveal">
+                <div>
+                    <h1 class="page-title">Subscription & Billing</h1>
+                    <p class="page-subtitle">Manage your plan, view invoices, and control your account.</p>
+                </div>
+                <span class="urgency-badge urgency-badge--gold" id="urgencyBadge" style="display: none;">
+                    &#x1F525; Limited Offer Active
+                </span>
+            </header>
+
+            <!-- Scarcity Meter -->
+            <div class="scarcity-meter scroll-reveal" id="scarcityMeter">
+                <div class="scarcity-text">
+                    <span class="scarcity-label">&#x26A1; Launch Pricing Active</span>
+                    <span class="scarcity-count"><strong>73%</strong> of launch spots claimed</span>
+                </div>
+                <div class="scarcity-meter-bar">
+                    <div class="scarcity-meter-fill" id="scarcityFill"></div>
+                </div>
+            </div>
+
+            <!-- Current Plan -->
+            <div class="settings-card plan-card-premium scroll-reveal">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <div style="text-transform: uppercase; font-size: 0.75rem; font-weight: 700; color: var(--color-brand-teal); margin-bottom: 0.5rem; letter-spacing: 0.05em;">
+                            Current Plan</div>
+                        <h2 id="planName" style="font-size: 1.75rem; color: var(--color-brand-dark-teal); margin-bottom: 0.5rem;">
+                            Infrastructure Engine Lifetime</h2>
+                        <p id="planDescription">You have full access to all premium tools and future updates.</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <div id="planPrice" style="font-size: 1.25rem; font-weight: 700; color: var(--color-brand-dark-teal);">
+                            &pound;297</div>
+                        <div id="planInterval" style="font-size: 0.875rem; color: var(--color-text-secondary);">One-time
+                            payment</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--color-bg-secondary); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                    <div class="features-row">
+                        <div class="feature-tag">
+                            <span class="feature-tag-check">&#x2713;</span> Compliance Calendar
+                        </div>
+                        <div class="feature-tag">
+                            <span class="feature-tag-check">&#x2713;</span> CIC34 Generator
+                        </div>
+                        <div class="feature-tag">
+                            <span class="feature-tag-check">&#x2713;</span> Grant Discovery
+                        </div>
+                        <div class="feature-tag">
+                            <span class="feature-tag-check">&#x2713;</span> Board Pack Builder
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-has-ripple" style="font-size: 0.875rem; padding: 0.5rem 1rem;">Manage Payment Method</button>
+                </div>
+            </div>
+
+            <!-- Tier Comparison -->
+            <div class="settings-card scroll-reveal">
+                <div class="settings-section-title">Compare Plans</div>
+                <div class="tier-compare">
+                    <div class="tier-card tier-card--locked" id="tierFree">
+                        <div class="tier-card-name">Free Tier</div>
+                        <div class="tier-card-price">&pound;0 <span>/ forever</span></div>
+                        <ul class="tier-list">
+                            <li>Compliance Calendar (view only)</li>
+                            <li>Eligibility Checker</li>
+                            <li class="locked-feature">CIC34 Report Generator</li>
+                            <li class="locked-feature">Grant Discovery Engine</li>
+                            <li class="locked-feature">Board Pack Builder</li>
+                            <li class="locked-feature">Policy Generator</li>
+                            <li class="locked-feature">Priority Support</li>
+                        </ul>
+                    </div>
+                    <div class="tier-card tier-card--active" id="tierPremium">
+                        <div class="tier-card-name" style="color: var(--color-brand-premium);">Infrastructure Engine Lifetime</div>
+                        <div class="tier-card-price">&pound;297 <span>/ one-time</span></div>
+                        <ul class="tier-list">
+                            <li>Everything in Free</li>
+                            <li>CIC34 Report Generator</li>
+                            <li>Grant Discovery Engine</li>
+                            <li>Board Pack Builder</li>
+                            <li>Policy Generator</li>
+                            <li>All Future Updates</li>
+                            <li>Priority Support</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Loss Aversion Warning (shown when hovering or clicking downgrade) -->
+                <div class="loss-warning" id="lossWarning">
+                    <span class="loss-warning-icon">&#x26A0;&#xFE0F;</span>
+                    <div class="loss-warning-text">
+                        <strong>You will lose access</strong> to CIC34 Generator, Grant Discovery, Board Pack Builder, and Policy Generator. Any saved reports will be archived and inaccessible until you upgrade again. <strong>This cannot be undone mid-cycle.</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial Strip -->
+            <div class="testimonial-strip scroll-reveal">
+                <div class="testimonial-strip-quote">
+                    <blockquote>"The Infrastructure Engine paid for itself in the first week. Our CIC34 report used to take three days &mdash; now it takes thirty minutes."</blockquote>
+                    <cite>&mdash; Priya Kapoor, Director, Brighter Futures CIC, Manchester</cite>
+                </div>
+                <div class="testimonial-strip-stat">
+                    <div class="testimonial-strip-stat-value">14h</div>
+                    <div class="testimonial-strip-stat-label">avg. time saved per month</div>
+                </div>
+            </div>
+
+            <!-- Invoice History -->
+            <div class="settings-card scroll-reveal">
+                <div class="settings-section-title">Invoice History</div>
+
+                <div style="overflow-x: auto;">
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody">
+                            <tr>
+                                <td>Feb 10, 2026</td>
+                                <td>Infrastructure Engine (Lifetime Access)</td>
+                                <td>&pound;297.00</td>
+                                <td><span class="status-badge status-paid">Paid</span></td>
+                                <td style="text-align: right;">
+                                    <a href="#" style="color: var(--color-brand-teal); font-weight: 500; font-size: 0.875rem;">Download PDF</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ / Help -->
+            <div class="scroll-reveal" style="text-align: center; margin-top: 3rem; color: var(--color-text-secondary);">
+                <p>Have questions about your billing? <a href="support.html" style="color: var(--color-brand-teal); text-decoration: underline;">Contact Support</a></p>
+            </div>
+        </main>
+    </div>
+
+
+    <script src="assets/js/auth.js"></script>
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!InclusiFundAuth.requireAuth()) return;
+
+            // --- Scroll Reveal ---
+            const revealEls = document.querySelectorAll('.scroll-reveal');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            revealEls.forEach(el => revealObserver.observe(el));
+
+            // --- Button Ripple ---
+            document.querySelectorAll('.btn-has-ripple, .btn-primary').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    ripple.classList.add('btn-ripple');
+                    const rect = this.getBoundingClientRect();
+                    ripple.style.left = (e.clientX - rect.left) + 'px';
+                    ripple.style.top = (e.clientY - rect.top) + 'px';
+                    ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+                    this.appendChild(ripple);
+                    ripple.addEventListener('animationend', () => ripple.remove());
+                });
+            });
+
+            // --- Scarcity Meter Animation ---
+            setTimeout(() => {
+                const fill = document.getElementById('scarcityFill');
+                if (fill) fill.style.width = '73%';
+            }, 400);
+
+            // --- Loss Aversion: show warning on Free tier hover ---
+            const tierFree = document.getElementById('tierFree');
+            const lossWarning = document.getElementById('lossWarning');
+            if (tierFree && lossWarning) {
+                tierFree.addEventListener('mouseenter', () => {
+                    lossWarning.classList.add('visible');
+                });
+                tierFree.addEventListener('mouseleave', () => {
+                    lossWarning.classList.remove('visible');
+                });
+                tierFree.addEventListener('click', () => {
+                    lossWarning.classList.add('visible');
+                });
+            }
+
+            // --- Populate sidebar from localStorage ---
+            const session = InclusiFundAuth.checkSession();
+            if (session) {
+                document.getElementById('sidebarName').textContent = session.name || session.email.split('@')[0];
+                document.getElementById('sidebarOrg').textContent = session.tier || 'User';
+                const initials = (session.name || session.email).substring(0, 2).toUpperCase();
+                document.getElementById('sidebarAvatar').textContent = initials;
+            }
+
+            const userEmail = session.email;
+            const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+
+            // Populate sidebar from Convex user data
+            try {
+                const user = await convexClient.query("users:getUser", { email: userEmail });
+                if (user) {
+                    document.getElementById('sidebarName').textContent = user.fullName || userEmail.split('@')[0];
+                    document.getElementById('sidebarOrg').textContent = user.organizationName || user.tier || 'User';
+                    const initials = (user.fullName || userEmail).substring(0, 2).toUpperCase();
+                    document.getElementById('sidebarAvatar').textContent = initials;
+
+                    // Update plan display based on tier
+                    const tier = (user.tier || 'free').toLowerCase();
+                    if (tier === 'premium' || tier === 'lifetime') {
+                        document.getElementById('planName').textContent = 'Infrastructure Engine Lifetime';
+                        document.getElementById('planDescription').textContent = 'You have full access to all premium tools and future updates.';
+                        document.getElementById('planPrice').textContent = '\u00A3297';
+                        document.getElementById('planInterval').textContent = 'One-time payment';
+                        // Show scarcity meter only for free users, hide for premium
+                        document.getElementById('scarcityMeter').style.display = 'none';
+                        // Mark premium tier active
+                        document.getElementById('tierPremium').classList.add('tier-card--active');
+                        document.getElementById('tierFree').classList.remove('tier-card--active');
+                    } else {
+                        document.getElementById('planName').textContent = 'Free Plan';
+                        document.getElementById('planDescription').textContent = 'You have access to free tools. Upgrade to unlock premium features.';
+                        document.getElementById('planPrice').textContent = '\u00A30';
+                        document.getElementById('planInterval').textContent = 'Free tier';
+                        // Show scarcity + urgency for free users
+                        document.getElementById('urgencyBadge').style.display = 'inline-flex';
+                        // Flip active states
+                        document.getElementById('tierFree').classList.add('tier-card--active');
+                        document.getElementById('tierPremium').classList.remove('tier-card--active');
+                        document.getElementById('tierFree').classList.remove('tier-card--locked');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+
+            // Fetch subscription record (if exists)
+            try {
+                const subscription = await convexClient.query("subscriptions:getSubscriptionByEmail", { email: userEmail });
+                if (subscription) {
+                    document.getElementById('planName').textContent = subscription.plan === 'premium' ? 'Infrastructure Engine Lifetime' : (subscription.plan || 'Infrastructure Engine Lifetime');
+                    document.getElementById('planPrice').textContent = subscription.amount !== undefined ? '\u00A3' + subscription.amount : '\u00A3297';
+                    const cycle = subscription.billingCycle || 'one-time';
+                    document.getElementById('planInterval').textContent = cycle.charAt(0).toUpperCase() + cycle.slice(1);
+                }
+            } catch (error) {
+                console.error('Error loading subscription data:', error);
+            }
+
+            // Fetch invoices
+            try {
+                const invoices = await convexClient.query("invoices:getInvoicesByEmail", { email: userEmail });
+                if (invoices && invoices.length > 0) {
+                    const tbody = document.getElementById('invoiceTableBody');
+                    tbody.innerHTML = '';
+                    invoices.forEach(inv => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${new Date(inv.date || inv._creationTime).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                            <td>${inv.description || 'Infrastructure Engine (Lifetime Access)'}</td>
+                            <td>\u00A3${(inv.amount !== undefined ? inv.amount : 297).toFixed(2)}</td>
+                            <td><span class="status-badge status-paid">${inv.status || 'Paid'}</span></td>
+                            <td style="text-align: right;">
+                                <a href="${inv.downloadUrl || '#'}" style="color: var(--color-brand-teal); font-weight: 500; font-size: 0.875rem;">Download PDF</a>
+                            </td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading invoices:', error);
+            }
+
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', (e) => {
+                e.preventDefault();
+                InclusiFundAuth.logout();
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIC Tool Suite | Inclusifund</title>
+    <meta name="description"
+        content="Access free and premium CIC tools for compliance, funding, governance, and strategic planning.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            /* Brand Colors - Teal/Cream Theme */
+            --color-primary: #79B4B7;
+            --color-primary-dark: #5a9a9d;
+            --color-primary-light: #9acbce;
+            --color-accent: #79B4B7;
+            --color-accent-light: #a8d4d6;
+            --color-cream: #FEFBF3;
+            --color-beige: #F8F0DF;
+            --color-text: #2d2d2d;
+            --color-text-muted: #9D9D9D;
+            --color-bg: #FEFBF3;
+            --color-card-bg: #ffffff;
+            --color-border: #F8F0DF;
+            --color-glass: rgba(254, 251, 243, 0.95);
+
+            /* Premium Accents */
+            --color-premium-gold: #d4a853;
+            --color-premium-gold-light: #f5e6c8;
+            --color-premium-dark: #1a1a1a;
+            --color-premium-lock: rgba(26, 26, 26, 0.6);
+
+            /* Spacing & Sizes */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-2xl: 4rem;
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --header-height: 80px;
+
+            /* Typography */
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Outfit', sans-serif;
+
+            /* Shadows & Effects */
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(121, 180, 183, 0.08);
+            --shadow-lg: 0 20px 25px -5px rgba(121, 180, 183, 0.12);
+            --shadow-xl: 0 25px 50px -12px rgba(121, 180, 183, 0.25);
+            --blur-glass: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Atmospheric Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            right: -15%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(121, 180, 183, 0.12) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -15%;
+            left: -20%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(248, 240, 223, 0.4) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(30px, -30px) scale(1.05);
+            }
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--color-glass);
+            backdrop-filter: blur(var(--blur-glass));
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .logo-text span {
+            color: var(--color-accent);
+        }
+
+        .tagline {
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: -4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .btn-header {
+            padding: 0.6rem 1rem;
+            border-radius: 100px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            font-size: 0.9rem;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--color-text);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-header:hover {
+            background: var(--color-border);
+        }
+
+        .btn-header.primary {
+            border-color: var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .btn-header.primary:hover {
+            background: var(--color-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(121, 180, 183, 0.2);
+        }
+
+        .btn-header.logout {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+
+        .btn-header.logout:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-icon-only {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
+            text-align: center;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--color-text-muted);
+            max-width: 600px;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        /* User Tier Badge */
+        .user-tier-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-top: var(--spacing-sm);
+        }
+
+        .user-tier-badge.free {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .user-tier-badge.premium {
+            background: linear-gradient(135deg, #f5e6c8, #e8d5a0);
+            color: #8B6914;
+        }
+
+        /* Tools Grid */
+        .tools-section {
+            padding: 0 var(--spacing-lg) var(--spacing-2xl);
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s backwards;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: var(--spacing-sm);
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+            color: var(--color-primary);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            color: var(--color-text);
+            font-weight: 700;
+        }
+
+        .section-count {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .tool-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            width: 100%;
+        }
+
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgb(213, 236, 236);
+            color: var(--color-primary-dark);
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .tool-name {
+            font-family: var(--font-heading);
+            font-size: 1.4rem;
+            color: var(--color-text);
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .tool-description {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            margin-bottom: var(--spacing-lg);
+            flex-grow: 1;
+            max-width: 280px;
+        }
+
+        .tool-footer {
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .btn-tool {
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            background: var(--color-bg);
+            color: var(--color-text);
+        }
+
+        /* Specific button colors for Free Tools */
+        .btn-tool.green {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-tool.teal {
+            background-color: #3f8c8f;
+            color: white;
+        }
+
+        .btn-tool.purple {
+            background-color: #8A4FFF;
+            color: white;
+        }
+
+        .btn-tool.primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn-tool:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-tool:disabled {
+            background: #F3F4F6;
+            color: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Upgrade Button */
+        .btn-tool.upgrade {
+            background: linear-gradient(135deg, var(--color-premium-gold), #c4982d);
+            color: white;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .btn-tool.upgrade:hover {
+            opacity: 1;
+            box-shadow: 0 6px 16px rgba(212, 168, 83, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Badges */
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 2;
+        }
+
+        .badge.free {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge.live {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge.soon {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge.premium-locked {
+            background: linear-gradient(135deg, #f5e6c8, #e8d5a0);
+            color: #8B6914;
+        }
+
+        /* Locked card styles for free users viewing premium tools */
+        .tool-card.locked {
+            opacity: 0.75;
+            border-color: var(--color-premium-gold-light);
+        }
+
+        .tool-card.locked:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tool-card.locked .tool-icon {
+            opacity: 0.4;
+            filter: grayscale(40%);
+        }
+
+        .tool-card.locked .tool-description {
+            opacity: 0.7;
+        }
+
+        /* Premium lock overlay */
+        .premium-lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, transparent 40%, rgba(255, 255, 255, 0.85) 100%);
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 1.5rem;
+            pointer-events: none;
+            border-radius: var(--border-radius-lg);
+        }
+
+        .tool-card.locked .tool-footer {
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Coming Soon */
+        .tool-card.coming-soon {
+            opacity: 0.6;
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        .tool-card.coming-soon .badge {
+            opacity: 1;
+            filter: grayscale(0%);
+        }
+
+        /* Upgrade Banner */
+        .upgrade-banner {
+            max-width: 1400px;
+            margin: 0 auto var(--spacing-2xl);
+            padding: 0 var(--spacing-lg);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s backwards;
+        }
+
+        .upgrade-banner-inner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl) var(--spacing-2xl);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upgrade-banner-inner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 168, 83, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .upgrade-banner-text h3 {
+            color: var(--color-premium-gold);
+            font-family: var(--font-heading);
+            font-size: 1.6rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .upgrade-banner-text p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .btn-upgrade-banner {
+            padding: 0.9rem 2.2rem;
+            border-radius: 100px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+            border: none;
+            background: linear-gradient(135deg, var(--color-premium-gold), #c4982d);
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-upgrade-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 168, 83, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--color-premium-dark);
+            color: white;
+            padding: var(--spacing-xl) 0;
+            text-align: center;
+            margin-top: var(--spacing-2xl);
+        }
+
+        .footer-text {
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* Loading */
+        #auth-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--color-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--color-primary-light);
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .header-actions span:not(.icon) {
+                display: none;
+            }
+
+            .btn-header {
+                padding: 0.5rem;
+            }
+
+            .upgrade-banner-inner {
+                flex-direction: column;
+                text-align: center;
+                padding: var(--spacing-lg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Auth Loading Screen -->
+    <div id="auth-loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <span class="logo-text">Inclusi<span>fund</span></span>
+                <span class="tagline">CIC Tool Suite</span>
+            </div>
+            <div class="header-actions" id="header-actions">
+                <!-- 1. Settings (always shown when logged in) -->
+                <a href="https://tools.inclusifund.co.uk/settings/user-account" class="btn-header btn-icon-only"
+                    title="Settings" id="btn-settings" style="display:none;">
+                    <span class="icon">&#9881;&#65039;</span>
+                </a>
+
+                <!-- 2. Login or Logout (toggled by JS) -->
+                <a href="https://tools.inclusifund.co.uk/log-in/user-account" class="btn-header" title="Log In"
+                    id="btn-login">
+                    <span class="icon">&#128273;</span>
+                    <span>Log In</span>
+                </a>
+                <button class="btn-header logout" title="Log Out" id="btn-logout" style="display:none;">
+                    <span class="icon">&#128682;</span>
+                    <span>Log Out</span>
+                </button>
+
+                <!-- 3. Upgrade (hidden for premium) -->
+                <a href="https://tools.inclusifund.co.uk/upgrade" class="btn-header primary" title="Upgrade"
+                    id="btn-upgrade">
+                    <span class="icon">&#128142;</span>
+                    <span>Upgrade</span>
+                </a>
+
+                <!-- 4. User avatar (shown when logged in) -->
+                <a href="https://tools.inclusifund.co.uk/dashboard/user-account" class="btn-header btn-icon-only"
+                    title="User Profile" id="btn-user" style="display:none;">
+                    <span class="icon" id="user-avatar-icon">&#128100;</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>CIC Tool Suite</h1>
+        <p class="hero-subtitle">Free and premium tools in one place. <br> Powered by AI for governance,
+            compliance, and growth.</p>
+        <div id="tier-badge-container"></div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- ═══════════════════════════════════════ -->
+        <!--          FREE TOOLS (Always Visible)     -->
+        <!-- ═══════════════════════════════════════ -->
+        <section class="tools-section" id="free-tools-section">
+            <div class="section-header">
+                <span class="section-icon">&#127793;</span>
+                <h2 class="section-title">Free Tools</h2>
+                <span class="section-count">4 tools · Always free</span>
+            </div>
+
+            <div class="tools-grid">
+
+                <!-- 1. Check Eligibility -->
+                <div class="tool-card" id="tool-eligibility">
+                    <div class="badge free">FREE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#9989;</span>
+                        <h3 class="tool-name">Check Eligibility</h3>
+                    </div>
+                    <p class="tool-description">Find out if your idea qualifies as a CIC in 60 seconds.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/eligibility-checker" class="btn-tool green">
+                            Start Check &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. Write Statement -->
+                <div class="tool-card" id="tool-statement">
+                    <div class="badge free">FREE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#128221;</span>
+                        <h3 class="tool-name">Write Statement</h3>
+                    </div>
+                    <p class="tool-description">Generate a professional community benefit statement.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/benefit-statement" class="btn-tool teal">
+                            Create Statement &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3. Business Model Stress Test -->
+                <div class="tool-card" id="tool-finances">
+                    <div class="badge free">FREE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#128176;</span>
+                        <h3 class="tool-name">Business Model Stress Test</h3>
+                    </div>
+                    <p class="tool-description">Stress-test your business model with 3 financial scenarios.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/business-model" class="btn-tool purple">
+                            Test Model &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. Find Grants -->
+                <div class="tool-card" id="tool-grants">
+                    <div class="badge free">FREE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#128269;</span>
+                        <h3 class="tool-name">Find Grants</h3>
+                    </div>
+                    <p class="tool-description">Access our curated database of UK grant opportunities.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/grants-start" class="btn-tool primary">
+                            Find Grants &rarr;
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!--       PREMIUM TOOLS (Gated)              -->
+        <!-- ═══════════════════════════════════════ -->
+        <section class="tools-section" id="premium-tools-section">
+            <div class="section-header">
+                <span class="section-icon">&#128142;</span>
+                <h2 class="section-title">Premium Tools</h2>
+                <span class="section-count" id="premium-section-count">4 tools · Unlock with Premium</span>
+            </div>
+
+            <div class="tools-grid" id="premium-tools-grid">
+
+                <!-- 5. CIC34 Generator (Premium) -->
+                <div class="tool-card premium-tool" id="tool-cic34" data-premium="true">
+                    <div class="badge live premium-badge">LIVE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#128196;</span>
+                        <h3 class="tool-name">CIC34 Generator</h3>
+                    </div>
+                    <p class="tool-description">Create comprehensive annual reports with AI-enhanced insights.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/app/cic34-generator"
+                            class="btn-tool primary premium-link">
+                            Open Tool &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 6. Compliance Calendar (Premium) -->
+                <div class="tool-card premium-tool" id="tool-compliance" data-premium="true">
+                    <div class="badge live premium-badge">LIVE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#9878;&#65039;</span>
+                        <h3 class="tool-name">Compliance Calendar</h3>
+                    </div>
+                    <p class="tool-description">Automated compliance monitoring and filing reminders.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/compliance-calendar"
+                            class="btn-tool primary premium-link">
+                            Open Tool &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 7. Board Pack Generator (Coming Soon) -->
+                <div class="tool-card coming-soon">
+                    <div class="badge soon">COMING SOON</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#128203;</span>
+                        <h3 class="tool-name">Board Pack Generator</h3>
+                    </div>
+                    <p class="tool-description">Create professional board meeting packs instantly.</p>
+                    <div class="tool-footer">
+                        <button class="btn-tool" disabled>Coming Soon</button>
+                    </div>
+                </div>
+
+                <!-- 8. Grant Match Analyzer (Coming Soon) -->
+                <div class="tool-card coming-soon">
+                    <div class="badge soon">COMING SOON</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#127919;</span>
+                        <h3 class="tool-name">Grant Match Analyzer</h3>
+                    </div>
+                    <p class="tool-description">AI-powered matching to find the best funding fits.</p>
+                    <div class="tool-footer">
+                        <button class="btn-tool" disabled>Coming Soon</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Upgrade Banner (hidden for premium users) -->
+        <div class="upgrade-banner" id="upgrade-banner">
+            <div class="upgrade-banner-inner">
+                <div class="upgrade-banner-text">
+                    <h3>&#128142; Unlock Premium Tools</h3>
+                    <p>Get CIC34 Generator, Compliance Calendar, and upcoming tools with a premium plan.</p>
+                </div>
+                <a href="https://tools.inclusifund.co.uk/upgrade" class="btn-upgrade-banner">
+                    Upgrade Now &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <section class="hero" style="padding-top: 0; padding-bottom: var(--spacing-2xl);">
+            <p class="hero-subtitle">Want to see what tools we have planned?</p>
+            <a href="https://tools.inclusifund.co.uk" class="btn-header"
+                style="border: 1px solid var(--color-text-muted);">
+                Back to Homepage &rarr;
+            </a>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">&copy; 2026 Inclusifund. All rights reserved. | Built for Community Interest Companies
+        </p>
+    </footer>
+
+    <!-- Convex SDK for tier verification fallback -->
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initDashboard();
+        });
+
+        function initDashboard() {
+            try {
+                // 1. Check session using InclusiFundAuth (or fallback to raw localStorage)
+                let user = null;
+
+                if (window.InclusiFundAuth) {
+                    user = InclusiFundAuth.checkSession();
+                } else {
+                    // Fallback: read raw localStorage
+                    const raw = localStorage.getItem('inclusifund_user');
+                    if (raw) {
+                        try {
+                            user = JSON.parse(raw);
+                            // Check expiration if present
+                            if (user.expiresAt && Date.now() >= user.expiresAt) {
+                                user = null;
+                            }
+                        } catch (e) {
+                            user = null;
+                        }
+                    }
+                }
+
+                // 2. Determine auth state
+                const isLoggedIn = !!user;
+                const tier = (user && user.tier) ? user.tier.toLowerCase() : 'free';
+                const isPremium = (tier === 'premium' || tier === 'lifetime');
+
+                // 3. Update Header UI
+                updateHeader(isLoggedIn, isPremium, user);
+
+                // 4. Update Tool Cards based on tier
+                updateToolCards(isPremium);
+
+                // 5. Show/hide upgrade banner
+                const upgradeBanner = document.getElementById('upgrade-banner');
+                if (isPremium) {
+                    upgradeBanner.style.display = 'none';
+                }
+
+                // 6. Show tier badge in hero
+                showTierBadge(isLoggedIn, isPremium);
+
+                // 7. Update premium section count text
+                if (isPremium) {
+                    const countEl = document.getElementById('premium-section-count');
+                    if (countEl) countEl.textContent = '4 tools · All unlocked';
+                }
+
+                // 8. Remove loading screen — dashboard is ready
+                document.getElementById('auth-loading').style.display = 'none';
+
+                // 9. Convex tier-verification fallback:
+                //    If user is logged in but shows as free, double-check with Convex backend.
+                //    This catches cases where the login page didn't sync the tier properly.
+                if (isLoggedIn && !isPremium && user.email) {
+                    verifyTierWithConvex(user);
+                }
+
+            } catch (e) {
+                console.error('Dashboard init error:', e);
+                // Fail safe: show dashboard in free mode
+                document.getElementById('auth-loading').style.display = 'none';
+                updateHeader(false, false, null);
+                updateToolCards(false);
+            }
+        }
+
+        /**
+         * Verify user's tier against Convex backend. 
+         * If Convex says premium but localStorage says free, fix it and re-render.
+         */
+        async function verifyTierWithConvex(user) {
+            try {
+                const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+                const convexUser = await convexClient.query("users:getUser", { email: user.email });
+
+                if (convexUser && (convexUser.tier === 'premium' || convexUser.tier === 'lifetime')) {
+                    console.log("[Dashboard] Convex says premium — upgrading localStorage session");
+
+                    // Update localStorage
+                    user.tier = convexUser.tier;
+                    if (convexUser.fullName) user.name = convexUser.fullName;
+                    if (window.InclusiFundAuth) {
+                        InclusiFundAuth.setSession(user);
+                    } else {
+                        localStorage.setItem('inclusifund_user', JSON.stringify(user));
+                    }
+
+                    // Re-render dashboard as premium
+                    updateHeader(true, true, user);
+                    updateToolCards(true);
+                    showTierBadge(true, true);
+
+                    const upgradeBanner = document.getElementById('upgrade-banner');
+                    if (upgradeBanner) upgradeBanner.style.display = 'none';
+
+                    const countEl = document.getElementById('premium-section-count');
+                    if (countEl) countEl.textContent = '4 tools · All unlocked';
+                }
+            } catch (err) {
+                console.error("[Dashboard] Convex tier check failed:", err);
+            }
+        }
+
+        /**
+         * Update header buttons based on auth state
+         */
+        function updateHeader(isLoggedIn, isPremium, user) {
+            const btnLogin = document.getElementById('btn-login');
+            const btnLogout = document.getElementById('btn-logout');
+            const btnUpgrade = document.getElementById('btn-upgrade');
+            const btnSettings = document.getElementById('btn-settings');
+            const btnUser = document.getElementById('btn-user');
+
+            if (isLoggedIn) {
+                // Show: Logout, Settings, User avatar
+                btnLogin.style.display = 'none';
+                btnLogout.style.display = 'inline-flex';
+                btnSettings.style.display = 'inline-flex';
+                btnUser.style.display = 'inline-flex';
+
+                // Hide upgrade for premium users
+                if (isPremium) {
+                    btnUpgrade.style.display = 'none';
+                } else {
+                    btnUpgrade.style.display = 'inline-flex';
+                }
+
+                // Setup logout handler
+                btnLogout.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (window.InclusiFundAuth) {
+                        InclusiFundAuth.logout();
+                    } else {
+                        localStorage.removeItem('inclusifund_user');
+                        sessionStorage.clear();
+                        window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+                    }
+                });
+            } else {
+                // Show: Login, Upgrade
+                btnLogin.style.display = 'inline-flex';
+                btnLogout.style.display = 'none';
+                btnSettings.style.display = 'none';
+                btnUser.style.display = 'none';
+                btnUpgrade.style.display = 'inline-flex';
+            }
+        }
+
+        /**
+         * Gate premium tool cards for free users
+         */
+        function updateToolCards(isPremium) {
+            const premiumCards = document.querySelectorAll('.tool-card.premium-tool');
+
+            premiumCards.forEach(card => {
+                if (isPremium) {
+                    // Unlocked: show normally
+                    card.classList.remove('locked');
+                    card.classList.add('active');
+                } else {
+                    // Locked: add overlay and swap button
+                    card.classList.add('locked');
+
+                    // Add lock overlay
+                    const overlay = document.createElement('div');
+                    overlay.className = 'premium-lock-overlay';
+                    card.appendChild(overlay);
+
+                    // Change badge to premium-locked
+                    const badge = card.querySelector('.premium-badge');
+                    if (badge) {
+                        badge.className = 'badge premium-locked';
+                        badge.textContent = '🔒 PREMIUM';
+                    }
+
+                    // Replace link with upgrade button
+                    const link = card.querySelector('.premium-link');
+                    if (link) {
+                        const upgradeBtn = document.createElement('a');
+                        upgradeBtn.href = 'https://tools.inclusifund.co.uk/upgrade';
+                        upgradeBtn.className = 'btn-tool upgrade';
+                        upgradeBtn.innerHTML = '&#128142; Upgrade to Unlock &rarr;';
+                        link.parentNode.replaceChild(upgradeBtn, link);
+                    }
+                }
+            });
+        }
+
+        /**
+         * Show tier badge under hero subtitle
+         */
+        function showTierBadge(isLoggedIn, isPremium) {
+            const container = document.getElementById('tier-badge-container');
+            if (!container) return;
+
+            if (!isLoggedIn) {
+                container.innerHTML = '<span class="user-tier-badge free">&#127793; Free Plan</span>';
+            } else if (isPremium) {
+                container.innerHTML = '<span class="user-tier-badge premium">&#128142; Premium Plan</span>';
+            } else {
+                container.innerHTML = '<span class="user-tier-badge free">&#127793; Free Plan</span>';
+            }
+        }
+    </script>
+</body>
+
+</html>

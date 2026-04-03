@@ -1,0 +1,7 @@
+# macOS
+.DS_Store
+
+# Utility scripts and temporary files
+*.py
+*.patch
+*.txt

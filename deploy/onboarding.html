@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund | Welcome to The Infrastructure Engine for UK CICs</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Theme -->
+    <link rel="stylesheet" href="assets/theme.css">
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.js"></script>
+
+    <!-- Convex + Auth -->
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script src="assets/js/auth.js"></script>
+
+    <style>
+        :root {
+            --color-primary: #008080;
+            --color-primary-light: #6BB6B6;
+            --color-primary-dark: #005461;
+            --color-accent: #D5ECEC;
+            --color-premium: #d4a853;
+            --color-dark: #1F2232;
+            --color-text-main: #1F2232;
+            --color-text-muted: #4B5563;
+        }
+
+        /* Progress Bar */
+        .progress-track {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(0,128,128,0.1);
+            z-index: 1000;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+            border-radius: 0 2px 2px 0;
+            transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        /* Scroll Reveal */
+        .sr {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .sr.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Social proof toast for onboarding */
+        .social-toast-onboard {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: white;
+            border-radius: 12px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            border: 1px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 999;
+            transform: translateX(-120%);
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+            max-width: 340px;
+        }
+
+        .social-toast-onboard.show {
+            transform: translateX(0);
+        }
+
+        .toast-avatar-ob {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .toast-text-ob {
+            font-size: 0.82rem;
+            color: #4B5563;
+            line-height: 1.4;
+        }
+
+        .toast-text-ob strong {
+            color: #1F2232;
+        }
+
+        .toast-time-ob {
+            font-size: 0.72rem;
+            color: var(--color-primary);
+            font-weight: 600;
+        }
+
+        /* Button Ripple */
+        .btn-ripple-ob {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: scale(0);
+            animation: ripple-ob 0.5s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-ob {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Sticky Bottom CTA */
+        .sticky-cta-ob {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.97);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-top: 1px solid #E5E7EB;
+            z-index: 998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transform: translateY(100%);
+            transition: transform 0.35s ease;
+        }
+
+        .sticky-cta-ob.show { transform: translateY(0); }
+        .sticky-cta-ob p { margin: 0; font-size: 0.9rem; font-weight: 500; color: var(--color-dark); }
+
+        /* Step counter badge */
+        .step-counter-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--color-accent);
+            color: var(--color-primary-dark);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media (max-width: 768px) {
+            .social-toast-onboard { display: none; }
+            .sticky-cta-ob p { display: none; }
+        }
+    </style>
+</head>
+
+<body class="dark-mode">
+    <!-- Progress Bar -->
+    <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+    </div>
+
+    <div id="root"></div>
+
+    <!-- Social Proof Toast -->
+    <div class="social-toast-onboard" id="onboardToast">
+        <div class="toast-avatar-ob" id="obToastAvatar">NP</div>
+        <div>
+            <div class="toast-text-ob" id="obToastText"><strong>Nadia Patel</strong> from Birmingham just completed onboarding</div>
+            <div class="toast-time-ob" id="obToastTime">3 minutes ago</div>
+        </div>
+    </div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        // --- Convex Client ---
+        const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+
+        // --- Progress Bar Updater ---
+        function updateProgress(step, total) {
+            const pct = Math.round((step / total) * 100);
+            const fill = document.getElementById('progressFill');
+            if (fill) fill.style.width = pct + '%';
+        }
+
+        const ScreenWrapper = ({ children, keyName }) => (
+            <motion.div
+                key={keyName}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[70vh] px-6"
+            >
+                {children}
+            </motion.div>
+        );
+
+        function Onboarding() {
+            const [step, setStep] = useState(1);
+            const [submitting, setSubmitting] = useState(false);
+            const [currentUser, setCurrentUser] = useState(null);
+            const [data, setData] = useState({
+                role: '',
+                goals: [],
+            });
+
+            const totalSteps = 5;
+
+            // Update progress bar on step change
+            useEffect(() => {
+                updateProgress(step, totalSteps);
+            }, [step]);
+
+            // Auth guard
+            useEffect(() => {
+                const user = window.InclusiFundAuth ? InclusiFundAuth.checkSession() : null;
+                if (!user) {
+                    window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+                    return;
+                }
+
+                if (user.onboardingComplete === true) {
+                    console.log("[onboarding] User already onboarded, redirecting to dashboard");
+                    window.location.href = '/dashboard';
+                    return;
+                }
+
+                convexClient.query("users:getUser", { email: user.email }).then(dbUser => {
+                    if (dbUser && dbUser.onboardingComplete === true) {
+                        user.onboardingComplete = true;
+                        if (window.InclusiFundAuth) InclusiFundAuth.setSession(user);
+                        console.log("[onboarding] DB says onboarding complete, redirecting to dashboard");
+                        window.location.href = '/dashboard';
+                        return;
+                    }
+                    setCurrentUser(user);
+                }).catch(err => {
+                    console.error("[onboarding] Failed to check DB, proceeding with wizard:", err);
+                    setCurrentUser(user);
+                });
+            }, []);
+
+            const next = () => setStep(s => s + 1);
+            const back = () => setStep(s => s - 1);
+
+            const selectRole = (role) => {
+                setData(prev => ({ ...prev, role }));
+                setTimeout(next, 300);
+            };
+
+            const toggleGoal = (goal) => {
+                setData(prev => ({
+                    ...prev,
+                    goals: prev.goals.includes(goal)
+                        ? prev.goals.filter(g => g !== goal)
+                        : [...prev.goals, goal]
+                }));
+            };
+
+            const handleFinish = async () => {
+                if (!currentUser) return;
+                setSubmitting(true);
+
+                try {
+                    await convexClient.mutation("onboarding:saveDiscoveryResponses", {
+                        userId: currentUser.email,
+                        role: data.role || "not_specified",
+                        goals: data.goals.length > 0 ? data.goals : ["general"],
+                    });
+
+                    currentUser.onboardingComplete = true;
+                    if (window.InclusiFundAuth) {
+                        InclusiFundAuth.setSession(currentUser);
+                    }
+
+                    console.log("Onboarding complete for:", currentUser.email);
+                    window.location.href = '/dashboard';
+                } catch (err) {
+                    console.error("Failed to save onboarding:", err);
+                    window.location.href = '/dashboard';
+                }
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Header */}
+                    <header className="p-8 flex justify-between items-center max-w-6xl mx-auto w-full">
+                        <div className="sidebar-logo">InclusiFund</div>
+                        {step > 1 && step < 5 && (
+                            <div className="flex items-center gap-3">
+                                <span className="step-counter-badge">
+                                    Step {step} of {totalSteps}
+                                </span>
+                            </div>
+                        )}
+                    </header>
+
+                    <main className="flex-1 flex items-center justify-center pb-24">
+                        <AnimatePresence mode="wait">
+                            {step === 1 && (
+                                <ScreenWrapper keyName="welcome">
+                                    <div className="w-20 h-20 bg-accent/20 rounded-2xl flex items-center justify-center text-accent text-4xl mb-8">&#x2728;</div>
+                                    <h1 className="text-5xl font-bold mb-6 text-center leading-tight">
+                                        Build a <span className="text-accent">CIC</span> that lasts.
+                                    </h1>
+                                    <p className="text-xl text-secondary text-center max-w-md mb-4">
+                                        Let's personalize your toolkit. It takes less than 2 minutes to get organized.
+                                    </p>
+                                    <p className="text-sm text-secondary text-center max-w-sm mb-12" style={{opacity: 0.7}}>
+                                        Join 847+ CIC directors who built their infrastructure here.
+                                    </p>
+                                    <button className="btn btn-primary px-12 py-4 text-lg" onClick={next}>Get Started</button>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 2 && (
+                                <ScreenWrapper keyName="role">
+                                    <h2 className="text-3xl font-bold mb-2 text-center">What is your current stage?</h2>
+                                    <p className="text-secondary mb-10 text-center">We customize the tools based on where you are.</p>
+                                    <div className="grid grid-cols-1 gap-4 w-full">
+                                        {[
+                                            { id: 'planning', label: 'Planning & Registration', icon: '\uD83C\uDF31', desc: 'Thinking about starting or in the process of registering.' },
+                                            { id: 'early', label: 'Early Stage CIC', icon: '\uD83D\uDE80', desc: 'Registered and operating for less than 2 years.' },
+                                            { id: 'established', label: 'Scale & Sustain', icon: '\uD83D\uDCAA', desc: 'Managing an established CIC looking for efficiency.' }
+                                        ].map(item => (
+                                            <button
+                                                key={item.id}
+                                                className={`card p-6 flex gap-6 items-center border-2 transition-all ${data.role === item.id ? 'border-accent bg-accent/5' : 'border-transparent hover:bg-surface-alt'}`}
+                                                onClick={() => selectRole(item.id)}
+                                            >
+                                                <div className="text-3xl">{item.icon}</div>
+                                                <div className="text-left">
+                                                    <div className="font-bold text-lg">{item.label}</div>
+                                                    <div className="text-sm text-secondary">{item.desc}</div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 3 && (
+                                <ScreenWrapper keyName="goals">
+                                    <h2 className="text-3xl font-bold mb-2 text-center">What are your main goals?</h2>
+                                    <p className="text-secondary mb-10 text-center">Select all that apply.</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                                        {[
+                                            { id: 'funding', label: 'Secure Funding', icon: '\uD83D\uDCB0' },
+                                            { id: 'compliance', label: 'Stay Compliant', icon: '\uD83D\uDCCB' },
+                                            { id: 'impact', label: 'Measure Impact', icon: '\uD83D\uDCCA' },
+                                            { id: 'governance', label: 'Improve Governance', icon: '\uD83D\uDC65' },
+                                            { id: 'strategy', label: 'Growth Strategy', icon: '\uD83C\uDFAF' },
+                                            { id: 'reporting', label: 'Annual Reporting', icon: '\uD83D\uDCDD' }
+                                        ].map(item => (
+                                            <button
+                                                key={item.id}
+                                                className={`card p-4 flex gap-4 items-center border-2 transition-all ${data.goals.includes(item.id) ? 'border-accent bg-accent/5' : 'border-transparent hover:bg-surface-alt'}`}
+                                                onClick={() => toggleGoal(item.id)}
+                                            >
+                                                <div className="text-2xl">{item.icon}</div>
+                                                <div className="font-bold">{item.label}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button className="btn btn-primary mt-12 px-10" disabled={data.goals.length === 0} onClick={next}>Continue</button>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 4 && (
+                                <ScreenWrapper keyName="proof">
+                                    <div className="text-6xl mb-8" style={{animation: 'bounce 1s ease-in-out infinite'}}>&#x1F91D;</div>
+                                    <h2 className="text-4xl font-bold mb-6 text-center">You're in good company.</h2>
+                                    <p className="text-xl text-secondary text-center max-w-md mb-6">
+                                        Over 500 CIC directors use InclusiFund to save 10+ hours of admin every single month.
+                                    </p>
+
+                                    {/* Testimonial card */}
+                                    <div style={{
+                                        background: 'rgba(255,255,255,0.06)',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        borderRadius: '16px',
+                                        padding: '1.5rem 2rem',
+                                        maxWidth: '420px',
+                                        marginBottom: '2rem'
+                                    }}>
+                                        <p className="text-secondary" style={{fontStyle: 'italic', fontSize: '0.95rem', marginBottom: '1rem'}}>
+                                            "InclusiFund turned our messy admin into a proper system. We passed our compliance review without a single query."
+                                        </p>
+                                        <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
+                                            <div style={{
+                                                width: '36px', height: '36px', borderRadius: '50%',
+                                                background: 'linear-gradient(135deg, #008080, #6BB6B6)',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                color: 'white', fontWeight: 700, fontSize: '0.75rem'
+                                            }}>MT</div>
+                                            <div>
+                                                <div style={{fontWeight: 600, fontSize: '0.85rem'}}>Marcus Thompson</div>
+                                                <div className="text-secondary" style={{fontSize: '0.75rem'}}>Director, Reconnect CIC</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button className="btn btn-secondary mt-4" onClick={next}>Next</button>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 5 && (
+                                <ScreenWrapper keyName="final">
+                                    <div className="w-20 h-20 bg-success-bg/20 rounded-full flex items-center justify-center text-success text-4xl mb-8">&#x2705;</div>
+                                    <h2 className="text-4xl font-bold mb-4 text-center">System Ready.</h2>
+                                    <p className="text-xl text-secondary text-center max-w-md mb-4">
+                                        We've prepared your Compliance Calendar and Board Pack Builder as priority tools.
+                                    </p>
+                                    <p className="text-sm text-secondary text-center max-w-sm mb-12" style={{opacity: 0.7}}>
+                                        Your personalised dashboard is waiting. Everything is set up for your stage and goals.
+                                    </p>
+                                    <button
+                                        className="btn btn-primary px-12 py-4 text-lg"
+                                        disabled={submitting}
+                                        onClick={handleFinish}
+                                    >
+                                        {submitting ? 'Setting up...' : 'Go to Dashboard'}
+                                    </button>
+                                </ScreenWrapper>
+                            )}
+                        </AnimatePresence>
+                    </main>
+
+                    {/* Progress Dots + Back Button */}
+                    {step > 1 && step < 5 && (
+                        <div className="fixed bottom-12 left-0 right-0 flex flex-col items-center gap-4">
+                            <div className="flex justify-center gap-3">
+                                {[2, 3, 4].map(s => (
+                                    <div
+                                        key={s}
+                                        className={`h-2 rounded-full transition-all duration-300 ${step === s ? 'w-8 bg-accent' : step > s ? 'w-2 bg-accent/50' : 'w-2 bg-surface-alt'}`}
+                                    ></div>
+                                ))}
+                            </div>
+                            {step > 1 && (
+                                <button
+                                    className="text-xs text-secondary hover:text-accent transition-colors"
+                                    style={{background: 'none', border: 'none', cursor: 'pointer', padding: '4px 12px'}}
+                                    onClick={back}
+                                >
+                                    &larr; Back
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Onboarding />);
+    </script>
+
+    <!-- Non-React BehSci Scripts -->
+    <script>
+        // Social proof toast for onboarding
+        (function() {
+            var toasts = [
+                { initials: 'NP', name: 'Nadia Patel', city: 'Birmingham', action: 'just completed onboarding', time: '3 minutes ago' },
+                { initials: 'TH', name: 'Tanya H.', city: 'Manchester', action: 'set up her compliance tools', time: '7 minutes ago' },
+                { initials: 'DW', name: 'Daniel Wright', city: 'Bristol', action: 'personalised his dashboard', time: '12 minutes ago' },
+                { initials: 'PK', name: 'Priya Kumar', city: 'Leeds', action: 'started her CIC toolkit', time: '18 minutes ago' },
+                { initials: 'MT', name: 'Marcus Thompson', city: 'London', action: 'completed onboarding in 90 seconds', time: '22 minutes ago' },
+            ];
+            var el = document.getElementById('onboardToast');
+            var avatar = document.getElementById('obToastAvatar');
+            var text = document.getElementById('obToastText');
+            var time = document.getElementById('obToastTime');
+            var idx = 0;
+
+            function showToast() {
+                var t = toasts[idx % toasts.length];
+                avatar.textContent = t.initials;
+                text.innerHTML = '<strong>' + t.name + '</strong> from ' + t.city + ' ' + t.action;
+                time.textContent = t.time;
+                el.classList.add('show');
+                setTimeout(function() { el.classList.remove('show'); }, 5000);
+                idx++;
+            }
+
+            setTimeout(function() {
+                showToast();
+                setInterval(showToast, 30000);
+            }, 10000);
+        })();
+
+        // Button ripple effect
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.btn');
+            if (!btn) return;
+            var r = document.createElement('span');
+            r.classList.add('btn-ripple-ob');
+            var rect = btn.getBoundingClientRect();
+            var size = Math.max(rect.width, rect.height);
+            r.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px;position:absolute;';
+            btn.style.position = 'relative';
+            btn.style.overflow = 'hidden';
+            btn.appendChild(r);
+            setTimeout(function() { r.remove(); }, 600);
+        });
+
+        // Scroll reveal for any non-React .sr elements
+        (function() {
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('visible');
+                        obs.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.sr').forEach(function(el) { obs.observe(el); });
+        })();
+    </script>
+</body>
+
+</html>

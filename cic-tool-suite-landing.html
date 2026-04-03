@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIC Tool Suite | Validate Your Community Interest Company in 60 Seconds</title>
+    <meta name="description" content="Free CIC eligibility checker, benefit statement writer, and compliance tools for UK Community Interest Companies. Get instant validation and professional reports.">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts - Distinctive Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,300&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-green: #0D9488;
+            --deep-teal: #115E59;
+            --soft-blue: #0EA5E9;
+            --warm-cream: #FFFBEB;
+            --charcoal: #1F2937;
+            --sage: #D1FAE5;
+            --accent-coral: #FB923C;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--warm-cream);
+            color: var(--charcoal);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Fraunces', serif;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        
+        /* Animated gradient background */
+        .hero-bg {
+            background: linear-gradient(135deg, 
+                var(--deep-teal) 0%, 
+                var(--primary-green) 50%, 
+                var(--soft-blue) 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 8s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        /* Floating animation for feature cards */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .feature-card {
+            animation: float 4s ease-in-out infinite;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .feature-card:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .feature-card:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: 0 25px 50px -12px rgba(13, 148, 136, 0.3);
+        }
+        
+        /* CTA button with pulse effect */
+        .cta-button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .cta-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .cta-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 40px -10px rgba(13, 148, 136, 0.5);
+        }
+        
+        /* Staggered fade-in animations */
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .fade-in-delay-1 { animation-delay: 0.2s; }
+        .fade-in-delay-2 { animation-delay: 0.4s; }
+        .fade-in-delay-3 { animation-delay: 0.6s; }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Accordion for FAQ */
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+        
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding-top: 1rem;
+        }
+        
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+        
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        /* Accessibility: Focus states */
+        a:focus, button:focus {
+            outline: 3px solid var(--accent-coral);
+            outline-offset: 4px;
+        }
+        
+        /* Neurodiverse-friendly: High contrast, clear spacing */
+        .accessible-text {
+            font-size: 1.125rem;
+            letter-spacing: 0.01em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-md fixed w-full top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg class="w-10 h-10 text-teal-600" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5zm0 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-1-9h2v2h-2v-2zm0 4h2v2h-2v-2z"/>
+                </svg>
+                <span class="text-2xl font-bold" style="font-family: 'Fraunces', serif; color: var(--deep-teal);">CIC Tool Suite</span>
+            </div>
+            <div class="hidden md:flex space-x-8 accessible-text">
+                <a href="#features" class="text-gray-700 hover:text-teal-600 transition">Tools</a>
+                <a href="#faq" class="text-gray-700 hover:text-teal-600 transition">FAQ</a>
+                <a href="#contact" class="text-gray-700 hover:text-teal-600 transition">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg pt-32 pb-20 px-6 text-white">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-5xl md:text-7xl mb-6 fade-in" style="font-weight: 800;">
+                Is Your Idea<br>
+                <span class="italic" style="color: var(--sage);">CIC-Eligible?</span><br>
+                Find Out in 60 Seconds
+            </h1>
+            <p class="text-xl md:text-2xl mb-10 max-w-3xl mx-auto accessible-text fade-in fade-in-delay-1" style="color: var(--warm-cream);">
+                Free AI-powered tools to validate your Community Interest Company, generate professional benefit statements, and ensure regulatory compliance.
+            </p>
+            <button onclick="startEligibilityCheck()" class="cta-button bg-white text-teal-800 px-10 py-5 rounded-full text-xl font-bold shadow-2xl fade-in fade-in-delay-2 accessible-text">
+                Start Free Eligibility Check →
+            </button>
+            <p class="mt-6 text-sm fade-in fade-in-delay-3" style="color: var(--sage);">No signup required • Instant results • Professional PDF report</p>
+        </div>
+    </section>
+
+    <!-- Feature Cards -->
+    <section id="features" class="py-20 px-6 bg-gradient-to-b from-white to-teal-50">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl md:text-5xl text-center mb-4" style="color: var(--deep-teal);">Three Tools, One Mission</h2>
+            <p class="text-center text-xl mb-16 text-gray-600 accessible-text">Simplify CIC compliance with intelligent automation</p>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Tool 1: Eligibility Checker -->
+                <div class="feature-card bg-white rounded-3xl p-8 shadow-xl border-2 border-teal-100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4" style="color: var(--deep-teal);">Eligibility Checker</h3>
+                    <p class="text-gray-600 mb-6 accessible-text">
+                        Validate your business idea against UK CIC Regulator requirements in under 60 seconds. Get instant pass/fail verdicts with detailed fixes.
+                    </p>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-teal-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Asset lock compliance test</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-teal-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Community benefit validation</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-teal-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Professional PDF report</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tool 2: Benefit Statement Writer -->
+                <div class="feature-card bg-white rounded-3xl p-8 shadow-xl border-2 border-sky-100">
+                    <div class="w-16 h-16 bg-gradient-to-br from-sky-500 to-sky-700 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4" style="color: var(--deep-teal);">Benefit Statement Writer</h3>
+                    <p class="text-gray-600 mb-6 accessible-text">
+                        Generate professional community benefit statements for CIC36 Section 5. Automatically strengthens vague language and ensures regulatory compliance.
+                    </p>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-sky-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>150-250 word statements</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-sky-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>Vague language detection</span>
+                        </li>
+                        <li class="flex items-start">
+                            <svg class="w-6 h-6 text-sky-600 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/>
+                            </svg>
+                            <span>DOCX export for CIC36</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tool 3: Compliance Monitor (Coming Soon) -->
+                <div class="feature-card bg-white rounded-3xl p-8 shadow-xl border-2 border-orange-100 opacity-90">
+                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4" style="color: var(--deep-teal);">Compliance Monitor</h3>
+                    <p class="text-gray-600 mb-6 accessible-text">
+                        Track CIC34 deadlines, monitor asset lock compliance, and receive automated reminders for annual reporting obligations.
+                    </p>
+                    <div class="inline-block bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-semibold">
+                        Coming Q2 2026
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 px-6" style="background: linear-gradient(to bottom, var(--sage), white);">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl md:text-5xl text-center mb-16" style="color: var(--deep-teal);">Trusted by Grassroots CICs</h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-3xl p-8 shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="w-14 h-14 bg-teal-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                            NP
+                        </div>
+                        <div class="ml-4">
+                            <p class="font-bold text-lg">Nadia Patel</p>
+                            <p class="text-gray-600">Sheffield Community Harvest CIC</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic accessible-text">
+                        "The eligibility checker saved us weeks of uncertainty. We got instant feedback on our asset lock structure and fixed it before submitting to Companies House."
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-3xl p-8 shadow-lg">
+                    <div class="flex items-center mb-4">
+                        <div class="w-14 h-14 bg-sky-600 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                            DW
+                        </div>
+                        <div class="ml-4">
+                            <p class="font-bold text-lg">Daniel Wright</p>
+                            <p class="text-gray-600">Coventry Skills Bridge CIC</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 italic accessible-text">
+                        "The benefit statement writer transformed our vague ideas into a professional CIC36 submission. The quality scores helped us understand exactly what the Regulator expects."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 px-6 bg-white">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-4xl md:text-5xl text-center mb-4" style="color: var(--deep-teal);">Common Questions</h2>
+            <p class="text-center text-xl mb-12 text-gray-600 accessible-text">Everything you need to know about CICs</p>
+            
+            <div class="space-y-4">
+                <!-- FAQ 1 -->
+                <div class="faq-item bg-teal-50 rounded-2xl p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold" style="color: var(--deep-teal);">What is a Community Interest Company (CIC)?</h3>
+                        <svg class="faq-icon w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="faq-answer text-gray-700 accessible-text">
+                        A CIC is a special type of limited company designed for social enterprises that want to use their profits and assets for the public good. CICs are regulated by the CIC Regulator and must pass the "community interest test" and maintain an "asset lock" to prevent private benefit.
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="faq-item bg-sky-50 rounded-2xl p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold" style="color: var(--deep-teal);">What is the asset lock requirement?</h3>
+                        <svg class="faq-icon w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="faq-answer text-gray-700 accessible-text">
+                        The asset lock ensures that a CIC's assets (including profits) are used for community benefit, not private gain. When a CIC is dissolved, its assets must be transferred to another asset-locked body (another CIC, charity, or community organization), never to members or shareholders.
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-item bg-teal-50 rounded-2xl p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold" style="color: var(--deep-teal);">How long does CIC registration take?</h3>
+                        <svg class="faq-icon w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="faq-answer text-gray-700 accessible-text">
+                        CIC registration typically takes 2-4 weeks after submitting your application to Companies House. The CIC Regulator reviews your community benefit statement (CIC36) to ensure it meets eligibility requirements. Using our tools can help you avoid common rejections and speed up the process.
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-item bg-sky-50 rounded-2xl p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold" style="color: var(--deep-teal);">Can a CIC make a profit?</h3>
+                        <svg class="faq-icon w-6 h-6 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="faq-answer text-gray-700 accessible-text">
+                        Yes! CICs can generate profits through trading, grants, donations, or mixed revenue models. However, profits must be reinvested into the community purpose, not distributed to members. There are strict limits on dividend payments to investors (currently capped at 35% of distributable profits).
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-item bg-teal-50 rounded-2xl p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xl font-bold" style="color: var(--deep-teal);">What are the annual reporting requirements for CICs?</h3>
+                        <svg class="faq-icon w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="faq-answer text-gray-700 accessible-text">
+                        CICs must file a CIC34 Community Interest Company Report annually, in addition to standard Companies House filings (accounts and confirmation statement). The CIC34 demonstrates how you've delivered community benefit during the year. Failure to file can result in penalties or dissolution.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section class="py-20 px-6 hero-bg text-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl mb-6 font-bold">Ready to Validate Your CIC Idea?</h2>
+            <p class="text-xl mb-10 accessible-text" style="color: var(--warm-cream);">
+                Join hundreds of grassroots CICs using our free tools to navigate UK regulations with confidence.
+            </p>
+            <button onclick="startEligibilityCheck()" class="cta-button bg-white text-teal-800 px-10 py-5 rounded-full text-xl font-bold shadow-2xl accessible-text">
+                Start Free Eligibility Check →
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-gray-300 py-12 px-6">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">CIC Tool Suite</h4>
+                <p class="text-sm accessible-text">
+                    Free AI-powered tools for UK Community Interest Companies. Built by InclusiFund.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">Tools</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-teal-400 transition">Eligibility Checker</a></li>
+                    <li><a href="#" class="hover:text-teal-400 transition">Benefit Statement Writer</a></li>
+                    <li><a href="#" class="hover:text-teal-400 transition">Compliance Monitor (Soon)</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">Resources</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="https://www.gov.uk/government/organisations/office-of-the-regulator-of-community-interest-companies" target="_blank" class="hover:text-teal-400 transition">CIC Regulator</a></li>
+                    <li><a href="https://www.gov.uk/set-up-a-social-enterprise" target="_blank" class="hover:text-teal-400 transition">Gov.uk CIC Guide</a></li>
+                    <li><a href="#faq" class="hover:text-teal-400 transition">FAQ</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold text-lg mb-4">Contact</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="mailto:hello@inclusifund.org" class="hover:text-teal-400 transition">hello@inclusifund.org</a></li>
+                    <li><a href="#" class="hover:text-teal-400 transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-teal-400 transition">Terms of Service</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center text-sm">
+            <p>&copy; 2026 InclusiFund. All rights reserved. Built with care for grassroots social enterprises.</p>
+        </div>
+    </footer>
+
+    <script>
+        // FAQ Accordion
+        function toggleFAQ(element) {
+            const allFAQs = document.querySelectorAll('.faq-item');
+            const isActive = element.classList.contains('active');
+            
+            // Close all FAQs
+            allFAQs.forEach(faq => faq.classList.remove('active'));
+            
+            // Open clicked FAQ if it wasn't active
+            if (!isActive) {
+                element.classList.add('active');
+            }
+        }
+
+        // Antigravity Integration
+        function startEligibilityCheck() {
+            // PLACEHOLDER: Replace this with actual Antigravity integration
+            // This should trigger Antigravity chat with the initial message
+            
+            const message = "I want to check if my business idea qualifies as a CIC";
+            
+            // Option 1: If Antigravity provides a JavaScript SDK
+            // window.Antigravity.open({ initialMessage: message });
+            
+            // Option 2: If using iframe/widget
+            // const widget = document.getElementById('antigravity-widget');
+            // widget.src = `https://antigravity.example.com/chat?message=${encodeURIComponent(message)}`;
+            // widget.style.display = 'block';
+            
+            // Option 3: Temporary fallback - open in new window or redirect
+            alert('Antigravity Integration Required:\n\nThis button should trigger the Antigravity chat interface with the message:\n\n"' + message + '"\n\nPlease configure the Antigravity widget/iframe integration in the startEligibilityCheck() function.');
+            
+            // For now, you can manually trigger the eligibility checker
+            console.log('Triggering Antigravity with message:', message);
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll-triggered animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,766 @@
+<!-- Load Required Libraries (Tailwind, React, Babel) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Auth Logic -->
+<script src="assets/js/auth.js"></script>
+<script>
+    window.addEventListener('load', function () {
+        if (typeof InclusiFundAuth !== 'undefined') {
+            InclusiFundAuth.requireAuth();
+        }
+    });
+</script>
+
+<!-- Tailwind Config -->
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    brand: {
+                        teal: '#008080',
+                        light: '#6BB6B6',
+                        premium: '#d4a853',
+                        dark: '#1F2232',
+                        surface: '#1F2937',
+                        danger: '#EF4444',
+                    }
+                },
+                fontFamily: {
+                    sans: ['Inter', 'sans-serif'],
+                    display: ['Outfit', 'sans-serif'],
+                }
+            }
+        }
+    }
+</script>
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- React App Container -->
+<div id="eligibility-root"></div>
+
+<style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    /* === BEHAVIORAL SCIENCE: Scroll Reveal === */
+    .sr {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity .6s ease, transform .6s ease;
+    }
+    .sr.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* === BEHAVIORAL SCIENCE: Loss Aversion Block === */
+    .loss-hl {
+        background: linear-gradient(90deg, rgba(239, 68, 68, .08), transparent);
+        border-left: 3px solid #EF4444;
+        padding: 1rem 1.25rem;
+        border-radius: 0 8px 8px 0;
+    }
+
+    /* === BEHAVIORAL SCIENCE: Progress Bar === */
+    .prog-bar {
+        width: 100%;
+        height: 8px;
+        background: #E5E7EB;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #008080, #6BB6B6);
+        border-radius: 999px;
+        transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* === BEHAVIORAL SCIENCE: Button Ripple === */
+    .btn-ripple {
+        position: relative;
+        overflow: hidden;
+    }
+    .btn-ripple .ripple-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.35);
+        transform: scale(0);
+        animation: rippleAnim 0.6s linear;
+        pointer-events: none;
+    }
+    @keyframes rippleAnim {
+        to { transform: scale(4); opacity: 0; }
+    }
+
+    /* === BEHAVIORAL SCIENCE: Confetti === */
+    .confetti-piece {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        z-index: 9999;
+        pointer-events: none;
+        animation: confettiFall 1.8s ease-out forwards;
+    }
+    @keyframes confettiFall {
+        0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+        100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+    }
+</style>
+
+<!-- Scroll Reveal Observer -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        function observeSR() {
+            document.querySelectorAll('.sr').forEach(function(el) {
+                observer.observe(el);
+            });
+        }
+        observeSR();
+        const ro = new MutationObserver(observeSR);
+        ro.observe(document.getElementById('eligibility-root'), { childList: true, subtree: true });
+    });
+</script>
+
+<!-- React Application Code -->
+<script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // --- CONFETTI LAUNCHER ---
+    function launchConfetti() {
+        const colors = ['#008080','#6BB6B6','#d4a853','#10B981','#F59E0B'];
+        for (let i = 0; i < 60; i++) {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.top = '-10px';
+            el.style.background = colors[Math.floor(Math.random() * colors.length)];
+            el.style.animationDelay = Math.random() * 0.5 + 's';
+            el.style.width = (6 + Math.random() * 8) + 'px';
+            el.style.height = (6 + Math.random() * 8) + 'px';
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 2500);
+        }
+    }
+
+    // --- RIPPLE HANDLER ---
+    function addRipple(e) {
+        const btn = e.currentTarget;
+        const circle = document.createElement('span');
+        const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+        const radius = diameter / 2;
+        circle.style.width = circle.style.height = diameter + 'px';
+        circle.style.left = (e.clientX - btn.getBoundingClientRect().left - radius) + 'px';
+        circle.style.top = (e.clientY - btn.getBoundingClientRect().top - radius) + 'px';
+        circle.className = 'ripple-circle';
+        const existing = btn.querySelector('.ripple-circle');
+        if (existing) existing.remove();
+        btn.appendChild(circle);
+    }
+
+    function CICEligibilityChecker() {
+        const [formData, setFormData] = useState({
+            businessActivity: '',
+            revenueModel: '',
+            beneficiaryGroup: '',
+            assetDistribution: '',
+            email: ''
+        });
+        const [step, setStep] = useState(1);
+        const [loading, setLoading] = useState(false);
+        const [results, setResults] = useState(null);
+        const [showExamples, setShowExamples] = useState(false);
+
+        const totalSteps = 5;
+
+        // Endowed progress: start at ~15%
+        const endowedBase = 15;
+        const progressPercent = ((step - 1) / (totalSteps - 1)) * (100 - endowedBase) + endowedBase;
+
+        // Auto-save to localStorage
+        useEffect(() => {
+            localStorage.setItem('cic-eligibility-data', JSON.stringify(formData));
+        }, [formData]);
+
+        // Load from localStorage on mount
+        useEffect(() => {
+            const saved = localStorage.getItem('cic-eligibility-data');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    setFormData(parsed);
+                } catch (e) {
+                    console.error('Failed to load saved data');
+                }
+            }
+        }, []);
+
+        const handleChange = (field, value) => {
+            setFormData(prev => ({ ...prev, [field]: value }));
+        };
+
+        const nextStep = () => {
+            setStep(prev => Math.min(prev + 1, totalSteps));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        const prevStep = () => {
+            setStep(prev => Math.max(prev - 1, 1));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        const runEligibilityCheck = async () => {
+            setLoading(true);
+
+            try {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const failures = [];
+                const warnings = [];
+                const recommendations = [];
+
+                // Test 1: Asset Lock
+                if (formData.assetDistribution === 'members') {
+                    failures.push({
+                        test: 'Asset Lock',
+                        reason: 'Assets cannot be distributed to members/shareholders in a CIC',
+                        fix: 'Change asset distribution to another CIC, charity, or community benefit'
+                    });
+                }
+                if (formData.assetDistribution === 'undecided') {
+                    warnings.push({
+                        test: 'Asset Lock',
+                        reason: 'You must decide on asset distribution before registering',
+                        fix: 'Choose to transfer assets to another CIC, charity, or community on wind-up'
+                    });
+                }
+
+                // Test 2: Beneficiary
+                const beneficiaryLower = formData.beneficiaryGroup.toLowerCase();
+                const redFlags = ['family', 'myself', 'shareholders', 'members', 'owners', 'directors'];
+                if (redFlags.some(flag => beneficiaryLower.includes(flag))) {
+                    failures.push({
+                        test: 'Community Benefit',
+                        reason: 'Beneficiaries cannot be primarily the founders, family, or private shareholders',
+                        fix: 'Redefine beneficiary group to be a wider community or specific disadvantaged group'
+                    });
+                }
+
+                // Test 3: Prohibited Activities
+                const activityLower = formData.businessActivity.toLowerCase();
+                const prohibited = ['political party', 'campaign for', 'elect'];
+                if (prohibited.some(kw => activityLower.includes(kw))) {
+                    failures.push({
+                        test: 'Prohibited Activities',
+                        reason: 'CICs cannot exist primarily for political party purposes',
+                        fix: 'Remove political campaigning as primary purpose'
+                    });
+                }
+
+                // Test 4: Clarity
+                const vagueTerms = ['help', 'support', 'assist'];
+                const specificTerms = ['training', 'education', 'housing', 'healthcare'];
+                if (vagueTerms.some(t => activityLower.includes(t)) &&
+                    !specificTerms.some(t => activityLower.includes(t))) {
+                    warnings.push({
+                        test: 'Community Benefit Clarity',
+                        reason: 'Your activity description is too vague',
+                        fix: 'Be more specific about activities and measurable benefits'
+                    });
+                }
+
+                // Determine verdict
+                let verdict = 'pass';
+                if (failures.length > 0) verdict = 'fail';
+                else if (warnings.length > 0) verdict = 'conditional';
+
+                // Recommendations
+                if (verdict === 'pass') {
+                    recommendations.push('Your idea appears eligible for CIC structure');
+                    recommendations.push('Next step: Draft your community benefit statement');
+                    recommendations.push('Consider: Limited by shares or limited by guarantee?');
+                } else if (verdict === 'conditional') {
+                    recommendations.push('Your idea may be eligible but needs clarification');
+                    recommendations.push('Address the warnings above');
+                } else {
+                    recommendations.push('Your idea needs changes to meet CIC requirements');
+                    recommendations.push('Review failures above');
+                    recommendations.push('Consider alternative structures');
+                }
+
+                // Fire confetti on pass
+                if (verdict === 'pass') {
+                    setTimeout(() => launchConfetti(), 300);
+                }
+
+                setResults({
+                    verdict,
+                    failures,
+                    warnings,
+                    recommendations,
+                    checkId: 'check_' + Date.now(),
+                    pdfUrl: '#'
+                });
+
+            } catch (error) {
+                console.error('Eligibility check failed:', error);
+                alert('Something went wrong. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Progress indicator with endowed progress
+        const ProgressBar = () => (
+            <div className="mb-8 sr">
+                <div className="flex justify-between text-sm font-semibold text-gray-500 mb-2">
+                    <span>Step {step} of {totalSteps}</span>
+                    <span>{Math.round(progressPercent)}% complete</span>
+                </div>
+                <div className="prog-bar">
+                    <div className="prog-fill" style={{ width: progressPercent + '%' }}></div>
+                </div>
+            </div>
+        );
+
+        if (loading) {
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-teal-50 to-cyan-50 flex items-center justify-center p-6">
+                    <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-12 text-center sr visible">
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-brand-teal border-t-transparent mx-auto mb-6"></div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2 font-display">Checking Your Eligibility...</h2>
+                        <p className="text-gray-600">This usually takes 5-10 seconds</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (results) {
+            const verdictConfig = {
+                pass: { bg: 'bg-teal-50', border: 'border-brand-teal', text: 'text-brand-teal', title: 'PASS' },
+                conditional: { bg: 'bg-amber-50', border: 'border-amber-500', text: 'text-amber-600', title: 'CONDITIONAL' },
+                fail: { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-600', title: 'NEEDS CHANGES' }
+            };
+            const config = verdictConfig[results.verdict];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-teal-50 to-cyan-50 p-6">
+                    <div className="max-w-3xl mx-auto">
+                        {/* Verdict Card */}
+                        <div className={`${config.bg} border-4 ${config.border} rounded-2xl p-8 mb-6 sr visible`}>
+                            <div className="text-center">
+                                <div className="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center border-4 ${config.border}" style={{ borderColor: results.verdict === 'pass' ? '#008080' : results.verdict === 'conditional' ? '#F59E0B' : '#EF4444' }}>
+                                    {results.verdict === 'pass' && <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#008080" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 12 2 2 4-4"/></svg>}
+                                    {results.verdict === 'conditional' && <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>}
+                                    {results.verdict === 'fail' && <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF4444" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>}
+                                </div>
+                                <h2 className={`text-4xl font-bold mb-3 ${config.text} font-display`}>{config.title}</h2>
+                                <p className="text-lg text-gray-700">
+                                    {results.verdict === 'pass' && 'Your idea meets CIC requirements!'}
+                                    {results.verdict === 'conditional' && 'Your idea can work with some clarifications'}
+                                    {results.verdict === 'fail' && 'Your idea needs changes to meet CIC requirements'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Failures */}
+                        {results.failures.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 sr visible">
+                                <h3 className="text-2xl font-semibold mb-4 text-red-600 flex items-center gap-2 font-display">
+                                    Issues Found
+                                </h3>
+                                {results.failures.map((failure, i) => (
+                                    <div key={i} className="loss-hl mb-3">
+                                        <h4 className="font-semibold text-red-900 mb-1">{failure.test}</h4>
+                                        <p className="text-red-800 mb-2">{failure.reason}</p>
+                                        <p className="text-sm text-red-700">
+                                            <strong>How to fix:</strong> {failure.fix}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Warnings */}
+                        {results.warnings.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 sr visible">
+                                <h3 className="text-2xl font-semibold mb-4 text-amber-600 flex items-center gap-2 font-display">
+                                    Warnings
+                                </h3>
+                                {results.warnings.map((warning, i) => (
+                                    <div key={i} className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-3 rounded">
+                                        <h4 className="font-semibold text-amber-900 mb-1">{warning.test}</h4>
+                                        <p className="text-amber-800 mb-2">{warning.reason}</p>
+                                        <p className="text-sm text-amber-700">
+                                            <strong>How to fix:</strong> {warning.fix}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Recommendations */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6 sr visible">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-800 flex items-center gap-2 font-display">
+                                Next Steps
+                            </h3>
+                            <ul className="space-y-3">
+                                {results.recommendations.map((rec, i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                        <span className="text-brand-teal text-xl font-bold flex-shrink-0">&#8226;</span>
+                                        <span className="text-gray-700 text-lg">{rec}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Email Confirmation */}
+                        <div className="bg-teal-50 border-2 border-brand-teal/30 rounded-2xl p-6 mb-6 sr visible">
+                            <p className="text-lg text-teal-900 text-center">
+                                <strong>Check your email!</strong> We've sent your full report to <strong>{formData.email}</strong>
+                            </p>
+                            <p className="text-sm text-teal-700 text-center mt-2">
+                                Didn't receive it? Check spam or <a href="#" className="underline">resend</a>
+                            </p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="space-y-3 sr visible">
+                            {(results.verdict === 'pass' || results.verdict === 'conditional') && (
+                                <a
+                                    href="/benefit-statement"
+                                    className="btn-ripple block w-full bg-brand-teal hover:bg-[#006666] text-white py-4 px-6 rounded-xl text-center text-lg font-semibold shadow-lg transition-all font-display"
+                                    onClick={addRipple}
+                                >
+                                    Continue to Benefit Statement Writer &rarr;
+                                </a>
+                            )}
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="block w-full bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-center text-lg font-semibold transition-all"
+                            >
+                                &larr; Start New Check
+                            </button>
+                        </div>
+
+                        {/* Footer Tagline */}
+                        <div className="text-center mt-8">
+                            <p className="text-xs text-gray-400 tracking-widest uppercase">The Infrastructure Engine for UK CICs</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-teal-50 to-cyan-50 py-12 px-4">
+                <div className="max-w-2xl mx-auto">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 sr">
+                        <div className="text-center md:text-left">
+                            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2 font-display">
+                                CIC Eligibility Checker
+                            </h1>
+                            <p className="text-lg text-gray-600">
+                                Find out if your idea qualifies in 60 seconds
+                            </p>
+                            <p className="text-sm text-brand-teal font-medium mt-1">The Infrastructure Engine for UK CICs</p>
+                        </div>
+                        <button
+                            onClick={() => window.location.href = 'https://tools.inclusifund.co.uk/dashboard'}
+                            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 py-2 px-4 rounded-lg font-medium transition-all shadow-sm hover:shadow-md text-sm whitespace-nowrap"
+                        >
+                            Return to Tools Suite
+                        </button>
+                    </div>
+
+                    <ProgressBar />
+
+                    <div className="bg-white rounded-2xl shadow-xl p-8 sr">
+                        {/* Step 1: Business Activity */}
+                        {step === 1 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2 text-gray-800 font-display">
+                                    What will your CIC do?
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    Be specific - this helps us assess eligibility
+                                </p>
+                                <textarea
+                                    value={formData.businessActivity}
+                                    onChange={(e) => handleChange('businessActivity', e.target.value)}
+                                    className="w-full p-4 border-2 border-gray-300 rounded-lg text-lg focus:border-brand-teal focus:outline-none focus:ring-2 focus:ring-brand-teal/20 transition-all"
+                                    placeholder="Example: Weekly cooking classes teaching elderly people healthy meal prep on a budget"
+                                    maxLength={500}
+                                    rows={5}
+                                />
+                                <div className="flex justify-between items-center mt-2">
+                                    <span className="text-sm text-gray-600">
+                                        {formData.businessActivity.length}/500 characters
+                                    </span>
+                                    {formData.businessActivity.length < 20 && formData.businessActivity.length > 0 && (
+                                        <span className="text-sm text-amber-600">
+                                            Please add more detail (minimum 20 characters)
+                                        </span>
+                                    )}
+                                </div>
+
+                                {/* Loss Aversion Block */}
+                                <div className="loss-hl mt-6">
+                                    <p className="text-sm text-red-700 font-semibold mb-1">78% of rejected CIC applications fail due to vague activity descriptions</p>
+                                    <p className="text-xs text-gray-500">Be as specific as possible about what your CIC will actually do, for whom, and where.</p>
+                                </div>
+
+                                <button
+                                    onClick={(e) => { addRipple(e); nextStep(); }}
+                                    disabled={formData.businessActivity.length < 20}
+                                    className="btn-ripple mt-6 w-full bg-brand-teal hover:bg-[#006666] disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all font-display"
+                                >
+                                    Next: Revenue Model &rarr;
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Step 2: Revenue Model */}
+                        {step === 2 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-6 text-gray-800 font-display">
+                                    How will you generate income?
+                                </h2>
+                                <div className="space-y-3">
+                                    {[
+                                        { value: 'donation', label: 'Primarily donations', desc: 'Fundraising, individual giving, corporate donations' },
+                                        { value: 'trading', label: 'Trading/selling products or services', desc: 'Selling goods, membership fees, service charges' },
+                                        { value: 'grant', label: 'Grant funding', desc: 'Trusts, foundations, government grants' },
+                                        { value: 'mixed', label: 'Mixed model (combination)', desc: 'Multiple income sources blended together' }
+                                    ].map(option => (
+                                        <label key={option.value} className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.revenueModel === option.value
+                                            ? 'border-brand-teal bg-teal-50'
+                                            : 'border-gray-300 hover:border-brand-light'
+                                            }`}>
+                                            <div className="flex items-start gap-3">
+                                                <input
+                                                    type="radio"
+                                                    name="revenueModel"
+                                                    value={option.value}
+                                                    checked={formData.revenueModel === option.value}
+                                                    onChange={(e) => handleChange('revenueModel', e.target.value)}
+                                                    className="mt-1 w-5 h-5 accent-brand-teal"
+                                                />
+                                                <div>
+                                                    <div className="font-semibold text-gray-800">{option.label}</div>
+                                                    <div className="text-sm text-gray-600">{option.desc}</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        &larr; Back
+                                    </button>
+                                    <button
+                                        onClick={(e) => { addRipple(e); nextStep(); }}
+                                        disabled={!formData.revenueModel}
+                                        className="btn-ripple flex-1 bg-brand-teal hover:bg-[#006666] disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all font-display"
+                                    >
+                                        Next: Beneficiaries &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 3: Beneficiary Group */}
+                        {step === 3 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2 text-gray-800 font-display">
+                                    Who will benefit from your CIC?
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    Be specific about WHO and WHERE
+                                </p>
+                                <textarea
+                                    value={formData.beneficiaryGroup}
+                                    onChange={(e) => handleChange('beneficiaryGroup', e.target.value)}
+                                    className="w-full p-4 border-2 border-gray-300 rounded-lg text-lg focus:border-brand-teal focus:outline-none focus:ring-2 focus:ring-brand-teal/20 transition-all"
+                                    placeholder="Example: Elderly people (65+) living alone in social housing in Leeds"
+                                    maxLength={200}
+                                    rows={3}
+                                />
+                                <div className="text-sm text-gray-600 mt-2">
+                                    {formData.beneficiaryGroup.length}/200 characters
+                                </div>
+
+                                <button
+                                    onClick={() => setShowExamples(!showExamples)}
+                                    className="text-brand-teal hover:text-[#006666] font-semibold mt-4 flex items-center gap-2"
+                                >
+                                    {showExamples ? '\u25B2' : '\u25BC'} Show good examples
+                                </button>
+
+                                {showExamples && (
+                                    <div className="mt-4 bg-teal-50 border border-brand-teal/20 rounded-lg p-4">
+                                        <h4 className="font-semibold text-teal-900 mb-2">Good examples:</h4>
+                                        <ul className="space-y-2 text-sm text-teal-800">
+                                            <li>&#8226; "Women experiencing domestic abuse in Birmingham and surrounding areas"</li>
+                                            <li>&#8226; "Children and young people with learning disabilities across South Wales"</li>
+                                            <li>&#8226; "Homeless and vulnerably housed individuals in Brighton & Hove"</li>
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {/* Loss Aversion Block */}
+                                <div className="loss-hl mt-6">
+                                    <p className="text-sm text-red-700 font-semibold mb-1">Naming private individuals as beneficiaries will automatically fail your application</p>
+                                    <p className="text-xs text-gray-500">The CIC Regulator requires a clearly defined community or disadvantaged group.</p>
+                                </div>
+
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        &larr; Back
+                                    </button>
+                                    <button
+                                        onClick={(e) => { addRipple(e); nextStep(); }}
+                                        disabled={formData.beneficiaryGroup.length < 10}
+                                        className="btn-ripple flex-1 bg-brand-teal hover:bg-[#006666] disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all font-display"
+                                    >
+                                        Next: Asset Distribution &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 4: Asset Distribution */}
+                        {step === 4 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-6 text-gray-800 font-display">
+                                    If your CIC closes, where would assets go?
+                                </h2>
+
+                                {/* Loss Aversion Block */}
+                                <div className="loss-hl mb-6">
+                                    <p className="text-sm text-red-700 font-semibold mb-1">Choosing "members/shareholders" will automatically disqualify your CIC application</p>
+                                    <p className="text-xs text-gray-500">The asset lock is a legal requirement. There are no exceptions.</p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    {[
+                                        { value: 'cic_charity', label: 'To another CIC or charity', desc: 'Assets stay locked for community benefit' },
+                                        { value: 'community', label: 'To the community', desc: 'Distributed for community benefit purposes' },
+                                        { value: 'members', label: 'To members/shareholders', desc: 'This violates CIC asset lock rules' },
+                                        { value: 'undecided', label: 'Not sure yet', desc: 'You\'ll need to decide before registering' }
+                                    ].map(option => (
+                                        <label key={option.value} className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.assetDistribution === option.value
+                                            ? option.value === 'members' ? 'border-red-500 bg-red-50' : 'border-brand-teal bg-teal-50'
+                                            : 'border-gray-300 hover:border-brand-light'
+                                            }`}>
+                                            <div className="flex items-start gap-3">
+                                                <input
+                                                    type="radio"
+                                                    name="assetDistribution"
+                                                    value={option.value}
+                                                    checked={formData.assetDistribution === option.value}
+                                                    onChange={(e) => handleChange('assetDistribution', e.target.value)}
+                                                    className="mt-1 w-5 h-5 accent-brand-teal"
+                                                />
+                                                <div>
+                                                    <div className="font-semibold text-gray-800">{option.label}</div>
+                                                    <div className={`text-sm ${option.value === 'members' ? 'text-red-600 font-medium' : 'text-gray-600'}`}>
+                                                        {option.desc}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        &larr; Back
+                                    </button>
+                                    <button
+                                        onClick={(e) => { addRipple(e); nextStep(); }}
+                                        disabled={!formData.assetDistribution}
+                                        className="btn-ripple flex-1 bg-brand-teal hover:bg-[#006666] disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all font-display"
+                                    >
+                                        Next: Email &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 5: Email */}
+                        {step === 5 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2 text-gray-800 font-display">
+                                    Where should we send your report?
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    We'll email you a detailed PDF with your eligibility results
+                                </p>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => handleChange('email', e.target.value)}
+                                    className="w-full p-4 border-2 border-gray-300 rounded-lg text-lg focus:border-brand-teal focus:outline-none focus:ring-2 focus:ring-brand-teal/20 transition-all"
+                                    placeholder="your@email.com"
+                                />
+                                <p className="text-sm text-gray-500 mt-3">
+                                    We'll only use this to send your report. No spam, ever.
+                                </p>
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        &larr; Back
+                                    </button>
+                                    <button
+                                        onClick={(e) => { addRipple(e); runEligibilityCheck(); }}
+                                        disabled={!formData.email || !/\S+@\S+\.\S+/.test(formData.email)}
+                                        className="btn-ripple flex-1 bg-brand-teal hover:bg-[#006666] disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all font-display"
+                                    >
+                                        Check My Eligibility
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer Tagline */}
+                    <div className="text-center mt-8">
+                        <p className="text-xs text-gray-400 tracking-widest uppercase">The Infrastructure Engine for UK CICs</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Render app
+    const container = document.getElementById('eligibility-root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<CICEligibilityChecker />);
+</script>

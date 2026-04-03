@@ -1,0 +1,35 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/welcome", "destination": "/onboarding-dark" },
+    { "source": "/upgrade", "destination": "/upgrade-landing" },
+    { "source": "/upgrade-gift-97", "destination": "/early-access-lifetime" },
+    { "source": "/upgrade-197", "destination": "/upgrade-197" },
+    { "source": "/log-in/user-account", "destination": "/login" },
+    { "source": "/log-in/:path*", "destination": "/login" },
+    { "source": "/dashboard/user-account", "destination": "/user-account-dashboard" },
+    { "source": "/tools", "destination": "/cic-tool-suite-landing" },
+    { "source": "/app/cic34-generator", "destination": "/cic34-generator" },
+    { "source": "/grants", "destination": "/opportunities-hub" },
+    { "source": "/opportunities-hub", "destination": "/opportunities-hub" },
+    { "source": "/grants-start", "destination": "/grants-onboarding-new" },
+    { "source": "/grant-onboarding", "destination": "/grants-onboarding-new" },
+    { "source": "/grant-custom", "destination": "/grants-custom" },
+    { "source": "/action-takers", "destination": "/action-takers" },
+    { "source": "/settings/user-account", "destination": "/settings" },
+    { "source": "/subscription/user-account", "destination": "/subscription" },
+    { "source": "/premium", "destination": "/premium-tools-dashboard" }
+  ]
+}

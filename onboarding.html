@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund | Welcome</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/theme.css">
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.js"></script>
+
+    <!-- Convex + Auth -->
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script src="assets/js/auth.js"></script>
+</head>
+
+<body class="dark-mode">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { motion, AnimatePresence } = window.Motion;
+
+        // --- Convex Client ---
+        const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+
+        const ScreenWrapper = ({ children, keyName }) => (
+            <motion.div
+                key={keyName}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center min-h-[70vh] px-6"
+            >
+                {children}
+            </motion.div>
+        );
+
+        function Onboarding() {
+            const [step, setStep] = useState(1);
+            const [submitting, setSubmitting] = useState(false);
+            const [currentUser, setCurrentUser] = useState(null);
+            const [data, setData] = useState({
+                role: '',
+                goals: [],
+            });
+
+            // Auth guard — check session on load
+            // If user already completed onboarding, skip straight to dashboard
+            useEffect(() => {
+                const user = window.InclusiFundAuth ? InclusiFundAuth.checkSession() : null;
+                if (!user) {
+                    window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+                    return;
+                }
+
+                // Skip onboarding for returning users who already completed it
+                if (user.onboardingComplete === true) {
+                    console.log("[onboarding] User already onboarded, redirecting to dashboard");
+                    window.location.href = '/dashboard';
+                    return;
+                }
+
+                // Double-check against the database in case localStorage is stale
+                convexClient.query("users:getUser", { email: user.email }).then(dbUser => {
+                    if (dbUser && dbUser.onboardingComplete === true) {
+                        // Update local session and redirect
+                        user.onboardingComplete = true;
+                        if (window.InclusiFundAuth) InclusiFundAuth.setSession(user);
+                        console.log("[onboarding] DB says onboarding complete, redirecting to dashboard");
+                        window.location.href = '/dashboard';
+                        return;
+                    }
+                    setCurrentUser(user);
+                }).catch(err => {
+                    console.error("[onboarding] Failed to check DB, proceeding with wizard:", err);
+                    setCurrentUser(user);
+                });
+            }, []);
+
+            const next = () => setStep(s => s + 1);
+            const back = () => setStep(s => s - 1);
+
+            const selectRole = (role) => {
+                setData(prev => ({ ...prev, role }));
+                setTimeout(next, 300);
+            };
+
+            const toggleGoal = (goal) => {
+                setData(prev => ({
+                    ...prev,
+                    goals: prev.goals.includes(goal)
+                        ? prev.goals.filter(g => g !== goal)
+                        : [...prev.goals, goal]
+                }));
+            };
+
+            const handleFinish = async () => {
+                if (!currentUser) return;
+                setSubmitting(true);
+
+                try {
+                    // Save responses to Convex (also marks onboardingComplete)
+                    await convexClient.mutation("onboarding:saveDiscoveryResponses", {
+                        userId: currentUser.email,
+                        role: data.role || "not_specified",
+                        goals: data.goals.length > 0 ? data.goals : ["general"],
+                    });
+
+                    // Update local session
+                    currentUser.onboardingComplete = true;
+                    if (window.InclusiFundAuth) {
+                        InclusiFundAuth.setSession(currentUser);
+                    }
+
+                    console.log("Onboarding complete for:", currentUser.email);
+
+                    // Redirect to dashboard
+                    window.location.href = '/dashboard';
+                } catch (err) {
+                    console.error("Failed to save onboarding:", err);
+                    // Still redirect — don't block the user
+                    window.location.href = '/dashboard';
+                }
+            };
+
+            const totalSteps = 5;
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    {/* Header */}
+                    <header className="p-8 flex justify-between items-center max-w-6xl mx-auto w-full">
+                        <div className="sidebar-logo">InclusiFund</div>
+                        {step > 1 && step < 5 && (
+                            <div className="text-xs font-bold uppercase tracking-wider text-muted">
+                                {step} / {totalSteps}
+                            </div>
+                        )}
+                    </header>
+
+                    <main className="flex-1 flex items-center justify-center pb-24">
+                        <AnimatePresence mode="wait">
+                            {step === 1 && (
+                                <ScreenWrapper keyName="welcome">
+                                    <div className="w-20 h-20 bg-accent/20 rounded-2xl flex items-center justify-center text-accent text-4xl mb-8">✨</div>
+                                    <h1 className="text-5xl font-bold mb-6 text-center leading-tight">
+                                        Build a <span className="text-accent">CIC</span> that lasts.
+                                    </h1>
+                                    <p className="text-xl text-secondary text-center max-w-md mb-12">
+                                        Let's personalize your toolkit. It takes less than 2 minutes to get organized.
+                                    </p>
+                                    <button className="btn btn-primary px-12 py-4 text-lg" onClick={next}>Get Started</button>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 2 && (
+                                <ScreenWrapper keyName="role">
+                                    <h2 className="text-3xl font-bold mb-2 text-center">What is your current stage?</h2>
+                                    <p className="text-secondary mb-10 text-center">We customize the tools based on where you are.</p>
+                                    <div className="grid grid-cols-1 gap-4 w-full">
+                                        {[
+                                            { id: 'planning', label: 'Planning & Registration', icon: '🌱', desc: 'Thinking about starting or in the process of registering.' },
+                                            { id: 'early', label: 'Early Stage CIC', icon: '🚀', desc: 'Registered and operating for less than 2 years.' },
+                                            { id: 'established', label: 'Scale & Sustain', icon: '💪', desc: 'Managing an established CIC looking for efficiency.' }
+                                        ].map(item => (
+                                            <button
+                                                key={item.id}
+                                                className={`card p-6 flex gap-6 items-center border-2 transition-all ${data.role === item.id ? 'border-accent bg-accent/5' : 'border-transparent hover:bg-surface-alt'}`}
+                                                onClick={() => selectRole(item.id)}
+                                            >
+                                                <div className="text-3xl">{item.icon}</div>
+                                                <div className="text-left">
+                                                    <div className="font-bold text-lg">{item.label}</div>
+                                                    <div className="text-sm text-secondary">{item.desc}</div>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 3 && (
+                                <ScreenWrapper keyName="goals">
+                                    <h2 className="text-3xl font-bold mb-2 text-center">What are your main goals?</h2>
+                                    <p className="text-secondary mb-10 text-center">Select all that apply.</p>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                                        {[
+                                            { id: 'funding', label: 'Secure Funding', icon: '💰' },
+                                            { id: 'compliance', label: 'Stay Compliant', icon: '📋' },
+                                            { id: 'impact', label: 'Measure Impact', icon: '📊' },
+                                            { id: 'governance', label: 'Improve Governance', icon: '👥' },
+                                            { id: 'strategy', label: 'Growth Strategy', icon: '🎯' },
+                                            { id: 'reporting', label: 'Annual Reporting', icon: '📝' }
+                                        ].map(item => (
+                                            <button
+                                                key={item.id}
+                                                className={`card p-4 flex gap-4 items-center border-2 transition-all ${data.goals.includes(item.id) ? 'border-accent bg-accent/5' : 'border-transparent hover:bg-surface-alt'}`}
+                                                onClick={() => toggleGoal(item.id)}
+                                            >
+                                                <div className="text-2xl">{item.icon}</div>
+                                                <div className="font-bold">{item.label}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <button className="btn btn-primary mt-12 px-10" disabled={data.goals.length === 0} onClick={next}>Continue</button>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 4 && (
+                                <ScreenWrapper keyName="pause">
+                                    <div className="text-6xl mb-8 animate-bounce">🤝</div>
+                                    <h2 className="text-4xl font-bold mb-6 text-center">You're in good company.</h2>
+                                    <p className="text-xl text-secondary text-center max-w-md">
+                                        Over 500 CIC directors use InclusiFund to save 10+ hours of admin every single month.
+                                    </p>
+                                    <button className="btn btn-secondary mt-12" onClick={next}>Next</button>
+                                </ScreenWrapper>
+                            )}
+
+                            {step === 5 && (
+                                <ScreenWrapper keyName="final">
+                                    <div className="w-20 h-20 bg-success-bg/20 rounded-full flex items-center justify-center text-success text-4xl mb-8">✅</div>
+                                    <h2 className="text-4xl font-bold mb-4 text-center">System Ready.</h2>
+                                    <p className="text-xl text-secondary text-center max-w-md mb-12">
+                                        We've prepared your Compliance Calendar and Board Pack Builder as priority tools.
+                                    </p>
+                                    <button
+                                        className="btn btn-primary px-12 py-4 text-lg"
+                                        disabled={submitting}
+                                        onClick={handleFinish}
+                                    >
+                                        {submitting ? 'Setting up...' : 'Go to Dashboard'}
+                                    </button>
+                                </ScreenWrapper>
+                            )}
+                        </AnimatePresence>
+                    </main>
+
+                    {/* Progress Dots */}
+                    {step > 1 && step < 5 && (
+                        <div className="fixed bottom-12 left-0 right-0 flex justify-center gap-3">
+                            {[2, 3, 4].map(s => (
+                                <div
+                                    key={s}
+                                    className={`h-2 rounded-full transition-all duration-300 ${step === s ? 'w-8 bg-accent' : 'w-2 bg-surface-alt'}`}
+                                ></div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Onboarding />);
+    </script>
+</body>
+
+</html>

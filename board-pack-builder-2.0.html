@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund Tools | Board Pack Builder 2.0</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/theme.css">
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+    <style>
+        /* === BEHAVIORAL SCIENCE: Scroll Reveal === */
+        .sr{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+        .sr.visible{opacity:1;transform:translateY(0)}
+
+        /* === BEHAVIORAL SCIENCE: Loss Aversion === */
+        .loss-hl{background:linear-gradient(90deg,rgba(239,68,68,.08),transparent);border-left:3px solid #EF4444;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin-bottom:1rem}
+
+        /* === BEHAVIORAL SCIENCE: Progress Bar === */
+        .prog-bar{height:6px;background:#E5E7EB;border-radius:3px;overflow:hidden}
+        .prog-fill{height:100%;background:linear-gradient(90deg,#008080,#6BB6B6);border-radius:3px;transition:width 1s ease}
+
+        /* === BEHAVIORAL SCIENCE: Button Ripple === */
+        .btn{position:relative;overflow:hidden}
+        .btn-rpl{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);transform:scale(0);animation:rpl .5s linear;pointer-events:none}
+        @keyframes rpl{to{transform:scale(4);opacity:0}}
+
+        /* === BEHAVIORAL SCIENCE: Confetti === */
+        @keyframes fall{
+            0%{transform:translateY(0) rotate(0deg);opacity:1}
+            100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+        }
+
+        /* === Premium Gold Accent === */
+        .gold-badge { background: linear-gradient(135deg, #d4a853 0%, #f0d68a 50%, #d4a853 100%); color: #1F2232; }
+    </style>
+</head>
+
+<body class="dark-mode">
+    <div class="app-shell">
+        <main class="app-content">
+            <header class="app-header sr">
+                <div>
+                    <h1 class="page-title">Board Pack Builder</h1>
+                    <p class="page-subtitle">The Infrastructure Engine for UK CICs — generate professional, compliant meeting packs in minutes.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button class="btn btn-secondary"
+                        onclick="window.location.href='https://tools.inclusifund.co.uk/dashboard'">Return to Tools
+                        Suite</button>
+                </div>
+            </header>
+
+            <div id="root"></div>
+        </main>
+    </div>
+
+    <!-- Core Logic -->
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/nav.js"></script>
+
+    <script type="text/babel">
+        // Auth Check
+        const user = InclusiFundAuth.requireAuth();
+        if (!user) {
+            console.log("Redirecting to login...");
+        }
+
+        const { useState, useEffect, useRef } = React;
+
+        // ── Button Ripple Handler ──
+        function addRipple(e) {
+            const btn = e.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            const rpl = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            rpl.style.width = rpl.style.height = size + 'px';
+            rpl.style.left = (e.clientX - rect.left - size/2) + 'px';
+            rpl.style.top = (e.clientY - rect.top - size/2) + 'px';
+            rpl.className = 'btn-rpl';
+            btn.appendChild(rpl);
+            setTimeout(() => rpl.remove(), 600);
+        }
+
+        // ── Confetti Burst ──
+        function confetti(count){for(var i=0;i<(count||50);i++){var c=document.createElement('div');
+        c.style.cssText='position:fixed;width:8px;height:8px;border-radius:50%;top:-10px;left:'+
+        Math.random()*100+'vw;background:hsl('+Math.random()*360+',80%,60%);z-index:9999;pointer-events:none;animation:fall '+(1+Math.random()*2)+'s ease-out forwards';
+        document.body.appendChild(c);setTimeout(function(){c.remove()},3000)}}
+
+        // ── Scroll Reveal Init ──
+        function initScrollReveal() {
+            document.querySelectorAll('.sr').forEach(function(el,i){
+                el.style.transitionDelay=(i%6)*0.08+'s';
+                new IntersectionObserver(function(e){
+                    if(e[0].isIntersecting){el.classList.add('visible');this.disconnect()}
+                },{threshold:.1}).observe(el)});
+        }
+
+        function BoardPackBuilder() {
+            const [step, setStep] = useState(1);
+            const [state, setState] = useState(() => {
+                const saved = localStorage.getItem('boardPackState');
+                return saved ? JSON.parse(saved) : {
+                    meetingDetails: {
+                        cicName: '',
+                        companyNumber: '',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '10:00',
+                        location: 'Zoom / Video Conference'
+                    },
+                    attendance: [
+                        { id: 1, name: 'Chairperson', role: 'Director', status: 'present' },
+                        { id: 2, name: 'Treasurer', role: 'Director', status: 'present' }
+                    ],
+                    agenda: [
+                        { id: '1', title: 'Apologies for Absence', type: 'info', duration: 5, fixed: true },
+                        { id: '2', title: 'Declarations of Interest', type: 'info', duration: 5, fixed: true },
+                        { id: '3', title: 'Minutes of Previous Meeting', type: 'decision', duration: 10, fixed: true }
+                    ],
+                    decisions: {}
+                };
+            });
+
+            const [loading, setLoading] = useState(false);
+            const [generated, setGenerated] = useState(false);
+            const agendaListRef = useRef(null);
+
+            useEffect(() => {
+                localStorage.setItem('boardPackState', JSON.stringify(state));
+            }, [state]);
+
+            useEffect(() => {
+                if (step === 3 && agendaListRef.current) {
+                    const sortable = new Sortable(agendaListRef.current, {
+                        animation: 150,
+                        handle: '.drag-handle',
+                        onEnd: (evt) => {
+                            const newAgenda = [...state.agenda];
+                            const [movedItem] = newAgenda.splice(evt.oldIndex, 1);
+                            newAgenda.splice(evt.newIndex, 0, movedItem);
+                            setState(prev => ({ ...prev, agenda: newAgenda }));
+                        }
+                    });
+                    return () => sortable.destroy();
+                }
+            }, [step]);
+
+            // Re-init scroll reveal on step change
+            useEffect(() => {
+                setTimeout(initScrollReveal, 50);
+            }, [step, generated, loading]);
+
+            const updateDetails = (field, value) => {
+                setState(prev => ({
+                    ...prev,
+                    meetingDetails: { ...prev.meetingDetails, [field]: value }
+                }));
+            };
+
+            const addAttendance = () => {
+                const newId = Date.now();
+                setState(prev => ({
+                    ...prev,
+                    attendance: [...prev.attendance, { id: newId, name: '', role: 'Director', status: 'present' }]
+                }));
+            };
+
+            const updateAttendance = (id, field, value) => {
+                setState(prev => ({
+                    ...prev,
+                    attendance: prev.attendance.map(a => a.id === id ? { ...a, [field]: value } : a)
+                }));
+            };
+
+            const removeAttendance = (id) => {
+                setState(prev => ({
+                    ...prev,
+                    attendance: prev.attendance.filter(a => a.id !== id)
+                }));
+            };
+
+            const addAgendaItem = (title, type, duration) => {
+                if (!title) return;
+                const newItem = { id: Date.now().toString(), title, type, duration: parseInt(duration) || 10, fixed: false };
+                setState(prev => ({ ...prev, agenda: [...prev.agenda, newItem] }));
+            };
+
+            const removeAgendaItem = (id) => {
+                setState(prev => ({ ...prev, agenda: prev.agenda.filter(a => a.id !== id) }));
+            };
+
+            const updateDecision = (itemId, field, value) => {
+                setState(prev => ({
+                    ...prev,
+                    decisions: {
+                        ...prev.decisions,
+                        [itemId]: { ...(prev.decisions[itemId] || {}), [field]: value }
+                    }
+                }));
+            };
+
+            const handleGenerate = () => {
+                setLoading(true);
+                setTimeout(() => {
+                    setLoading(false);
+                    setGenerated(true);
+                    // Fire confetti on completion
+                    setTimeout(() => confetti(60), 300);
+                }, 2500);
+            };
+
+            const isQuorate = () => {
+                const directors = state.attendance.filter(a => a.role === 'Director');
+                const present = directors.filter(d => d.status === 'present');
+                return present.length >= Math.max(2, Math.ceil(directors.length / 2));
+            };
+
+            const totalSteps = 5;
+
+            if (generated) {
+                return (
+                    <div className="card text-center space-y-8 animate-fade-in py-12 sr">
+                        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-success-bg text-success text-5xl">✅</div>
+                        <div className="space-y-2">
+                            <h2 className="text-3xl font-bold">Board Pack Ready!</h2>
+                            <p className="text-secondary max-w-md mx-auto">Your agenda, minutes template, and decision covers are compiled and ready for download.</p>
+                        </div>
+                        <div className="flex justify-center gap-4">
+                            <button className="btn btn-primary px-10" onClick={(e) => { addRipple(e); setTimeout(() => alert('Downloading Board Pack ZIP...'), 200); }}>Download ZIP</button>
+                            <button className="btn btn-secondary" onClick={(e) => { addRipple(e); setTimeout(() => setGenerated(false), 200); }}>Back to Editor</button>
+                        </div>
+
+                        {/* Social proof */}
+                        <div className="max-w-md mx-auto text-left bg-surface-alt rounded-xl p-4 border border-border-light mt-6">
+                            <p className="text-sm text-secondary italic">"We switched from manual Word documents to this builder. Our board meetings are now consistently structured and compliant."</p>
+                            <p className="text-sm font-bold text-accent mt-2">— Daniel Wright, Chair, Greenspace Manchester CIC</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (loading) {
+                return (
+                    <div className="card flex flex-col items-center justify-center space-y-6 py-24 sr">
+                        <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        <div className="text-center">
+                            <h3 className="text-xl font-bold">Compiling Board Pack</h3>
+                            <p className="text-muted">Drafting minutes template and checking quorum requirements...</p>
+                        </div>
+                        <div className="w-64 prog-bar mt-4">
+                            <div className="prog-fill" style={{ width: '70%' }}></div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="space-y-8 max-w-4xl mx-auto">
+                    {/* Progress Nav with behavioral progress bar */}
+                    <div className="sr">
+                        <div className="prog-bar mb-2">
+                            <div className="prog-fill" style={{ width: `${(step / totalSteps) * 100}%` }}></div>
+                        </div>
+                        <div className="grid grid-cols-5 gap-2">
+                            {[1, 2, 3, 4, 5].map(s => (
+                                <div key={s} className="space-y-2">
+                                    <div className={`h-1.5 rounded-full transition-all duration-500 ${step >= s ? 'bg-accent' : 'bg-surface-alt'}`}></div>
+                                    <div className={`text-[10px] font-bold uppercase tracking-wider text-center ${step === s ? 'text-accent' : 'text-muted'}`}>
+                                        {['Basics', 'Attendance', 'Agenda', 'Decisions', 'Review'][s - 1]}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="card p-8 sr">
+                        {step === 1 && (
+                            <div className="space-y-6">
+                                <h2 className="text-2xl font-bold">Meeting Details</h2>
+                                <div className="grid grid-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">CIC Name</label>
+                                        <input className="input" placeholder="e.g. Wellbeing Hub CIC" value={state.meetingDetails.cicName} onChange={e => updateDetails('cicName', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">Company Number</label>
+                                        <input className="input" placeholder="e.g. 12345678" value={state.meetingDetails.companyNumber} onChange={e => updateDetails('companyNumber', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">Date</label>
+                                        <input type="date" className="input" value={state.meetingDetails.date} onChange={e => updateDetails('date', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">Location</label>
+                                        <input className="input" value={state.meetingDetails.location} onChange={e => updateDetails('location', e.target.value)} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="space-y-6">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-2xl font-bold">Attendance Tracking</h2>
+                                    <div className={`px-4 py-2 rounded-full text-sm font-bold ${isQuorate() ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'}`}>
+                                        {isQuorate() ? '✅ Quorate' : '⚠️ Not Quorate'}
+                                    </div>
+                                </div>
+
+                                {/* Loss Aversion: Quorum warning */}
+                                {!isQuorate() && (
+                                    <div className="loss-hl">
+                                        <p className="text-sm font-semibold" style={{color:'#EF4444'}}>Without quorum, no decisions can be formally ratified. Any resolutions passed will be legally invalid.</p>
+                                    </div>
+                                )}
+
+                                <div className="space-y-3">
+                                    {state.attendance.map((person, idx) => (
+                                        <div key={person.id} className="flex gap-3 items-center bg-surface-alt p-3 rounded-xl border border-border-light">
+                                            <input className="input bg-transparent border-none flex-1 font-bold" value={person.name} placeholder="Name" onChange={e => updateAttendance(person.id, 'name', e.target.value)} />
+                                            <select className="input bg-transparent border-none w-40" value={person.role} onChange={e => updateAttendance(person.id, 'role', e.target.value)}>
+                                                <option>Director</option>
+                                                <option>Observer</option>
+                                                <option>Secretary</option>
+                                            </select>
+                                            <select className="input bg-transparent border-none w-40" value={person.status} onChange={e => updateAttendance(person.id, 'status', e.target.value)}>
+                                                <option value="present">Present</option>
+                                                <option value="apologies">Apologies</option>
+                                                <option value="absent">Absent</option>
+                                            </select>
+                                            <button className="text-error p-2 hover:bg-error-bg rounded-lg" onClick={() => removeAttendance(person.id)}>✖</button>
+                                        </div>
+                                    ))}
+                                    <button className="btn btn-secondary w-full border-dashed" onClick={(e) => { addRipple(e); addAttendance(); }}>+ Add Attendee</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div className="space-y-6">
+                                <h2 className="text-2xl font-bold">Agenda Builder</h2>
+                                <p className="text-secondary">Drag and drop to reorder items.</p>
+                                <div className="space-y-2" ref={agendaListRef}>
+                                    {state.agenda.map((item, idx) => (
+                                        <div key={item.id} className="flex items-center gap-4 bg-surface-alt p-4 rounded-xl border border-border-light group cursor-move">
+                                            <div className="drag-handle text-muted"><i className="fas fa-grip-vertical"></i></div>
+                                            <div className="flex-1">
+                                                <div className="font-bold">{item.title}</div>
+                                                <div className="flex gap-2 text-xs uppercase font-bold tracking-wider mt-1">
+                                                    <span className={item.type === 'decision' ? 'text-accent' : 'text-primary'}>{item.type}</span>
+                                                    <span className="text-muted">• {item.duration} mins</span>
+                                                </div>
+                                            </div>
+                                            {!item.fixed && <button className="text-error opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeAgendaItem(item.id)}>✖</button>}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="bg-surface p-4 rounded-xl border border-dashed flex gap-3 items-center">
+                                    <input className="input flex-1" id="new-title" placeholder="New Agenda Item Title" />
+                                    <select className="input w-32" id="new-type text-dark">
+                                        <option value="info">Info</option>
+                                        <option value="discussion">Discussion</option>
+                                        <option value="decision">Decision</option>
+                                    </select>
+                                    <button className="btn btn-primary" onClick={(e) => {
+                                        addRipple(e);
+                                        const t = document.getElementById('new-title');
+                                        const type = document.getElementById('new-type text-dark');
+                                        addAgendaItem(t.value, type.value, 15);
+                                        t.value = '';
+                                    }}>Add</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 4 && (
+                            <div className="space-y-6">
+                                <h2 className="text-2xl font-bold">Decision Details</h2>
+                                <p className="text-secondary text-sm">Provide context for each agenda item marked as 'Decision'.</p>
+
+                                {/* Loss Aversion: Compliance reminder */}
+                                <div className="loss-hl">
+                                    <p className="text-sm" style={{color:'#EF4444'}}>CIC boards must document every financial decision with a clear recommendation, impact assessment, and risk analysis. Missing details may trigger a CIC Regulator query.</p>
+                                </div>
+
+                                <div className="space-y-6">
+                                    {state.agenda.filter(a => a.type === 'decision').map(item => (
+                                        <div key={item.id} className="p-6 bg-surface-alt rounded-xl border border-border-light space-y-4">
+                                            <div className="text-accent font-bold uppercase text-xs tracking-widest">Item: {item.title}</div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-muted uppercase">Recommendation</label>
+                                                <textarea className="input min-h-[80px]" value={state.decisions[item.id]?.rec || ''} onChange={e => updateDecision(item.id, 'rec', e.target.value)} placeholder="What is the board being asked to do?" />
+                                            </div>
+                                            <div className="grid grid-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-bold text-muted uppercase">Financial Impact</label>
+                                                    <input className="input" value={state.decisions[item.id]?.finance || ''} onChange={e => updateDecision(item.id, 'finance', e.target.value)} placeholder="e.g. £500, Budgeted" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-bold text-muted uppercase">Key Risk</label>
+                                                    <input className="input" value={state.decisions[item.id]?.risk || ''} onChange={e => updateDecision(item.id, 'risk', e.target.value)} placeholder="e.g. Reputational" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {state.agenda.filter(a => a.type === 'decision').length === 0 && (
+                                        <div className="text-center py-10 text-muted">No decisions on this agenda.</div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 5 && (
+                            <div className="space-y-8">
+                                <h2 className="text-2xl font-bold">Review & Finalize</h2>
+                                <div className="grid grid-2 gap-6">
+                                    <div className="space-y-1">
+                                        <div className="text-xs font-bold text-muted uppercase">Meeting Info</div>
+                                        <div className="text-lg font-bold">{state.meetingDetails.cicName || 'Your CIC'}</div>
+                                        <div className="text-sm text-secondary">{state.meetingDetails.date} @ {state.meetingDetails.time}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <div className="text-xs font-bold text-muted uppercase">Quorum Status</div>
+                                        <div className={`text-lg font-bold ${isQuorate() ? 'text-success' : 'text-warning'}`}>{isQuorate() ? 'Quorate' : 'Not Quorate'}</div>
+                                        <div className="text-sm text-secondary">{state.attendance.filter(d => d.role === 'Director' && d.status === 'present').length} Directors Present</div>
+                                    </div>
+                                </div>
+
+                                {/* Loss Aversion: Not quorate final warning */}
+                                {!isQuorate() && (
+                                    <div className="loss-hl">
+                                        <p className="text-sm font-semibold" style={{color:'#EF4444'}}>This meeting is not quorate. Generating the pack without quorum means all decisions will be advisory only and cannot be ratified.</p>
+                                    </div>
+                                )}
+
+                                <div className="space-y-4">
+                                    <div className="text-xs font-bold text-muted uppercase">Agenda Snapshot</div>
+                                    <div className="space-y-2">
+                                        {state.agenda.map((item, i) => (
+                                            <div key={i} className="flex justify-between text-sm py-2 border-b border-surface-alt">
+                                                <span>{i + 1}. {item.title}</span>
+                                                <span className="text-muted uppercase font-bold text-[10px]">{item.type}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button className="btn btn-primary w-full py-4 text-lg" onClick={(e) => { addRipple(e); setTimeout(handleGenerate, 200); }}>Generate Board Pack</button>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between pt-8 border-t border-border-light mt-8">
+                            <button className={`btn btn-secondary ${step === 1 ? 'invisible' : ''}`} onClick={(e) => { addRipple(e); setTimeout(() => setStep(s => s - 1), 150); }}>Back</button>
+                            {step < 5 && <button className="btn btn-primary" onClick={(e) => { addRipple(e); setTimeout(() => setStep(s => s + 1), 150); }}>Continue</button>}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<BoardPackBuilder />);
+
+        // Initialize Scroll Reveal on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sr').forEach(function(el,i){
+                el.style.transitionDelay=(i%6)*0.08+'s';
+                new IntersectionObserver(function(e){
+                    if(e[0].isIntersecting){el.classList.add('visible');this.disconnect()}
+                },{threshold:.1}).observe(el)});
+        });
+    </script>
+</body>
+
+</html>

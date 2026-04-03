@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIC Benefit Statement Writer 2.0 | InclusiFund Tools</title>
+    <meta name="description"
+        content="Generate a regulator-ready community benefit statement for CIC36 Section 5 in minutes. The Infrastructure Engine for UK CICs.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script>
+        !function (t, e) { var o, n, p, r; e.__SV || (window.posthog = e, e._i = [], e.init = function (i, s, a) { function g(t, e) { var o = e.split("."); 2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } } (p = t.createElement("script")).type = "text/javascript", p.async = !0, p.src = s.api_host + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r); var u = e; for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) { var e = "posthog"; return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e }, u.people.toString = function () { return u.toString(1) + ".people (stub)" }, o = "capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep".split(" "), n = 0; n < o.length; n++)g(u, o[n]); e._i.push([i, s, a]) }, e.__SV = 1) }(document, window.posthog || []);
+        posthog.init('phc_w5zFmD9OVZVV9z93WnpvT9NFKsKIHzWaruG4GZIasle', { api_host: 'https://us.i.posthog.com' });
+    </script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { primary: '#008080', dark: '#005461', light: '#6BB6B6', surface: '#D5ECEC' },
+                        premium: '#d4a853',
+                        danger: '#EF4444',
+                        success: '#10B981'
+                    },
+                    fontFamily: { sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(0, 128, 128, 0.3); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 128, 128, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 128, 128, 0); }
+        }
+        .pulse-ring { animation: pulse-ring 2s infinite; }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #008080 25%, #6BB6B6 50%, #008080 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        .category-chip { transition: all 0.15s ease; }
+        .category-chip:hover { transform: translateY(-1px); }
+        .category-chip.selected { background: #008080; color: white; border-color: #008080; }
+
+        /* === BEHAVIORAL SCIENCE: Scroll Reveal === */
+        .sr{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+        .sr.visible{opacity:1;transform:translateY(0)}
+
+        /* === BEHAVIORAL SCIENCE: Loss Aversion === */
+        .loss-hl{background:linear-gradient(90deg,rgba(239,68,68,.08),transparent);border-left:3px solid #EF4444;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin-bottom:1rem}
+
+        /* === BEHAVIORAL SCIENCE: Progress Bar === */
+        .prog-bar{height:6px;background:#E5E7EB;border-radius:3px;overflow:hidden}
+        .prog-fill{height:100%;background:linear-gradient(90deg,#008080,#6BB6B6);border-radius:3px;transition:width 1s ease}
+
+        /* === BEHAVIORAL SCIENCE: Button Ripple === */
+        .btn-rp{position:relative;overflow:hidden}
+        .btn-rpl{position:absolute;border-radius:50%;background:rgba(255,255,255,.25);transform:scale(0);animation:rpl .5s linear;pointer-events:none}
+        @keyframes rpl{to{transform:scale(4);opacity:0}}
+
+        /* === BEHAVIORAL SCIENCE: Confetti === */
+        @keyframes fall{
+            0%{transform:translateY(0) rotate(0deg);opacity:1}
+            100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+        }
+
+        /* === Premium Gold Accent === */
+        .gold-badge { background: linear-gradient(135deg, #d4a853 0%, #f0d68a 50%, #d4a853 100%); color: #1F2232; }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <div id="app-root"></div>
+    <script src="assets/js/auth.js"></script>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback } = React;
+        const CONVEX_URL = 'https://terrific-bloodhound-927.convex.cloud';
+
+        // ── CIC Categories ──
+        const CIC_CATEGORIES = [
+            { id: 'education', label: 'Education & Training', icon: '📚' },
+            { id: 'health', label: 'Health & Wellbeing', icon: '🏥' },
+            { id: 'poverty_relief', label: 'Poverty Relief', icon: '🤝' },
+            { id: 'environment', label: 'Environment', icon: '🌿' },
+            { id: 'community_development', label: 'Community Development', icon: '🏘️' },
+            { id: 'arts_culture', label: 'Arts & Culture', icon: '🎨' },
+            { id: 'sports', label: 'Sports & Recreation', icon: '⚽' },
+            { id: 'social_care', label: 'Social Care', icon: '💛' },
+            { id: 'employment', label: 'Employment & Skills', icon: '💼' },
+            { id: 'housing', label: 'Housing', icon: '🏠' },
+        ];
+
+        const FREQUENCY_OPTIONS = ['Weekly', 'Fortnightly', 'Monthly', 'Quarterly', 'Annually', 'Ongoing/Continuous'];
+
+        // ── Vague Language Patterns ──
+        const VAGUE_PATTERNS = [
+            { pattern: /\bhelp people\b/gi, replacement: 'provide targeted services to individuals' },
+            { pattern: /\bmake a difference\b/gi, replacement: 'create measurable impact' },
+            { pattern: /\bsupport communities\b/gi, replacement: 'deliver structured programmes for' },
+            { pattern: /\bdo good\b/gi, replacement: 'generate community benefit through' },
+            { pattern: /\bgive back\b/gi, replacement: 'reinvest resources into' },
+            { pattern: /\bchange lives\b/gi, replacement: 'improve outcomes for' },
+            { pattern: /\bempower\b/gi, replacement: 'equip with skills and resources' },
+            { pattern: /\braise awareness\b/gi, replacement: 'deliver education and outreach on' },
+        ];
+
+        // ── Quality Scoring Engine ──
+        function scoreSpecificCommunity(text) {
+            if (!text || text.length < 20) return 0;
+            let score = 30;
+            const demographics = ['aged', 'age', 'years old', 'young', 'elderly', 'women', 'men', 'children', 'disabled', 'BAME', 'Black', 'ethnic', 'refugee', 'migrant', 'veteran', 'homeless', 'NEET', 'unemployed'];
+            const locations = ['in', 'across', 'within', 'borough', 'city', 'county', 'region', 'district', 'ward', 'area'];
+            const circumstances = ['living', 'experiencing', 'affected', 'suffering', 'facing', 'vulnerable', 'disadvantaged', 'isolated', 'low-income'];
+            if (demographics.some(d => text.toLowerCase().includes(d))) score += 25;
+            if (locations.some(l => text.toLowerCase().includes(l))) score += 25;
+            if (circumstances.some(c => text.toLowerCase().includes(c))) score += 20;
+            return Math.min(100, score);
+        }
+
+        function scoreConcreteActivities(text) {
+            if (!text || text.length < 30) return 0;
+            let score = 20;
+            const actionVerbs = ['provide', 'deliver', 'teach', 'train', 'run', 'operate', 'facilitate', 'organise', 'create', 'build', 'develop', 'offer', 'host', 'conduct', 'manage', 'implement', 'coordinate'];
+            const deliverables = ['workshop', 'class', 'session', 'programme', 'course', 'service', 'clinic', 'support group', 'mentoring', 'training', 'coaching', 'counselling', 'resource', 'hub', 'centre'];
+            const matched_verbs = actionVerbs.filter(v => text.toLowerCase().includes(v));
+            const matched_deliverables = deliverables.filter(d => text.toLowerCase().includes(d));
+            score += Math.min(40, matched_verbs.length * 15);
+            score += Math.min(40, matched_deliverables.length * 15);
+            return Math.min(100, score);
+        }
+
+        function scoreClearOutcomes(text) {
+            if (!text || text.length < 30) return 0;
+            let score = 20;
+            const measurable = ['increase', 'improve', 'reduce', 'decrease', 'enhance', 'strengthen', 'raise', 'lower', 'boost', 'prevent', 'eliminate', 'achieve'];
+            const outcomes = ['employment', 'health', 'wellbeing', 'confidence', 'skill', 'literacy', 'income', 'isolation', 'mental health', 'physical health', 'qualification', 'housing', 'safety', 'independence'];
+            if (measurable.some(m => text.toLowerCase().includes(m))) score += 35;
+            if (outcomes.some(o => text.toLowerCase().includes(o))) score += 30;
+            if (/\d+%?/.test(text)) score += 15;
+            return Math.min(100, score);
+        }
+
+        function scoreAppropriateScale(peoplePerYear) {
+            if (!peoplePerYear || peoplePerYear <= 0) return 0;
+            if (peoplePerYear >= 50 && peoplePerYear <= 500) return 100;
+            if ((peoplePerYear >= 20 && peoplePerYear < 50) || (peoplePerYear > 500 && peoplePerYear <= 1000)) return 80;
+            return 60;
+        }
+
+        function scoreGoodLength(wordCount) {
+            if (!wordCount || wordCount === 0) return 0;
+            if (wordCount >= 150 && wordCount <= 250) return 100;
+            if ((wordCount >= 130 && wordCount < 150) || (wordCount > 250 && wordCount <= 280)) return 80;
+            return 60;
+        }
+
+        function cleanVagueLanguage(text) {
+            let cleaned = text;
+            const found = [];
+            VAGUE_PATTERNS.forEach(({ pattern, replacement }) => {
+                if (pattern.test(cleaned)) {
+                    found.push({ original: cleaned.match(pattern)?.[0], suggestion: replacement });
+                    cleaned = cleaned.replace(pattern, replacement);
+                }
+            });
+            return { cleaned, found };
+        }
+
+        function generateStatement(data) {
+            const { targetCommunity, activities, benefitDescription, peoplePerYear, geographicArea, frequency } = data;
+            const { cleaned: cleanedActivities } = cleanVagueLanguage(activities);
+            const { cleaned: cleanedBenefit } = cleanVagueLanguage(benefitDescription);
+
+            const para1 = `The company's activities will provide direct benefit to ${targetCommunity}. This community faces specific challenges that require targeted, sustained intervention to address underlying barriers and improve long-term outcomes for those most affected.`;
+            const para2 = `To achieve this impact, the company will ${cleanedActivities.charAt(0).toLowerCase() + cleanedActivities.slice(1)}. These activities will be delivered on a ${frequency.toLowerCase()} basis across ${geographicArea}, ensuring consistent and accessible provision for the target community.`;
+            const para3 = `Through these activities, the company aims to ${cleanedBenefit.charAt(0).toLowerCase() + cleanedBenefit.slice(1)}. Progress will be measured through participant feedback, outcome tracking, and regular impact assessments to ensure the community benefit is being effectively delivered.`;
+            const para4 = `The company anticipates reaching approximately ${peoplePerYear} people per year across ${geographicArea}. Any surplus generated will be reinvested to sustain and expand these community benefit activities.`;
+
+            return [para1, para2, para3, para4].join('\n\n');
+        }
+
+        // ── Convex API Helper ──
+        async function callConvex(functionName, args) {
+            try {
+                const res = await fetch(`${CONVEX_URL}/api/mutation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ path: functionName, args }),
+                });
+                return await res.json();
+            } catch (err) {
+                console.error('Convex call failed:', err);
+                return null;
+            }
+        }
+
+        // ── Button Ripple Handler ──
+        function addRipple(e) {
+            const btn = e.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            const rpl = document.createElement('span');
+            const size = Math.max(rect.width, rect.height);
+            rpl.style.width = rpl.style.height = size + 'px';
+            rpl.style.left = (e.clientX - rect.left - size/2) + 'px';
+            rpl.style.top = (e.clientY - rect.top - size/2) + 'px';
+            rpl.className = 'btn-rpl';
+            btn.appendChild(rpl);
+            setTimeout(() => rpl.remove(), 600);
+        }
+
+        // ── Confetti Burst ──
+        function confetti(count){for(var i=0;i<(count||50);i++){var c=document.createElement('div');
+        c.style.cssText='position:fixed;width:8px;height:8px;border-radius:50%;top:-10px;left:'+
+        Math.random()*100+'vw;background:hsl('+Math.random()*360+',80%,60%);z-index:9999;pointer-events:none;animation:fall '+(1+Math.random()*2)+'s ease-out forwards';
+        document.body.appendChild(c);setTimeout(function(){c.remove()},3000)}}
+
+        // ── Progress Bar Component (2.0 w/ behavioral progress bar) ──
+        function ProgressBar({ step, totalSteps }) {
+            return (
+                <div className="mb-8">
+                    <div className="flex justify-between text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                        <span>Step {step} of {totalSteps}</span>
+                        <span>{Math.round((step / totalSteps) * 100)}%</span>
+                    </div>
+                    <div className="prog-bar">
+                        <div className="prog-fill" style={{ width: `${(step / totalSteps) * 100}%` }} />
+                    </div>
+                </div>
+            );
+        }
+
+        // ── Score Gauge Component ──
+        function ScoreGauge({ label, score, color }) {
+            return (
+                <div className="mb-3">
+                    <div className="flex justify-between text-xs font-semibold text-gray-500 mb-1">
+                        <span>{label}</span>
+                        <span className={score >= 80 ? 'text-emerald-600' : score >= 50 ? 'text-amber-600' : 'text-red-500'}>{score}/100</span>
+                    </div>
+                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full transition-all duration-700 ${score >= 80 ? 'bg-emerald-500' : score >= 50 ? 'bg-amber-500' : 'bg-red-400'}`} style={{ width: `${score}%` }} />
+                    </div>
+                </div>
+            );
+        }
+
+        // ── Main App ──
+        function BenefitStatementWriter() {
+            const [step, setStep] = useState(1);
+            const [isPremium, setIsPremium] = useState(false);
+            const [premiumEmail, setPremiumEmail] = useState('');
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [generatedStatement, setGeneratedStatement] = useState('');
+            const [copied, setCopied] = useState(false);
+            const [saved, setSaved] = useState(false);
+
+            const [formData, setFormData] = useState({
+                targetCommunity: '',
+                activities: '',
+                activityCategories: [],
+                benefitDescription: '',
+                peoplePerYear: '',
+                geographicArea: '',
+                frequency: '',
+                email: '',
+            });
+
+            // Check auth on mount
+            useEffect(() => {
+                if (typeof InclusiFundAuth !== 'undefined') {
+                    const user = InclusiFundAuth.checkSession();
+                    if (user && user.email) {
+                        setIsPremium(true);
+                        setPremiumEmail(user.email);
+                        setFormData(prev => ({ ...prev, email: user.email }));
+                    }
+                }
+            }, []);
+
+            // Scroll Reveal
+            useEffect(() => {
+                document.querySelectorAll('.sr').forEach(function(el,i){
+                    el.style.transitionDelay=(i%6)*0.08+'s';
+                    new IntersectionObserver(function(e){
+                        if(e[0].isIntersecting){el.classList.add('visible');this.disconnect()}
+                    },{threshold:.1}).observe(el)});
+            }, [step, generatedStatement]);
+
+            const totalSteps = isPremium ? 6 : 7;
+            const update = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+
+            const toggleCategory = (catId) => {
+                setFormData(prev => {
+                    const cats = prev.activityCategories.includes(catId)
+                        ? prev.activityCategories.filter(c => c !== catId)
+                        : [...prev.activityCategories, catId];
+                    return { ...prev, activityCategories: cats };
+                });
+            };
+
+            // Quality scores (real-time)
+            const scores = useMemo(() => {
+                const wordCount = generatedStatement ? generatedStatement.split(/\s+/).filter(Boolean).length : 0;
+                return {
+                    specificCommunity: scoreSpecificCommunity(formData.targetCommunity),
+                    concreteActivities: scoreConcreteActivities(formData.activities),
+                    clearOutcomes: scoreClearOutcomes(formData.benefitDescription),
+                    appropriateScale: scoreAppropriateScale(Number(formData.peoplePerYear)),
+                    goodLength: generatedStatement ? scoreGoodLength(wordCount) : 0,
+                };
+            }, [formData, generatedStatement]);
+
+            const overallScore = useMemo(() => {
+                const vals = Object.values(scores);
+                const active = vals.filter(v => v > 0);
+                return active.length ? Math.round(active.reduce((a, b) => a + b, 0) / active.length) : 0;
+            }, [scores]);
+
+            const vagueWarnings = useMemo(() => {
+                const all = [];
+                [formData.activities, formData.benefitDescription].forEach(text => {
+                    if (text) { const { found } = cleanVagueLanguage(text); all.push(...found); }
+                });
+                return all;
+            }, [formData.activities, formData.benefitDescription]);
+
+            const handleGenerate = () => {
+                setIsGenerating(true);
+                setTimeout(() => {
+                    const stmt = generateStatement(formData);
+                    setGeneratedStatement(stmt);
+                    setIsGenerating(false);
+                    setStep(isPremium ? 6 : 7);
+                    // Fire confetti on completion
+                    setTimeout(() => confetti(60), 300);
+                }, 1500);
+            };
+
+            const handleSave = async () => {
+                const email = isPremium ? premiumEmail : formData.email;
+                if (!email) return;
+                const wordCount = generatedStatement.split(/\s+/).filter(Boolean).length;
+                setSaved(true);
+                await callConvex('benefitStatements:storeBenefitStatement', {
+                    email,
+                    targetCommunity: formData.targetCommunity,
+                    activities: formData.activities,
+                    activityCategories: formData.activityCategories,
+                    benefitDescription: formData.benefitDescription,
+                    peoplePerYear: Number(formData.peoplePerYear) || 0,
+                    geographicArea: formData.geographicArea,
+                    frequency: formData.frequency,
+                    generatedStatement,
+                    wordCount,
+                    qualityScores: scores,
+                    overallScore,
+                });
+                // Log activity
+                await callConvex('activity:logActivity', {
+                    userId: email,
+                    toolName: 'Benefit Statement Writer',
+                    toolSlug: 'benefit-statement',
+                    action: 'completed',
+                    metadata: { overallScore, wordCount },
+                });
+            };
+
+            const copyToClipboard = () => {
+                navigator.clipboard.writeText(generatedStatement);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+            };
+
+            const downloadAsText = () => {
+                const header = `Community Benefit Statement\nCIC36 Section 5\n${'─'.repeat(40)}\n\n`;
+                const footer = `\n\n${'─'.repeat(40)}\nWord Count: ${generatedStatement.split(/\s+/).filter(Boolean).length}\nGenerated: ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}\n\nQuality Scores:\n  • Specific Community: ${scores.specificCommunity}/100\n  • Concrete Activities: ${scores.concreteActivities}/100\n  • Clear Outcomes: ${scores.clearOutcomes}/100\n  • Appropriate Scale: ${scores.appropriateScale}/100\n  • Good Length: ${scores.goodLength}/100\n  • Overall: ${overallScore}/100`;
+                const blob = new Blob([header + generatedStatement + footer], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'CIC-Benefit-Statement.txt'; a.click();
+                URL.revokeObjectURL(url);
+            };
+
+            // Map logical step to actual step (premium skips email)
+            const getStepContent = () => {
+                if (isPremium && step >= 6) return 'result';
+                if (!isPremium && step >= 7) return 'result';
+                if (isPremium) {
+                    const mapping = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5 };
+                    return mapping[step] || step;
+                }
+                return step;
+            };
+
+            const currentContent = getStepContent();
+            const isResult = currentContent === 'result';
+
+            // ── RESULT VIEW ──
+            if (isResult && generatedStatement) {
+                const wordCount = generatedStatement.split(/\s+/).filter(Boolean).length;
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/30 py-8 px-4">
+                        <div className="max-w-4xl mx-auto animate-fade-in">
+                            {/* Header */}
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 sr">
+                                <div>
+                                    <h1 className="text-3xl font-extrabold text-gray-900">Statement Ready</h1>
+                                    <p className="text-gray-500 mt-1">Your CIC36 Section 5 community benefit statement</p>
+                                </div>
+                                <div className="flex gap-3">
+                                    {isPremium && (
+                                        <a href="https://tools.inclusifund.co.uk/dashboard" className="btn-rp bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-2 px-4 rounded-lg font-medium text-sm transition-all shadow-sm hover:shadow" onClick={addRipple}>
+                                            Return to Tools Suite
+                                        </a>
+                                    )}
+                                    <button onClick={(e) => { addRipple(e); setTimeout(() => { setStep(1); setGeneratedStatement(''); setSaved(false); }, 200); }} className="btn-rp bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-2 px-4 rounded-lg font-medium text-sm transition-all shadow-sm hover:shadow">
+                                        Start Over
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                                {/* Statement */}
+                                <div className="lg:col-span-8 sr">
+                                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                                        <div className="flex items-center justify-between mb-6">
+                                            <h2 className="text-lg font-bold text-gray-800">Generated Statement</h2>
+                                            <span className="text-sm font-medium text-gray-500">{wordCount} words</span>
+                                        </div>
+                                        <div className="bg-gray-50 rounded-xl p-6 text-gray-800 leading-relaxed whitespace-pre-line border border-gray-100 font-[system-ui] text-[15px]">
+                                            {generatedStatement}
+                                        </div>
+                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+                                            <button onClick={(e) => { addRipple(e); copyToClipboard(); }} className={`btn-rp py-3 px-4 rounded-xl font-semibold text-sm transition-all ${copied ? 'bg-emerald-500 text-white' : 'bg-brand-primary hover:bg-brand-dark text-white shadow-md hover:shadow-lg hover:-translate-y-0.5'}`}>
+                                                {copied ? '✓ Copied!' : '📋 Copy'}
+                                            </button>
+                                            <button onClick={(e) => { addRipple(e); downloadAsText(); }} className="btn-rp bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-3 px-4 rounded-xl font-semibold text-sm transition-all shadow-sm hover:shadow">
+                                                📄 Download .txt
+                                            </button>
+                                            <button onClick={(e) => { addRipple(e); handleSave(); }} disabled={saved} className={`btn-rp py-3 px-4 rounded-xl font-semibold text-sm transition-all ${saved ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-brand-surface hover:bg-brand-light/30 text-brand-dark border border-brand-light shadow-sm hover:shadow'}`}>
+                                                {saved ? '✓ Saved' : '💾 Save to Account'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Scores Sidebar */}
+                                <div className="lg:col-span-4 sr">
+                                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sticky top-6">
+                                        <div className="text-center mb-6">
+                                            <div className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Quality Score</div>
+                                            <div className="flex items-end justify-center gap-1">
+                                                <span className={`text-5xl font-extrabold ${overallScore >= 80 ? 'text-emerald-600' : overallScore >= 50 ? 'text-amber-600' : 'text-red-500'}`}>{overallScore}</span>
+                                                <span className="text-lg text-gray-400 font-medium mb-1">/100</span>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <ScoreGauge label="Specific Community" score={scores.specificCommunity} />
+                                            <ScoreGauge label="Concrete Activities" score={scores.concreteActivities} />
+                                            <ScoreGauge label="Clear Outcomes" score={scores.clearOutcomes} />
+                                            <ScoreGauge label="Appropriate Scale" score={scores.appropriateScale} />
+                                            <ScoreGauge label="Good Length" score={scores.goodLength} />
+                                        </div>
+                                        {vagueWarnings.length > 0 && (
+                                            <div className="mt-5 loss-hl">
+                                                <h4 className="text-sm font-bold text-red-700 mb-2">Language Improvements</h4>
+                                                {vagueWarnings.slice(0, 3).map((w, i) => (
+                                                    <div key={i} className="text-xs text-red-600 mb-1">
+                                                        <span className="line-through">{w.original}</span> → <strong>{w.suggestion}</strong>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Testimonial */}
+                                        <div className="mt-5 bg-brand-surface/40 rounded-xl p-4 border border-brand-light/40">
+                                            <p className="text-xs text-gray-600 italic leading-relaxed">"Used this for our CIC36 renewal and the regulator approved it first time. Saved us hours of back-and-forth."</p>
+                                            <p className="text-xs font-bold text-brand-dark mt-2">— Tanya H., Community Arts CIC</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // ── GENERATING STATE ──
+            if (isGenerating) {
+                return (
+                    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/30 flex items-center justify-center p-6">
+                        <div className="max-w-sm w-full bg-white rounded-2xl shadow-xl p-10 text-center animate-fade-in">
+                            <div className="w-16 h-16 rounded-2xl shimmer mx-auto mb-6 flex items-center justify-center text-3xl text-white">📝</div>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Drafting Your Statement</h2>
+                            <p className="text-gray-500 text-sm">Applying CIC Regulator standards...</p>
+                            <div className="prog-bar mt-6">
+                                <div className="prog-fill" style={{ width: '80%' }} />
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // ── WIZARD VIEW ──
+            const canProceed = () => {
+                switch (step) {
+                    case 1: return formData.targetCommunity.length >= 20;
+                    case 2: return formData.activities.length >= 50;
+                    case 3: return formData.activityCategories.length >= 1;
+                    case 4: return formData.benefitDescription.length >= 50;
+                    case 5: return formData.peoplePerYear && formData.geographicArea && formData.frequency;
+                    case 6: return isPremium ? true : /\S+@\S+\.\S+/.test(formData.email);
+                    default: return false;
+                }
+            };
+
+            const handleNext = () => {
+                if (isPremium && step === 5) { handleGenerate(); return; }
+                if (!isPremium && step === 6) { handleGenerate(); return; }
+                setStep(s => s + 1);
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-teal-50/30 py-8 px-4">
+                    <div className="max-w-5xl mx-auto">
+                        {/* Header */}
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 sr">
+                            <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                    <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">Benefit Statement Writer</h1>
+                                    <span className="bg-brand-surface text-brand-dark text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wide">Free</span>
+                                </div>
+                                <p className="text-gray-500">The Infrastructure Engine for UK CICs — draft a regulator-ready CIC36 Section 5 statement in minutes</p>
+                            </div>
+                            {isPremium && (
+                                <a href="https://tools.inclusifund.co.uk/dashboard" className="btn-rp bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 py-2 px-4 rounded-lg font-medium text-sm transition-all shadow-sm hover:shadow" onClick={addRipple}>
+                                    Return to Tools Suite
+                                </a>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                            {/* Left: Wizard Form */}
+                            <div className="lg:col-span-7 sr">
+                                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
+                                    <ProgressBar step={step} totalSteps={totalSteps} />
+
+                                    <div className="min-h-[280px] animate-fade-in" key={step}>
+                                        {/* Step 1: Target Community */}
+                                        {step === 1 && (
+                                            <div>
+                                                <div className="mb-5 pb-4 border-b border-gray-100">
+                                                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">👥 Target Community</h2>
+                                                    <p className="text-gray-500 text-sm mt-1">Who is the specific group of people your CIC will benefit?</p>
+                                                </div>
+                                                <textarea className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all text-gray-700 min-h-[160px] resize-none" placeholder="Example: Young people aged 16-25 in the West Midlands who are currently not in education, employment, or training (NEET)." value={formData.targetCommunity} onChange={e => update('targetCommunity', e.target.value)} maxLength={200} />
+                                                <div className="flex justify-between text-xs text-gray-400 mt-2">
+                                                    <span>Be specific: demographics, location, circumstances</span>
+                                                    <span className={formData.targetCommunity.length < 20 ? 'text-amber-500' : 'text-emerald-500'}>{formData.targetCommunity.length}/200</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Step 2: Activities */}
+                                        {step === 2 && (
+                                            <div>
+                                                <div className="mb-5 pb-4 border-b border-gray-100">
+                                                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">🛠️ Activities</h2>
+                                                    <p className="text-gray-500 text-sm mt-1">What specific activities will your CIC deliver?</p>
+                                                </div>
+                                                <textarea className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all text-gray-700 min-h-[160px] resize-none" placeholder="Example: Providing weekly coding bootcamps, 1-on-1 mentorship sessions, and CV writing workshops to equip participants with employable digital skills." value={formData.activities} onChange={e => update('activities', e.target.value)} maxLength={300} />
+                                                <div className="flex justify-between text-xs text-gray-400 mt-2">
+                                                    <span>Use action verbs: provide, deliver, teach, train</span>
+                                                    <span className={formData.activities.length < 50 ? 'text-amber-500' : 'text-emerald-500'}>{formData.activities.length}/300</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Step 3: Categories */}
+                                        {step === 3 && (
+                                            <div>
+                                                <div className="mb-5 pb-4 border-b border-gray-100">
+                                                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">📂 Activity Categories</h2>
+                                                    <p className="text-gray-500 text-sm mt-1">Select all CIC categories that apply to your activities</p>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {CIC_CATEGORIES.map(cat => (
+                                                        <button key={cat.id} onClick={() => toggleCategory(cat.id)} className={`category-chip flex items-center gap-2 p-3 rounded-xl border-2 text-left text-sm font-medium ${formData.activityCategories.includes(cat.id) ? 'selected' : 'border-gray-200 text-gray-700 hover:border-brand-light bg-white'}`}>
+                                                            <span className="text-lg">{cat.icon}</span>
+                                                            <span>{cat.label}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <p className="text-xs text-gray-400 mt-3">{formData.activityCategories.length} selected — select at least 1</p>
+                                            </div>
+                                        )}
+
+                                        {/* Step 4: Benefit Description */}
+                                        {step === 4 && (
+                                            <div>
+                                                <div className="mb-5 pb-4 border-b border-gray-100">
+                                                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">🎯 Benefit Description</h2>
+                                                    <p className="text-gray-500 text-sm mt-1">How will your activities benefit the community?</p>
+                                                </div>
+                                                <textarea className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all text-gray-700 min-h-[160px] resize-none" placeholder="Example: Increase employability skills, boost confidence, reduce long-term youth unemployment rates, and improve mental wellbeing through structured peer support." value={formData.benefitDescription} onChange={e => update('benefitDescription', e.target.value)} maxLength={300} />
+                                                <div className="flex justify-between text-xs text-gray-400 mt-2">
+                                                    <span>Focus on measurable outcomes</span>
+                                                    <span className={formData.benefitDescription.length < 50 ? 'text-amber-500' : 'text-emerald-500'}>{formData.benefitDescription.length}/300</span>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Step 5: Scale & Reach */}
+                                        {step === 5 && (
+                                            <div>
+                                                <div className="mb-5 pb-4 border-b border-gray-100">
+                                                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">📊 Scale & Reach</h2>
+                                                    <p className="text-gray-500 text-sm mt-1">How many people will you reach, where, and how often?</p>
+                                                </div>
+                                                <div className="space-y-5">
+                                                    <div>
+                                                        <label className="block text-sm font-semibold text-gray-700 mb-2">People per year</label>
+                                                        <input type="number" min="1" className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all text-gray-700" placeholder="e.g. 120" value={formData.peoplePerYear} onChange={e => update('peoplePerYear', e.target.value)} />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Geographic area</label>
+                                                        <input type="text" className="w-full p-3 border-2 border-gray-200 rounded-xl focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all text-gray-700" placeholder="e.g. Leeds city centre, or Rural Devon" value={formData.geographicArea} onChange={e => update('geographicArea', e.target.value)} />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Frequency of activities</label>
+                                                        <div className="grid grid-cols-3 gap-2">
+                                                            {FREQUENCY_OPTIONS.map(freq => (
+                                                                <button key={freq} onClick={() => update('frequency', freq)} className={`p-2.5 rounded-xl border-2 text-sm font-medium transition-all ${formData.frequency === freq ? 'bg-brand-primary text-white border-brand-primary' : 'border-gray-200 text-gray-700 hover:border-brand-light'}`}>
+                                                                    {freq}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Step 6: Email (free users only) */}
+                                        {step === 6 && !isPremium && (
+                                            <div>
+                                                <div className="mb-5 pb-4 border-b border-gray-100">
+                                                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">📧 Your Email</h2>
+                                                    <p className="text-gray-500 text-sm mt-1">We'll save your statement and send you a copy</p>
+                                                </div>
+                                                <input type="email" className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all text-gray-700 text-lg" placeholder="your@email.com" value={formData.email} onChange={e => update('email', e.target.value)} />
+                                                <p className="text-xs text-gray-400 mt-3">🔒 We'll only use this to save your statement. No spam, ever.</p>
+                                                <div className="mt-6 bg-brand-surface/50 border border-brand-light/50 rounded-xl p-4">
+                                                    <p className="text-sm text-brand-dark font-medium">💎 Premium users get unlimited statements, saved history, and DOCX export.</p>
+                                                    <a href="https://tools.inclusifund.co.uk/upgrade" className="text-sm text-brand-primary font-semibold hover:underline mt-1 inline-block">Upgrade to Premium →</a>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Navigation Buttons */}
+                                    <div className="mt-6 flex gap-3 pt-5 border-t border-gray-100">
+                                        {step > 1 && (
+                                            <button onClick={(e) => { addRipple(e); setTimeout(() => setStep(s => s - 1), 150); }} className="btn-rp bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-200 py-3 px-5 rounded-xl font-semibold text-sm transition-all hover:shadow">
+                                                ← Back
+                                            </button>
+                                        )}
+                                        <button onClick={(e) => { addRipple(e); setTimeout(handleNext, 150); }} disabled={!canProceed()} className="btn-rp flex-1 bg-gradient-to-r from-brand-primary to-brand-dark hover:brightness-110 text-white py-3 px-5 rounded-xl font-semibold text-sm shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg disabled:bg-gray-200 disabled:from-gray-200 disabled:to-gray-300 disabled:cursor-not-allowed disabled:shadow-none disabled:translate-y-0">
+                                            {((isPremium && step === 5) || (!isPremium && step === 6)) ? 'Generate Statement' : 'Continue →'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right: Live Scoring Panel */}
+                            <div className="lg:col-span-5 space-y-5 sr">
+                                <div className="sticky top-6">
+                                    {/* Score Card */}
+                                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+                                        <div className="text-center mb-5">
+                                            <div className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Quality Score</div>
+                                            <div className="flex items-end justify-center gap-1">
+                                                <span className={`text-5xl font-extrabold tracking-tight ${overallScore >= 80 ? 'text-emerald-600' : overallScore >= 50 ? 'text-amber-600' : 'text-gray-300'}`}>{overallScore}</span>
+                                                <span className="text-lg text-gray-400 font-medium mb-1">/100</span>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <ScoreGauge label="Specific Community" score={scores.specificCommunity} />
+                                            <ScoreGauge label="Concrete Activities" score={scores.concreteActivities} />
+                                            <ScoreGauge label="Clear Outcomes" score={scores.clearOutcomes} />
+                                            <ScoreGauge label="Appropriate Scale" score={scores.appropriateScale} />
+                                        </div>
+                                    </div>
+
+                                    {/* Vague Language Warnings — Loss Aversion Pattern */}
+                                    {vagueWarnings.length > 0 && (
+                                        <div className="loss-hl mt-5">
+                                            <h3 className="font-bold text-red-700 text-sm mb-3 flex items-center gap-2">Vague Language Detected</h3>
+                                            <p className="text-xs text-red-600 mb-2">The CIC Regulator may reject statements with vague wording. Fix these to avoid delays:</p>
+                                            {vagueWarnings.map((w, i) => (
+                                                <div key={i} className="text-xs text-red-600 mb-2 bg-white/60 rounded-lg p-2.5">
+                                                    <span className="line-through opacity-60">{w.original}</span>
+                                                    <span className="mx-1">→</span>
+                                                    <strong>{w.suggestion}</strong>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Writing Tips */}
+                                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 mt-5">
+                                        <h3 className="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">💡 CIC Regulator Tips</h3>
+                                        <ul className="space-y-2.5 text-xs text-gray-600">
+                                            <li className="flex gap-2"><span className="text-brand-primary font-bold text-sm">•</span><span>Be <strong className="text-gray-800">specific</strong> about who matches your beneficiary criteria</span></li>
+                                            <li className="flex gap-2"><span className="text-brand-primary font-bold text-sm">•</span><span>Focus on <strong className="text-gray-800">outcomes</strong> (e.g. "improved mental health"), not just outputs</span></li>
+                                            <li className="flex gap-2"><span className="text-brand-primary font-bold text-sm">•</span><span>Target <strong className="text-gray-800">150-250 words</strong> — the sweet spot for CIC36</span></li>
+                                            <li className="flex gap-2"><span className="text-brand-primary font-bold text-sm">•</span><span>Avoid vague phrases — say what you <strong className="text-gray-800">actually do</strong></span></li>
+                                        </ul>
+                                    </div>
+
+                                    {/* Social Proof */}
+                                    <div className="bg-brand-surface/30 rounded-2xl border border-brand-light/30 p-5 mt-5">
+                                        <p className="text-xs font-bold text-brand-dark uppercase tracking-wider mb-2">Trusted by CIC Directors</p>
+                                        <p className="text-xs text-gray-600 italic">"We used InclusiFund's statement writer for two CIC registrations. Both approved without queries."</p>
+                                        <p className="text-xs font-semibold text-brand-dark mt-2">— Nadia Patel, Director, Wellbeing Hub CIC</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Mount
+        const container = document.getElementById('app-root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<BenefitStatementWriter />);
+
+        // Initialize Scroll Reveal
+        document.querySelectorAll('.sr').forEach(function(el,i){
+            el.style.transitionDelay=(i%6)*0.08+'s';
+            new IntersectionObserver(function(e){
+                if(e[0].isIntersecting){el.classList.add('visible');this.disconnect()}
+            },{threshold:.1}).observe(el)});
+    </script>
+</body>
+
+</html>

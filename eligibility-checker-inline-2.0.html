@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIC Eligibility Checker - InclusiFund</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CDN Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* InclusiFund Design System - Production v2.0 */
+
+        :root {
+            /* === PRIMARY COLORS (Teal Family) === */
+            --color-primary: #008080;
+            --color-primary-dark: #005461;
+            --color-primary-light: #6BB6B6;
+            --color-primary-surface: #D5ECEC;
+
+            /* === PREMIUM === */
+            --color-premium: #d4a853;
+
+            /* === BACKGROUNDS === */
+            --bg-page-light: #F4F4F4;
+            --bg-page-dark: #1F2232;
+            --bg-surface-light: #FFFFFF;
+            --bg-surface-dark: #1F2937;
+            --bg-hover: #F9FAFB;
+            --bg-surface-alt: #F3F4F6;
+
+            /* === TEXT === */
+            --text-primary-light: #1F2232;
+            --text-primary-dark: #F9FAFB;
+            --text-secondary: #4B5563;
+            --text-muted: #9CA3AF;
+
+            /* === ACCENTS === */
+            --color-success: #10B981;
+            --color-warning: #F59E0B;
+            --color-error: #EF4444;
+            --color-info: #3B82F6;
+
+            /* === BORDERS === */
+            --border-default: #D1D5DB;
+            --border-light: #E5E7EB;
+            --border-focus: #008080;
+
+            /* === SPACING === */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+
+            /* === TYPOGRAPHY === */
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-heading: 'Outfit', 'Sora', 'Inter', sans-serif;
+
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+
+            /* === SHADOWS === */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+
+            /* === TRANSITIONS === */
+            --transition-fast: 150ms ease-in-out;
+            --transition-base: 200ms ease-in-out;
+
+            /* === BORDER RADIUS === */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+        }
+
+        body {
+            font-family: var(--font-family);
+        }
+
+        /* === COMPONENT CLASSES === */
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-3) var(--space-6);
+            border-radius: var(--radius-md);
+            border: none;
+            font-weight: 600;
+            font-size: var(--text-base);
+            font-family: var(--font-heading);
+            cursor: pointer;
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background: #D1D5DB;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary-light);
+            border: 1px solid var(--border-default);
+            padding: var(--space-3) var(--space-6);
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: var(--text-base);
+            cursor: pointer;
+            transition: all var(--transition-base);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--color-primary);
+            background: var(--bg-hover);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-surface-light);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-base);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Inputs */
+        .input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            border: 2px solid var(--border-default);
+            border-radius: var(--radius-md);
+            font-size: var(--text-base);
+            font-family: var(--font-family);
+            background: var(--bg-surface-light);
+            color: var(--text-primary-light);
+            transition: all var(--transition-fast);
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.15);
+        }
+
+        .input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Typography */
+        h1, .heading-1 {
+            font-family: var(--font-heading);
+            font-size: var(--text-3xl);
+            font-weight: 700;
+            color: var(--text-primary-light);
+            line-height: 1.2;
+        }
+
+        h2, .heading-2 {
+            font-family: var(--font-heading);
+            font-size: var(--text-2xl);
+            font-weight: 600;
+            color: var(--text-primary-light);
+            line-height: 1.3;
+        }
+
+        h3, .heading-3 {
+            font-family: var(--font-heading);
+            font-size: var(--text-xl);
+            font-weight: 600;
+            color: var(--text-primary-light);
+            line-height: 1.4;
+        }
+
+        .text-muted { color: var(--text-muted); }
+        .text-error { color: var(--color-error); }
+        .text-success { color: var(--color-success); }
+        .text-secondary { color: var(--text-secondary); }
+        .font-bold { font-weight: 700; }
+
+        /* === APP LAYOUT === */
+        .app-shell {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .app-sidebar {
+            background: #1F2232;
+            color: white;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .app-content {
+            padding: 2.5rem 3.5rem;
+            max-width: 1200px;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-family: var(--font-heading);
+            font-size: var(--text-3xl);
+            font-weight: 700;
+            color: var(--text-primary-light);
+            margin: 0 0 0.5rem 0;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .checker-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Step Progress */
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: var(--text-sm);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: var(--space-2);
+        }
+
+        /* Option Cards */
+        .option-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-4);
+        }
+
+        .option-card {
+            padding: var(--space-6);
+            border: 2px solid var(--border-default);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--bg-surface-light);
+        }
+
+        .option-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-md);
+        }
+
+        .option-card.selected {
+            border-color: var(--color-primary);
+            background: rgba(0, 128, 128, 0.05);
+        }
+
+        .option-card.error-state {
+            border-color: var(--color-error);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .option-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-surface-alt);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: var(--space-4);
+        }
+
+        .option-card.selected .option-icon {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .option-card.error-state .option-icon {
+            background: var(--color-error);
+            color: white;
+        }
+
+        /* Result Card */
+        .result-card {
+            text-align: center;
+            padding: var(--space-8);
+        }
+
+        .score-display {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--color-primary);
+            margin-bottom: var(--space-6);
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            line-height: 1;
+            font-family: var(--font-heading);
+        }
+
+        .score-label {
+            font-size: var(--text-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* === BEHAVIORAL SCIENCE: Scroll Reveal === */
+        .sr {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+        .sr.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === BEHAVIORAL SCIENCE: Loss Aversion Block === */
+        .loss-hl {
+            background: linear-gradient(90deg, rgba(239, 68, 68, .08), transparent);
+            border-left: 3px solid #EF4444;
+            padding: 1rem 1.25rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* === BEHAVIORAL SCIENCE: Progress Bar === */
+        .prog-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--bg-surface-alt);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: var(--space-8);
+        }
+        .prog-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #008080, #6BB6B6);
+            border-radius: 999px;
+            transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* === BEHAVIORAL SCIENCE: Button Ripple === */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-ripple .ripple-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            transform: scale(0);
+            animation: rippleAnim 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes rippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* === BEHAVIORAL SCIENCE: Confetti === */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall 1.8s ease-out forwards;
+        }
+        @keyframes confettiFall {
+            0% { opacity: 1; transform: translateY(0) rotate(0deg); }
+            100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
+        }
+
+        /* Utility */
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .text-sm { font-size: var(--text-sm); }
+        .text-xs { font-size: var(--text-xs); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+            .app-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body style="background: var(--bg-page-light); min-height: 100vh;">
+    <div class="app-shell">
+        <!-- Sidebar injected by nav.js -->
+        <aside id="sidebar-container"></aside>
+
+        <main class="app-content">
+            <header class="app-header sr">
+                <div>
+                    <h1 class="page-title">CIC Eligibility Checker</h1>
+                    <p class="page-subtitle">The Infrastructure Engine for UK CICs</p>
+                </div>
+            </header>
+
+            <div id="root" class="checker-container"></div>
+        </main>
+    </div>
+
+    <!-- Core Logic -->
+    <script src="assets/js/auth.js"></script>
+
+    <!-- Scroll Reveal Observer -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            function observeSR() {
+                document.querySelectorAll('.sr').forEach(function(el) {
+                    observer.observe(el);
+                });
+            }
+            observeSR();
+            const ro = new MutationObserver(observeSR);
+            ro.observe(document.getElementById('root'), { childList: true, subtree: true });
+        });
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- CONFETTI LAUNCHER ---
+        function launchConfetti() {
+            const colors = ['#008080','#6BB6B6','#d4a853','#10B981','#F59E0B'];
+            for (let i = 0; i < 60; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti-piece';
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.top = '-10px';
+                el.style.background = colors[Math.floor(Math.random() * colors.length)];
+                el.style.animationDelay = Math.random() * 0.5 + 's';
+                el.style.width = (6 + Math.random() * 8) + 'px';
+                el.style.height = (6 + Math.random() * 8) + 'px';
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 2500);
+            }
+        }
+
+        // --- RIPPLE HANDLER ---
+        function addRipple(e) {
+            const btn = e.currentTarget;
+            const circle = document.createElement('span');
+            const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+            const radius = diameter / 2;
+            circle.style.width = circle.style.height = diameter + 'px';
+            circle.style.left = (e.clientX - btn.getBoundingClientRect().left - radius) + 'px';
+            circle.style.top = (e.clientY - btn.getBoundingClientRect().top - radius) + 'px';
+            circle.className = 'ripple-circle';
+            const existing = btn.querySelector('.ripple-circle');
+            if (existing) existing.remove();
+            btn.appendChild(circle);
+        }
+
+        function EligibilityChecker() {
+            const [step, setStep] = useState(1);
+            const [formData, setFormData] = useState({
+                businessActivity: '',
+                revenueModel: '',
+                beneficiaryGroup: '',
+                assetDistribution: '',
+                email: ''
+            });
+            const [loading, setLoading] = useState(false);
+            const [results, setResults] = useState(null);
+
+            const totalSteps = 4;
+
+            // Endowed progress: start at ~15%
+            const endowedBase = 15;
+            const progressPercent = ((step - 1) / (totalSteps - 1)) * (100 - endowedBase) + endowedBase;
+
+            const handleNext = () => setStep(s => Math.min(s + 1, totalSteps));
+            const handleBack = () => setStep(s => Math.max(s - 1, 1));
+
+            const updateField = (field, value) => {
+                setFormData(prev => ({ ...prev, [field]: value }));
+            };
+
+            const handleSubmit = () => {
+                setLoading(true);
+                setTimeout(() => {
+                    const score = formData.assetDistribution === 'members' ? 12 : 92;
+                    const eligible = score >= 70;
+
+                    setResults({
+                        eligible,
+                        score,
+                        feedback: eligible
+                            ? "Your business model strongly aligns with CIC requirements. The revenue model is well-balanced, and your beneficiary group is clearly defined."
+                            : "Your asset distribution choice does not meet CIC requirements. Assets must be locked for community benefit."
+                    });
+                    setLoading(false);
+
+                    if (eligible) {
+                        setTimeout(() => launchConfetti(), 300);
+                    }
+                }, 2000);
+            };
+
+            if (results) {
+                return (
+                    <div className="card result-card animate-fade-in sr visible">
+                        <div className="score-display" style={{ borderColor: results.eligible ? 'var(--color-primary)' : 'var(--color-error)' }}>
+                            <span className="score-value" style={{ color: results.eligible ? 'var(--color-primary)' : 'var(--color-error)' }}>{results.score}</span>
+                            <span className="score-label">Score</span>
+                        </div>
+
+                        <h2 className="heading-2" style={{ color: results.eligible ? 'var(--color-primary)' : 'var(--color-error)' }}>
+                            {results.eligible ? "You're Eligible!" : "Needs Changes"}
+                        </h2>
+                        <p className="text-secondary" style={{ maxWidth: '500px', margin: '0 auto var(--space-8)' }}>{results.feedback}</p>
+
+                        {!results.eligible && (
+                            <div className="loss-hl mb-6" style={{ textAlign: 'left' }}>
+                                <p style={{ color: '#991B1B', fontWeight: 600, marginBottom: '4px', fontSize: 'var(--text-sm)' }}>
+                                    Distributing assets to members/shareholders will automatically fail your CIC registration
+                                </p>
+                                <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)' }}>
+                                    Select "Another CIC or Charity" or "General Community Benefit" to pass the asset lock test.
+                                </p>
+                            </div>
+                        )}
+
+                        {results.eligible && (
+                            <div className="card" style={{ background: 'var(--bg-surface-alt)', marginBottom: 'var(--space-8)' }}>
+                                <div className="text-xs font-bold uppercase text-muted mb-2">Recommended Next Step</div>
+                                <div className="heading-3">Benefit Statement Writer</div>
+                            </div>
+                        )}
+
+                        <div style={{ display: 'grid', gap: 'var(--space-4)', gridTemplateColumns: '1fr 1fr' }}>
+                            {results.eligible && (
+                                <button className="btn-primary btn-ripple" onClick={(e) => { addRipple(e); window.location.href = 'benefit-statement.html'; }}>
+                                    Start Statement
+                                </button>
+                            )}
+                            <button className="btn-secondary" onClick={() => { setResults(null); setStep(1); }} style={results.eligible ? {} : { gridColumn: 'span 2' }}>
+                                Restart Check
+                            </button>
+                        </div>
+
+                        <div style={{ textAlign: 'center', marginTop: 'var(--space-8)' }}>
+                            <p className="text-xs text-muted" style={{ letterSpacing: '0.1em', textTransform: 'uppercase' }}>The Infrastructure Engine for UK CICs</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (loading) {
+                return (
+                    <div className="card sr visible" style={{ textAlign: 'center', padding: 'var(--space-12)' }}>
+                        <div style={{ width: '48px', height: '48px', border: '4px solid var(--border-light)', borderTopColor: 'var(--color-primary)', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto var(--space-6)' }}></div>
+                        <style>{'@keyframes spin { to { transform: rotate(360deg); } }'}</style>
+                        <h3 className="heading-3">Analyzing Your Business</h3>
+                        <p className="text-secondary">Comparing your model against CIC Regulator requirements...</p>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="animate-fade-in">
+                    {/* Progress with endowed progress */}
+                    <div className="step-header sr">
+                        <span>Step {step} of {totalSteps}</span>
+                        <span>{Math.round(progressPercent)}% Complete</span>
+                    </div>
+                    <div className="prog-bar sr">
+                        <div className="prog-fill" style={{ width: progressPercent + '%' }}></div>
+                    </div>
+
+                    <div className="card sr">
+                        {step === 1 && (
+                            <div>
+                                <h2 className="heading-3 mb-4">What will your CIC do?</h2>
+                                <p className="text-secondary mb-6">Describe the specific activities your Community Interest Company will undertake.</p>
+
+                                <textarea
+                                    className="input"
+                                    style={{ minHeight: '160px', marginBottom: 'var(--space-2)' }}
+                                    placeholder="Example: Weekly cooking classes teaching elderly people how to prepare healthy meals on a budget..."
+                                    value={formData.businessActivity}
+                                    onChange={e => updateField('businessActivity', e.target.value)}
+                                />
+                                <div className="text-xs text-muted" style={{ textAlign: 'right' }}>
+                                    {formData.businessActivity.length} characters
+                                </div>
+
+                                {/* Loss Aversion Block */}
+                                <div className="loss-hl mt-6">
+                                    <p style={{ color: '#991B1B', fontWeight: 600, marginBottom: '4px', fontSize: 'var(--text-sm)' }}>
+                                        78% of rejected CIC applications fail due to vague activity descriptions
+                                    </p>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)' }}>
+                                        Be as specific as possible about what, for whom, and where.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div>
+                                <h2 className="heading-3 mb-4">How will you generate revenue?</h2>
+                                <p className="text-secondary mb-6">Select the primary way your CIC will generate income.</p>
+
+                                <div className="option-grid">
+                                    {[
+                                        { id: 'donation', title: 'Donations', desc: 'Funded primarily by charitable donations', icon: '\uD83C\uDF81' },
+                                        { id: 'trading', title: 'Trading', desc: 'Selling goods or services for income', icon: '\uD83D\uDECD\uFE0F' },
+                                        { id: 'mixed', title: 'Mixed Model', desc: 'Combination of trading and external funding', icon: '\u2696\uFE0F' }
+                                    ].map(opt => (
+                                        <div
+                                            key={opt.id}
+                                            className={`option-card ${formData.revenueModel === opt.id ? 'selected' : ''}`}
+                                            onClick={() => updateField('revenueModel', opt.id)}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+                                                <div className="option-icon" style={{ marginBottom: 0 }}>{opt.icon}</div>
+                                                <div>
+                                                    <div className="font-bold">{opt.title}</div>
+                                                    <div className="text-sm text-secondary">{opt.desc}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div>
+                                <h2 className="heading-3 mb-4">Who will benefit?</h2>
+                                <p className="text-secondary mb-6">Describe the specific community or group that will benefit from your activities.</p>
+
+                                <textarea
+                                    className="input"
+                                    style={{ minHeight: '160px' }}
+                                    placeholder="Example: Elderly people (65+) living alone in social housing in North London..."
+                                    value={formData.beneficiaryGroup}
+                                    onChange={e => updateField('beneficiaryGroup', e.target.value)}
+                                />
+
+                                {/* Loss Aversion Block */}
+                                <div className="loss-hl mt-6">
+                                    <p style={{ color: '#991B1B', fontWeight: 600, marginBottom: '4px', fontSize: 'var(--text-sm)' }}>
+                                        Naming private individuals as beneficiaries will automatically fail your application
+                                    </p>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)' }}>
+                                        The CIC Regulator requires a clearly defined community or disadvantaged group.
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 4 && (
+                            <div>
+                                <h2 className="heading-3 mb-4">The Asset Lock</h2>
+                                <p className="text-secondary mb-6">If dissolved, where will assets be transferred?</p>
+
+                                <div style={{ padding: 'var(--space-4)', background: 'rgba(0,128,128,0.05)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-4)', display: 'flex', gap: 'var(--space-3)', border: '1px solid rgba(0,128,128,0.15)' }}>
+                                    <span style={{ fontSize: '1.2rem' }}>&#9432;</span>
+                                    <p className="text-sm text-secondary" style={{ margin: 0 }}>CICs are required by law to have an "asset lock" to ensure assets are used for community benefit, not private gain.</p>
+                                </div>
+
+                                {/* Loss Aversion Block */}
+                                <div className="loss-hl mb-6">
+                                    <p style={{ color: '#991B1B', fontWeight: 600, marginBottom: '4px', fontSize: 'var(--text-sm)' }}>
+                                        Choosing "members/shareholders" will automatically disqualify your application
+                                    </p>
+                                    <p style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)' }}>
+                                        The asset lock is a legal requirement. There are no exceptions.
+                                    </p>
+                                </div>
+
+                                <div className="option-grid">
+                                    {[
+                                        { id: 'another_cic', title: 'Another CIC or Charity', desc: 'Assets will transfer to another asset-locked organization', icon: '\uD83C\uDFE6' },
+                                        { id: 'community', title: 'General Community Benefit', desc: 'Assets will be used for general social benefit', icon: '\uD83C\uDF0D' },
+                                        { id: 'members', title: 'Members/Shareholders', desc: 'Assets will be distributed to members', warning: true, icon: '\uD83D\uDEAB' }
+                                    ].map(opt => (
+                                        <div
+                                            key={opt.id}
+                                            className={`option-card ${formData.assetDistribution === opt.id ? (opt.warning ? 'error-state selected' : 'selected') : ''}`}
+                                            onClick={() => updateField('assetDistribution', opt.id)}
+                                        >
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
+                                                <div className="option-icon" style={{ marginBottom: 0 }}>{opt.icon}</div>
+                                                <div>
+                                                    <div className="font-bold">
+                                                        {opt.title} {opt.warning && <span style={{ color: 'var(--color-error)', marginLeft: '8px', fontSize: '10px', fontWeight: 700 }}>NOT ELIGIBLE</span>}
+                                                    </div>
+                                                    <div className="text-sm text-secondary">{opt.desc}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div style={{ marginTop: 'var(--space-8)', display: 'flex', gap: 'var(--space-4)' }}>
+                            {step > 1 && (
+                                <button className="btn-secondary" style={{ flex: 1 }} onClick={handleBack}>
+                                    Back
+                                </button>
+                            )}
+                            <button
+                                className="btn-primary btn-ripple"
+                                style={{ flex: 1 }}
+                                onClick={(e) => {
+                                    addRipple(e);
+                                    if (step === totalSteps) { handleSubmit(); } else { handleNext(); }
+                                }}
+                                disabled={
+                                    (step === 1 && !formData.businessActivity) ||
+                                    (step === 2 && !formData.revenueModel) ||
+                                    (step === 3 && !formData.beneficiaryGroup) ||
+                                    (step === 4 && !formData.assetDistribution)
+                                }
+                            >
+                                {step === totalSteps ? 'Check Eligibility' : 'Continue'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Footer Tagline */}
+                    <div style={{ textAlign: 'center', marginTop: 'var(--space-8)' }} className="sr">
+                        <p className="text-xs text-muted" style={{ letterSpacing: '0.1em', textTransform: 'uppercase' }}>The Infrastructure Engine for UK CICs</p>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<EligibilityChecker />);
+    </script>
+</body>
+
+</html>

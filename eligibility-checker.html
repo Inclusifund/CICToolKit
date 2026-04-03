@@ -1,0 +1,594 @@
+<!-- Load Required Libraries (Tailwind, React, Babel) -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Auth Logic -->
+<script src="assets/js/auth.js"></script>
+<script>
+    window.addEventListener('load', function () {
+        if (typeof InclusiFundAuth !== 'undefined') {
+            InclusiFundAuth.requireAuth();
+        }
+    });
+</script>
+
+<!-- React App Container -->
+<div id="eligibility-root"></div>
+
+<!-- React Application Code -->
+<script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function CICEligibilityChecker() {
+        const [formData, setFormData] = useState({
+            businessActivity: '',
+            revenueModel: '',
+            beneficiaryGroup: '',
+            assetDistribution: '',
+            email: ''
+        });
+        const [step, setStep] = useState(1);
+        const [loading, setLoading] = useState(false);
+        const [results, setResults] = useState(null);
+        const [showExamples, setShowExamples] = useState(false);
+
+        // Auto-save to localStorage
+        useEffect(() => {
+            localStorage.setItem('cic-eligibility-data', JSON.stringify(formData));
+        }, [formData]);
+
+        // Load from localStorage on mount
+        useEffect(() => {
+            const saved = localStorage.getItem('cic-eligibility-data');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    setFormData(parsed);
+                } catch (e) {
+                    console.error('Failed to load saved data');
+                }
+            }
+        }, []);
+
+        const handleChange = (field, value) => {
+            setFormData(prev => ({ ...prev, [field]: value }));
+        };
+
+        const nextStep = () => {
+            setStep(prev => Math.min(prev + 1, 5));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        const prevStep = () => {
+            setStep(prev => Math.max(prev - 1, 1));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        const runEligibilityCheck = async () => {
+            setLoading(true);
+
+            try {
+                // Simulate API call (replace with actual Convex/N8N webhook)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // Mock validation logic (replace with actual skill logic)
+                const failures = [];
+                const warnings = [];
+                const recommendations = [];
+
+                // Test 1: Asset Lock
+                if (formData.assetDistribution === 'members') {
+                    failures.push({
+                        test: 'Asset Lock',
+                        reason: 'Assets cannot be distributed to members/shareholders in a CIC',
+                        fix: 'Change asset distribution to another CIC, charity, or community benefit'
+                    });
+                }
+                if (formData.assetDistribution === 'undecided') {
+                    warnings.push({
+                        test: 'Asset Lock',
+                        reason: 'You must decide on asset distribution before registering',
+                        fix: 'Choose to transfer assets to another CIC, charity, or community on wind-up'
+                    });
+                }
+
+                // Test 2: Beneficiary
+                const beneficiaryLower = formData.beneficiaryGroup.toLowerCase();
+                const redFlags = ['family', 'myself', 'shareholders', 'members', 'owners', 'directors'];
+                if (redFlags.some(flag => beneficiaryLower.includes(flag))) {
+                    failures.push({
+                        test: 'Community Benefit',
+                        reason: 'Beneficiaries cannot be primarily the founders, family, or private shareholders',
+                        fix: 'Redefine beneficiary group to be a wider community or specific disadvantaged group'
+                    });
+                }
+
+                // Test 3: Prohibited Activities
+                const activityLower = formData.businessActivity.toLowerCase();
+                const prohibited = ['political party', 'campaign for', 'elect'];
+                if (prohibited.some(kw => activityLower.includes(kw))) {
+                    failures.push({
+                        test: 'Prohibited Activities',
+                        reason: 'CICs cannot exist primarily for political party purposes',
+                        fix: 'Remove political campaigning as primary purpose'
+                    });
+                }
+
+                // Test 4: Clarity
+                const vagueTerms = ['help', 'support', 'assist'];
+                const specificTerms = ['training', 'education', 'housing', 'healthcare'];
+                if (vagueTerms.some(t => activityLower.includes(t)) &&
+                    !specificTerms.some(t => activityLower.includes(t))) {
+                    warnings.push({
+                        test: 'Community Benefit Clarity',
+                        reason: 'Your activity description is too vague',
+                        fix: 'Be more specific about activities and measurable benefits'
+                    });
+                }
+
+                // Determine verdict
+                let verdict = 'pass';
+                if (failures.length > 0) verdict = 'fail';
+                else if (warnings.length > 0) verdict = 'conditional';
+
+                // Recommendations
+                if (verdict === 'pass') {
+                    recommendations.push('Your idea appears eligible for CIC structure');
+                    recommendations.push('Next step: Draft your community benefit statement');
+                    recommendations.push('Consider: Limited by shares or limited by guarantee?');
+                } else if (verdict === 'conditional') {
+                    recommendations.push('Your idea may be eligible but needs clarification');
+                    recommendations.push('Address the warnings above');
+                } else {
+                    recommendations.push('Your idea needs changes to meet CIC requirements');
+                    recommendations.push('Review failures above');
+                    recommendations.push('Consider alternative structures');
+                }
+
+                setResults({
+                    verdict,
+                    failures,
+                    warnings,
+                    recommendations,
+                    checkId: 'check_' + Date.now(),
+                    pdfUrl: '#' // Replace with actual PDF generation
+                });
+
+                // TODO: Call N8N webhook here
+                // fetch('https://your-n8n-webhook-url/eligibility-complete', {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({
+                //         email: formData.email,
+                //         verdict,
+                //         checkId: 'check_' + Date.now(),
+                //         businessActivity: formData.businessActivity,
+                //         beneficiaryGroup: formData.beneficiaryGroup
+                //     })
+                // });
+
+            } catch (error) {
+                console.error('Eligibility check failed:', error);
+                alert('Something went wrong. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        // Progress indicator
+        const ProgressBar = () => (
+            <div className="flex justify-center items-center gap-2 mb-8">
+                {[1, 2, 3, 4, 5].map(num => (
+                    <div key={num} className="flex items-center">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step >= num
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-gray-200 text-gray-500'
+                            }`}>
+                            {num}
+                        </div>
+                        {num < 5 && (
+                            <div className={`w-12 h-1 ${step > num ? 'bg-emerald-600' : 'bg-gray-200'}`} />
+                        )}
+                    </div>
+                ))}
+            </div>
+        );
+
+        if (loading) {
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center p-6">
+                    <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-12 text-center">
+                        <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-600 border-t-transparent mx-auto mb-6"></div>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2">Checking Your Eligibility...</h2>
+                        <p className="text-gray-600">This usually takes 5-10 seconds</p>
+                    </div>
+                </div>
+            );
+        }
+
+        if (results) {
+            const verdictConfig = {
+                pass: { bg: 'bg-green-50', border: 'border-green-500', text: 'text-green-600', emoji: '✅', title: 'PASS' },
+                conditional: { bg: 'bg-amber-50', border: 'border-amber-500', text: 'text-amber-600', emoji: '⚠️', title: 'CONDITIONAL' },
+                fail: { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-600', emoji: '❌', title: 'NEEDS CHANGES' }
+            };
+            const config = verdictConfig[results.verdict];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
+                    <div className="max-w-3xl mx-auto">
+                        {/* Verdict Card */}
+                        <div className={`${config.bg} border-4 ${config.border} rounded-2xl p-8 mb-6`}>
+                            <div className="text-center">
+                                <div className="text-6xl mb-4">{config.emoji}</div>
+                                <h2 className={`text-4xl font-bold mb-3 ${config.text}`}>{config.title}</h2>
+                                <p className="text-lg text-gray-700">
+                                    {results.verdict === 'pass' && 'Your idea meets CIC requirements!'}
+                                    {results.verdict === 'conditional' && 'Your idea can work with some clarifications'}
+                                    {results.verdict === 'fail' && 'Your idea needs changes to meet CIC requirements'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Failures */}
+                        {results.failures.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                                <h3 className="text-2xl font-semibold mb-4 text-red-600 flex items-center gap-2">
+                                    <span>❌</span> Issues Found
+                                </h3>
+                                {results.failures.map((failure, i) => (
+                                    <div key={i} className="bg-red-50 border-l-4 border-red-500 p-4 mb-3 rounded">
+                                        <h4 className="font-semibold text-red-900 mb-1">{failure.test}</h4>
+                                        <p className="text-red-800 mb-2">{failure.reason}</p>
+                                        <p className="text-sm text-red-700">
+                                            <strong>How to fix:</strong> {failure.fix}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Warnings */}
+                        {results.warnings.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                                <h3 className="text-2xl font-semibold mb-4 text-amber-600 flex items-center gap-2">
+                                    <span>⚠️</span> Warnings
+                                </h3>
+                                {results.warnings.map((warning, i) => (
+                                    <div key={i} className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-3 rounded">
+                                        <h4 className="font-semibold text-amber-900 mb-1">{warning.test}</h4>
+                                        <p className="text-amber-800 mb-2">{warning.reason}</p>
+                                        <p className="text-sm text-amber-700">
+                                            <strong>How to fix:</strong> {warning.fix}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Recommendations */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                            <h3 className="text-2xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+                                <span>📋</span> Next Steps
+                            </h3>
+                            <ul className="space-y-3">
+                                {results.recommendations.map((rec, i) => (
+                                    <li key={i} className="flex items-start gap-3">
+                                        <span className="text-emerald-500 text-xl font-bold flex-shrink-0">•</span>
+                                        <span className="text-gray-700 text-lg">{rec}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Email Confirmation */}
+                        <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-6 mb-6">
+                            <p className="text-lg text-blue-900 text-center">
+                                📧 <strong>Check your email!</strong> We've sent your full report to <strong>{formData.email}</strong>
+                            </p>
+                            <p className="text-sm text-blue-700 text-center mt-2">
+                                Didn't receive it? Check spam or <a href="#" className="underline">resend</a>
+                            </p>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="space-y-3">
+                            {(results.verdict === 'pass' || results.verdict === 'conditional') && (
+                                <a
+                                    href="/benefit-statement"
+                                    className="block w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-6 rounded-xl text-center text-lg font-semibold shadow-lg transition-all"
+                                >
+                                    Continue to Benefit Statement Writer →
+                                </a>
+                            )}
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="block w-full bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-center text-lg font-semibold transition-all"
+                            >
+                                ← Start New Check
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 py-12 px-4">
+                <div className="max-w-2xl mx-auto">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                        <div className="text-center md:text-left">
+                            <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+                                CIC Eligibility Checker
+                            </h1>
+                            <p className="text-lg text-gray-600">
+                                Find out if your idea qualifies in 60 seconds
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => window.location.href = 'https://tools.inclusifund.co.uk/dashboard'}
+                            className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 py-2 px-4 rounded-lg font-medium transition-all shadow-sm hover:shadow-md text-sm whitespace-nowrap"
+                        >
+                            Return to Tools Suite
+                        </button>
+                    </div>
+
+                    <ProgressBar />
+
+                    <div className="bg-white rounded-2xl shadow-xl p-8">
+                        {/* Step 1: Business Activity */}
+                        {step === 1 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2 text-gray-800">
+                                    What will your CIC do?
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    Be specific - this helps us assess eligibility
+                                </p>
+                                <textarea
+                                    value={formData.businessActivity}
+                                    onChange={(e) => handleChange('businessActivity', e.target.value)}
+                                    className="w-full p-4 border-2 border-gray-300 rounded-lg text-lg focus:border-emerald-500 focus:outline-none"
+                                    placeholder="Example: Weekly cooking classes teaching elderly people healthy meal prep on a budget"
+                                    maxLength={500}
+                                    rows={5}
+                                />
+                                <div className="flex justify-between items-center mt-2">
+                                    <span className="text-sm text-gray-600">
+                                        {formData.businessActivity.length}/500 characters
+                                    </span>
+                                    {formData.businessActivity.length < 20 && formData.businessActivity.length > 0 && (
+                                        <span className="text-sm text-amber-600">
+                                            ⚠️ Please add more detail (minimum 20 characters)
+                                        </span>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={nextStep}
+                                    disabled={formData.businessActivity.length < 20}
+                                    className="mt-6 w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all"
+                                >
+                                    Next: Revenue Model →
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Step 2: Revenue Model */}
+                        {step === 2 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                                    How will you generate income?
+                                </h2>
+                                <div className="space-y-3">
+                                    {[
+                                        { value: 'donation', label: 'Primarily donations', desc: 'Fundraising, individual giving, corporate donations' },
+                                        { value: 'trading', label: 'Trading/selling products or services', desc: 'Selling goods, membership fees, service charges' },
+                                        { value: 'grant', label: 'Grant funding', desc: 'Trusts, foundations, government grants' },
+                                        { value: 'mixed', label: 'Mixed model (combination)', desc: 'Multiple income sources blended together' }
+                                    ].map(option => (
+                                        <label key={option.value} className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.revenueModel === option.value
+                                            ? 'border-emerald-500 bg-emerald-50'
+                                            : 'border-gray-300 hover:border-emerald-300'
+                                            }`}>
+                                            <div className="flex items-start gap-3">
+                                                <input
+                                                    type="radio"
+                                                    name="revenueModel"
+                                                    value={option.value}
+                                                    checked={formData.revenueModel === option.value}
+                                                    onChange={(e) => handleChange('revenueModel', e.target.value)}
+                                                    className="mt-1 w-5 h-5 text-emerald-600"
+                                                />
+                                                <div>
+                                                    <div className="font-semibold text-gray-800">{option.label}</div>
+                                                    <div className="text-sm text-gray-600">{option.desc}</div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        ← Back
+                                    </button>
+                                    <button
+                                        onClick={nextStep}
+                                        disabled={!formData.revenueModel}
+                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all"
+                                    >
+                                        Next: Beneficiaries →
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 3: Beneficiary Group */}
+                        {step === 3 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2 text-gray-800">
+                                    Who will benefit from your CIC?
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    Be specific about WHO and WHERE
+                                </p>
+                                <textarea
+                                    value={formData.beneficiaryGroup}
+                                    onChange={(e) => handleChange('beneficiaryGroup', e.target.value)}
+                                    className="w-full p-4 border-2 border-gray-300 rounded-lg text-lg focus:border-emerald-500 focus:outline-none"
+                                    placeholder="Example: Elderly people (65+) living alone in social housing in Leeds"
+                                    maxLength={200}
+                                    rows={3}
+                                />
+                                <div className="text-sm text-gray-600 mt-2">
+                                    {formData.beneficiaryGroup.length}/200 characters
+                                </div>
+
+                                <button
+                                    onClick={() => setShowExamples(!showExamples)}
+                                    className="text-emerald-600 hover:text-emerald-700 font-semibold mt-4 flex items-center gap-2"
+                                >
+                                    {showExamples ? '▲' : '▼'} Show good examples
+                                </button>
+
+                                {showExamples && (
+                                    <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                                        <h4 className="font-semibold text-emerald-900 mb-2">Good examples:</h4>
+                                        <ul className="space-y-2 text-sm text-emerald-800">
+                                            <li>• "Women experiencing domestic abuse in Birmingham and surrounding areas"</li>
+                                            <li>• "Children and young people with learning disabilities across South Wales"</li>
+                                            <li>• "Homeless and vulnerably housed individuals in Brighton & Hove"</li>
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        ← Back
+                                    </button>
+                                    <button
+                                        onClick={nextStep}
+                                        disabled={formData.beneficiaryGroup.length < 10}
+                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all"
+                                    >
+                                        Next: Asset Distribution →
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 4: Asset Distribution */}
+                        {step === 4 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+                                    If your CIC closes, where would assets go?
+                                </h2>
+                                <div className="space-y-3">
+                                    {[
+                                        { value: 'cic_charity', label: 'To another CIC or charity', desc: 'Assets stay locked for community benefit' },
+                                        { value: 'community', label: 'To the community', desc: 'Distributed for community benefit purposes' },
+                                        { value: 'members', label: 'To members/shareholders', desc: '⚠️ This violates CIC asset lock rules' },
+                                        { value: 'undecided', label: 'Not sure yet', desc: 'You\'ll need to decide before registering' }
+                                    ].map(option => (
+                                        <label key={option.value} className={`block p-4 border-2 rounded-lg cursor-pointer transition-all ${formData.assetDistribution === option.value
+                                            ? option.value === 'members' ? 'border-red-500 bg-red-50' : 'border-emerald-500 bg-emerald-50'
+                                            : 'border-gray-300 hover:border-emerald-300'
+                                            }`}>
+                                            <div className="flex items-start gap-3">
+                                                <input
+                                                    type="radio"
+                                                    name="assetDistribution"
+                                                    value={option.value}
+                                                    checked={formData.assetDistribution === option.value}
+                                                    onChange={(e) => handleChange('assetDistribution', e.target.value)}
+                                                    className="mt-1 w-5 h-5 text-emerald-600"
+                                                />
+                                                <div>
+                                                    <div className="font-semibold text-gray-800">{option.label}</div>
+                                                    <div className={`text-sm ${option.value === 'members' ? 'text-red-600 font-medium' : 'text-gray-600'}`}>
+                                                        {option.desc}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </label>
+                                    ))}
+                                </div>
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        ← Back
+                                    </button>
+                                    <button
+                                        onClick={nextStep}
+                                        disabled={!formData.assetDistribution}
+                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all"
+                                    >
+                                        Next: Email →
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Step 5: Email */}
+                        {step === 5 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2 text-gray-800">
+                                    Where should we send your report?
+                                </h2>
+                                <p className="text-gray-600 mb-6">
+                                    We'll email you a detailed PDF with your eligibility results
+                                </p>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={(e) => handleChange('email', e.target.value)}
+                                    className="w-full p-4 border-2 border-gray-300 rounded-lg text-lg focus:border-emerald-500 focus:outline-none"
+                                    placeholder="your@email.com"
+                                />
+                                <p className="text-sm text-gray-500 mt-3">
+                                    🔒 We'll only use this to send your report. No spam, ever.
+                                </p>
+                                <div className="flex gap-3 mt-6">
+                                    <button
+                                        onClick={prevStep}
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border-2 border-gray-300 py-4 px-6 rounded-xl text-lg font-semibold transition-all"
+                                    >
+                                        ← Back
+                                    </button>
+                                    <button
+                                        onClick={runEligibilityCheck}
+                                        disabled={!formData.email || !/\S+@\S+\.\S+/.test(formData.email)}
+                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white py-4 px-6 rounded-xl text-lg font-semibold shadow-lg transition-all"
+                                    >
+                                        Check My Eligibility ✓
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Render app
+    const container = document.getElementById('eligibility-root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<CICEligibilityChecker />);
+</script>
+
+<!-- Add custom Tailwind config if needed -->
+<style>
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+</style>

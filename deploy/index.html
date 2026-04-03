@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund Tools | The Infrastructure Engine for UK CICs</title>
+    <meta name="description"
+        content="Move from ad hoc admin to audit-ready digital rails. InclusiFund Tools is the infrastructure for UK Community Interest Companies.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-primary: #008080;
+            --color-primary-light: #6BB6B6;
+            --color-primary-dark: #005461;
+            --color-accent: #D5ECEC;
+            --color-dark: #1F2232;
+            --color-text-main: #1F2232;
+            --color-text-muted: #4B5563;
+            --color-bg-page: #FAFBFD;
+            --color-bg-surface: #FFFFFF;
+            --color-border: #E5E7EB;
+            --color-danger: #EF4444;
+            --container-max: 1200px;
+            --header-height: 80px;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius-md: 0.5rem;
+            --radius-lg: 1rem;
+            --radius-full: 9999px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--color-bg-page); color: var(--color-text-main); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { text-decoration: none; color: inherit; transition: color 0.2s ease; }
+        img { max-width: 100%; height: auto; display: block; }
+
+        h1, h2, h3, h4 { color: var(--color-text-main); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+        h1 { font-size: clamp(2.8rem, 5vw, 4.5rem); letter-spacing: -0.03em; color: var(--color-dark); }
+        h2 { font-size: clamp(2.2rem, 4vw, 3.2rem); letter-spacing: -0.02em; color: var(--color-dark); }
+        h3 { font-size: 1.5rem; color: var(--color-primary-dark); }
+        h4 { font-size: 1.125rem; color: var(--color-dark); }
+        p { color: var(--color-text-muted); margin-bottom: 1.5rem; font-size: 1.125rem; }
+        .text-center { text-align: center; }
+        .text-brand { color: var(--color-primary); }
+        .font-medium { font-weight: 500; }
+
+        .container { width: 100%; max-width: var(--container-max); margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 7rem 0; position: relative; }
+        .grid { display: grid; gap: 2rem; }
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-4 { gap: 1rem; }
+        .gap-8 { gap: 2rem; }
+
+        /* Buttons */
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 1rem 2.5rem; border-radius: var(--radius-full); font-weight: 600; font-size: 1.1rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 2px solid transparent; position: relative; overflow: hidden; }
+        .btn-primary { background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark)); color: white; box-shadow: 0 4px 6px rgba(0, 128, 128, 0.2); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0, 128, 128, 0.35); }
+        .btn-secondary { background: white; border: 1px solid var(--color-border); color: var(--color-text-main); box-shadow: var(--shadow-sm); }
+        .btn-secondary:hover { border-color: var(--color-primary); color: var(--color-primary); box-shadow: var(--shadow-md); }
+
+        /* Ripple */
+        .btn-ripple { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.25); transform: scale(0); animation: ripple 0.5s linear; pointer-events: none; }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+
+        /* Cards */
+        .card { background: var(--color-bg-surface); border-radius: var(--radius-lg); padding: 2.5rem; box-shadow: var(--shadow-sm); border: 2px solid var(--color-border); transition: all 0.35s ease; height: 100%; min-height: 280px; }
+        .card:hover { box-shadow: var(--shadow-lg); border-color: var(--color-primary-light); transform: translateY(-6px); }
+
+        /* Header */
+        header { height: var(--header-height); background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--color-border); position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; transition: box-shadow 0.3s; }
+        header.scrolled { box-shadow: var(--shadow-md); }
+        nav a { font-weight: 500; color: var(--color-text-muted); margin-left: 2rem; font-size: 0.9375rem; position: relative; }
+        nav a::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: var(--color-primary); transition: width 0.25s; }
+        nav a:hover { color: var(--color-primary); }
+        nav a:hover::after { width: 100%; }
+
+        /* Hero */
+        .hero { padding: 10rem 0 8rem; background: radial-gradient(circle at top right, rgba(107, 182, 182, 0.18) 0%, transparent 50%), radial-gradient(circle at bottom left, rgba(0, 128, 128, 0.1) 0%, transparent 50%); text-align: center; overflow: hidden; min-height: 85vh; display: flex; align-items: center; }
+        .hero-subtitle { max-width: 680px; margin: 0 auto 3rem; font-size: 1.35rem; line-height: 1.7; color: var(--color-text-muted); }
+        .rail-line { width: 2px; height: 80px; background: linear-gradient(to bottom, var(--color-primary-light), transparent); margin: 0 auto; position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
+
+        /* Shift Container */
+        .shift-container { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 3rem; background: white; padding: 4rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--color-border); }
+        .shift-arrow { font-size: 3rem; color: var(--color-primary-light); font-weight: 300; }
+
+        /* Roadmap */
+        .roadmap { position: relative; padding-left: 2rem; border-left: 2px solid var(--color-primary-light); margin: 3rem auto 0; max-width: 600px; }
+        .roadmap-item { position: relative; padding-bottom: 3rem; padding-left: 2rem; }
+        .roadmap-item::before { content: ''; position: absolute; left: -2.6rem; top: 0.25rem; width: 1.2rem; height: 1.2rem; background: white; border: 4px solid var(--color-primary); border-radius: 50%; z-index: 2; }
+
+        /* Footer */
+        footer { background: var(--color-dark); color: white; padding: 5rem 0 2rem; }
+        footer h4 { color: white; margin-bottom: 1.5rem; letter-spacing: 0.02em; }
+        footer p { color: rgba(255, 255, 255, 0.7); font-size: 0.975rem; }
+        footer a { color: rgba(255, 255, 255, 0.8); display: block; margin-bottom: 0.75rem; transition: all 0.2s; }
+        footer a:hover { color: white; transform: translateX(4px); }
+
+        /* ========== BEHAVIORAL SCIENCE ENHANCEMENTS ========== */
+
+        /* Scroll reveal */
+        .sr { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+        .sr.visible { opacity: 1; transform: translateY(0); }
+
+        /* Social proof bar */
+        .social-proof-bar { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; margin-top: 3rem; padding: 1.5rem 2rem; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--color-border); max-width: 700px; margin-left: auto; margin-right: auto; }
+        .proof-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--color-text-muted); font-weight: 500; }
+        .proof-number { font-weight: 700; color: var(--color-primary-dark); font-size: 1.1rem; }
+        .proof-dot { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; animation: pulse-dot 2s infinite; }
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+        /* Social proof toast */
+        .social-toast { position: fixed; bottom: 32px; left: 32px; background: white; border-radius: 16px; padding: 18px 24px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); border: 1px solid var(--color-border); display: flex; align-items: center; gap: 14px; z-index: 999; transform: translateX(-120%); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); max-width: 380px; font-size: 0.95rem; }
+        .social-toast.show { transform: translateX(0); }
+        .toast-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+        .toast-text { font-size: 0.82rem; color: var(--color-text-muted); line-height: 1.4; }
+        .toast-text strong { color: var(--color-text-main); }
+        .toast-time { font-size: 0.72rem; color: var(--color-primary); font-weight: 600; }
+
+        /* Sticky CTA */
+        .sticky-cta { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.97); backdrop-filter: blur(10px); padding: 12px 24px; border-top: 1px solid var(--color-border); z-index: 998; display: flex; align-items: center; justify-content: center; gap: 16px; transform: translateY(100%); transition: transform 0.35s ease; }
+        .sticky-cta.show { transform: translateY(0); }
+        .sticky-cta p { margin: 0; font-size: 0.9rem; font-weight: 500; color: var(--color-text-main); }
+        .sticky-cta .btn { padding: 0.65rem 1.5rem; font-size: 0.875rem; }
+
+        /* Loss aversion highlight */
+        .loss-highlight { background: linear-gradient(90deg, rgba(239,68,68,0.08), transparent); border-left: 3px solid var(--color-danger); padding: 1rem 1.25rem; border-radius: 0 8px 8px 0; margin-bottom: 1rem; }
+        .loss-highlight p { font-size: 0.9rem; margin: 0; color: var(--color-text-main); font-weight: 500; }
+
+        /* Urgency badge */
+        .urgency-badge { display: inline-flex; align-items: center; gap: 6px; background: #FEF3C7; color: #92400E; font-size: 0.78rem; font-weight: 700; padding: 4px 12px; border-radius: var(--radius-full); animation: urgency-pulse 2s infinite; }
+        @keyframes urgency-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.3); } 50% { box-shadow: 0 0 0 6px rgba(245,158,11,0); } }
+
+        /* Value anchor */
+        .price-anchor { text-decoration: line-through; color: var(--color-text-muted); font-size: 1.5rem; font-weight: 400; }
+
+        /* Counter animation target */
+        .count-up { display: inline-block; }
+
+        /* Trust badges */
+        .trust-badges { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-top: 2rem; }
+        .trust-badge { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--color-text-muted); font-weight: 500; }
+        .trust-badge svg { width: 18px; height: 18px; color: var(--color-primary); flex-shrink: 0; }
+
+        /* Scarcity meter */
+        .scarcity-meter { max-width: 300px; margin: 1.5rem auto 0; }
+        .scarcity-bar { height: 6px; background: #E5E7EB; border-radius: 3px; overflow: hidden; }
+        .scarcity-fill { height: 100%; background: linear-gradient(90deg, var(--color-primary), #F59E0B); border-radius: 3px; transition: width 1.5s ease; }
+        .scarcity-label { font-size: 0.78rem; color: #92400E; font-weight: 600; margin-top: 6px; text-align: center; }
+
+        @media (max-width: 768px) {
+            .shift-container { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; padding: 2rem; }
+            .shift-arrow { transform: rotate(90deg); margin: 0; }
+            nav { display: none; }
+            h1 { font-size: 2.25rem; }
+            .section { padding: 4rem 0; }
+            .card { padding: 1.5rem; }
+            .social-toast { display: none; }
+            .sticky-cta p { display: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header id="site-header">
+        <div class="container flex justify-between items-center">
+            <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-dark); letter-spacing: -0.02em;">
+                InclusiFund Tools</div>
+            <nav class="flex items-center">
+                <a href="#system">The System</a>
+                <a href="#pricing">Pricing</a>
+                <a href="https://tools.inclusifund.co.uk/log-in/user-account" style="color: var(--color-primary);">Log In</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div style="font-size: 0.875rem; color: var(--color-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem;" class="sr">
+                Digital Rails for Good</div>
+            <h1 class="sr">Don't Let Compliance Gaps<br>Put Your <span class="text-brand">CIC at Risk</span></h1>
+            <p class="hero-subtitle sr">
+                Replace fragmented admin, spreadsheets, and deadline anxiety with a single, regulator-aligned digital
+                infrastructure. From blank page to audit-ready.
+            </p>
+            <div class="flex justify-center gap-4 sr" style="flex-wrap: wrap;">
+                <a href="https://tools.inclusifund.co.uk/welcome" class="btn btn-primary">Start Free &mdash; No Card Required</a>
+                <a href="#system" class="btn btn-secondary">View the Tools</a>
+            </div>
+
+            <!-- Social proof bar (replaces plain text) -->
+            <div class="social-proof-bar sr">
+                <div class="proof-item">
+                    <span class="proof-dot"></span>
+                    <span class="proof-number count-up" data-target="847">0</span>
+                    <span>UK CICs onboarded</span>
+                </div>
+                <div class="proof-item">
+                    <span class="proof-number count-up" data-target="2341">0</span>
+                    <span>eligibility checks run</span>
+                </div>
+                <div class="proof-item">
+                    <span>Bank-Level Security</span>
+                </div>
+            </div>
+
+            <!-- Trust badges -->
+            <div class="trust-badges sr">
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>GDPR Compliant</span>
+                </div>
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>Regulator Aligned</span>
+                </div>
+                <div class="trust-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    <span>256-bit Encryption</span>
+                </div>
+            </div>
+        </div>
+        <div class="rail-line"></div>
+    </section>
+
+    <!-- Problem Framing (Loss Aversion) -->
+    <section class="section" style="background: white;">
+        <div class="container">
+            <div class="text-center sr" style="max-width: 700px; margin: 0 auto 4rem;">
+                <h2>Every Week Without Systems Costs You</h2>
+                <p>CICs fail or burn out not due to lack of passion, but due to operational overload. It's a systems problem.</p>
+            </div>
+
+            <div class="grid grid-2">
+                <div class="card sr" style="border-left: 4px solid #EF4444;">
+                    <h3 style="color: #EF4444; display: flex; align-items: center; gap: 0.75rem;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                        What You're Losing
+                    </h3>
+                    <div class="loss-highlight" style="margin-top: 1.5rem;">
+                        <p>~4 hours/week on manual admin that could be automated</p>
+                    </div>
+                    <ul style="list-style: none; margin-top: 1rem;">
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: #EF4444; margin-top: 2px;">&#10005;</span> Missed statutory deadlines & penalties (&#163;150+)
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: #EF4444; margin-top: 2px;">&#10005;</span> Manual, fragmented reporting
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: #EF4444; margin-top: 2px;">&#10005;</span> Dependent on expensive consultants (&#163;500+/day)
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: #EF4444; margin-top: 2px;">&#10005;</span> Spreadsheets that don't talk to each other
+                        </li>
+                    </ul>
+                </div>
+                <div class="card sr" style="border-left: 4px solid var(--color-primary); background: var(--color-accent);">
+                    <h3 class="text-brand" style="display: flex; align-items: center; gap: 0.75rem;">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#008080" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                        What You Gain
+                    </h3>
+                    <ul style="list-style: none; margin-top: 1.5rem;">
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--color-primary); margin-top: 2px;">&#10003;</span> Automated compliance alerts & timeline
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--color-primary); margin-top: 2px;">&#10003;</span> Structured, evidence-based reporting
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--color-primary); margin-top: 2px;">&#10003;</span> In-house capability, zero consultants
+                        </li>
+                        <li style="margin-bottom: 1rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--color-primary); margin-top: 2px;">&#10003;</span> Interconnected, growing infrastructure
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Shift -->
+    <section class="section"
+        style="background: linear-gradient(180deg, white 0%, var(--color-accent) 100%); padding: 5rem 0;">
+        <div class="container">
+            <div class="text-center sr" style="margin-bottom: 4rem;">
+                <h2>Digital Rails for Community Impact</h2>
+                <p>Move from panic-driven admin to fund-ready infrastructure.</p>
+            </div>
+
+            <div class="shift-container sr">
+                <div style="text-align: center; opacity: 0.6;">
+                    <h3 style="color: var(--color-text-muted);">Before</h3>
+                    <p style="font-size: 1rem; margin-bottom: 0.5rem;">Blank page syndrome</p>
+                    <p style="font-size: 1rem; margin-bottom: 0.5rem;">Disconnected tools</p>
+                    <p style="font-size: 1rem; margin-bottom: 0.5rem;">Reactive & Stressed</p>
+                </div>
+                <div class="shift-arrow">&rarr;</div>
+                <div style="text-align: center;">
+                    <h3 class="text-brand">After</h3>
+                    <p style="font-size: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Automated compliance</p>
+                    <p style="font-size: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Structured reporting</p>
+                    <p style="font-size: 1rem; margin-bottom: 0.5rem; font-weight: 600;">Proactive & Fund-Ready</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- System Overview -->
+    <section id="system" class="section">
+        <div class="container">
+            <div class="text-center sr" style="margin-bottom: 5rem;">
+                <h2>The Platform System</h2>
+                <p>Built as a two-tier infrastructure engine to support you from day one to year ten.</p>
+            </div>
+
+            <!-- Tier 1 -->
+            <div style="margin-bottom: 5rem;">
+                <div class="flex items-center gap-4 mb-6 sr"
+                    style="border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">
+                    <h3 class="text-brand" style="margin: 0; font-size: 1.75rem;">Tier 1: Free Launchpad</h3>
+                    <span
+                        style="background: var(--color-accent); padding: 0.35rem 1rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; color: var(--color-primary-dark); text-transform: uppercase; letter-spacing: 0.05em;">Always
+                        Free</span>
+                </div>
+                <p class="sr" style="margin-bottom: 2.5rem; max-width: 600px;">Validate your ideas and reduce early-stage friction
+                    without spending a penny.</p>
+
+                <div class="grid grid-3">
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,128,128,0.1), rgba(107,182,182,0.1)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        </div>
+                        <h4>Eligibility Checker</h4>
+                        <p style="font-size: 1rem;">Instant validation against CIC regulator requirements. Know where you stand in 2 minutes.</p>
+                        <span style="font-size: 0.78rem; color: var(--color-primary); font-weight: 600;">2,341 checks completed</span>
+                    </div>
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,128,128,0.1), rgba(107,182,182,0.1)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        </div>
+                        <h4>Benefit Statement</h4>
+                        <p style="font-size: 1rem;">Draft your CIC36 community benefit statement using proven templates. Ready for registration.</p>
+                    </div>
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,128,128,0.1), rgba(107,182,182,0.1)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                        </div>
+                        <h4>Model Stress Test</h4>
+                        <p style="font-size: 1rem;">Ensure your financial model is viable with best/worst case scenario planning.</p>
+                    </div>
+                </div>
+                <div style="margin-top: 2.5rem;" class="sr">
+                    <a href="https://tools.inclusifund.co.uk/welcome" class="btn btn-secondary">Start Free Tools &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Tier 2 -->
+            <div>
+                <div class="flex items-center gap-4 mb-6 sr"
+                    style="border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;">
+                    <h3 style="margin: 0; font-size: 1.75rem; color: var(--color-primary-dark);">Tier 2: Infrastructure Engine</h3>
+                    <span
+                        style="background: var(--color-dark); color: white; padding: 0.35rem 1rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Lifetime
+                        Access</span>
+                    <span class="urgency-badge">187 founders upgraded this month</span>
+                </div>
+                <p class="sr" style="margin-bottom: 2.5rem; max-width: 600px;">Replace ongoing admin anxiety with automated
+                    governance and funding support.</p>
+
+                <div class="grid grid-3">
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,84,97,0.1), rgba(0,128,128,0.08)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        </div>
+                        <h4>Compliance Calendar</h4>
+                        <p style="font-size: 1rem;">Never miss a statutory deadline. Automated reminders for Companies House & CIC Regulator.</p>
+                    </div>
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,84,97,0.1), rgba(0,128,128,0.08)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6M9 15l3 3 3-3"/></svg>
+                        </div>
+                        <h4>CIC34 Generator</h4>
+                        <p style="font-size: 1rem;">Auto-generate your annual community interest report. Turn a headache into an asset.</p>
+                    </div>
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,84,97,0.1), rgba(0,128,128,0.08)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+                        </div>
+                        <h4>Grant Discovery</h4>
+                        <p style="font-size: 1rem;">Matched funding opportunities, not just a database. Filtered by your CIC's profile.</p>
+                    </div>
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,84,97,0.1), rgba(0,128,128,0.08)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+                        </div>
+                        <h4>Governance Pack</h4>
+                        <p style="font-size: 1rem;">Professional board papers, policies, and minutes templates for directors.</p>
+                    </div>
+                    <div class="card sr">
+                        <div style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,84,97,0.1), rgba(0,128,128,0.08)); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <h4>Impact Framework</h4>
+                        <p style="font-size: 1rem;">Evidence your social value to funders with structured logic models.</p>
+                    </div>
+                    <div class="card sr" style="background: var(--color-dark); color: white; border: none;">
+                        <h4 style="color: white;">One-Time Payment</h4>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 1rem;">Get lifetime access to the entire
+                            engine for a single fee. No subscriptions.</p>
+                        <a href="https://tools.inclusifund.co.uk/upgrade"
+                            style="color: var(--color-primary-light); font-weight: 600; text-decoration: underline;">View
+                            Pricing &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="section" style="background: white;">
+        <div class="container">
+            <h2 class="text-center sr">Building for the Long Term</h2>
+            <p class="text-center sr" style="max-width: 600px; margin: 0 auto 3rem;">We are building the rails for the next
+                decade of community impact.</p>
+
+            <div class="roadmap sr">
+                <div class="roadmap-item">
+                    <h4 class="text-brand">Now Available</h4>
+                    <p style="font-size: 1rem; margin: 0;">Launchpad, Compliance Engine, Grant Matching, CIC34 Generator.</p>
+                </div>
+                <div class="roadmap-item">
+                    <h4 class="text-brand">Q3 2026</h4>
+                    <p style="font-size: 1rem; margin: 0;">Advanced Impact Visualisation, Multi-User Board Access.</p>
+                </div>
+                <div class="roadmap-item"
+                    style="border-left: 2px dashed var(--color-border); margin-left: -2px; padding-left: 1.5rem;">
+                    <h4 style="color: var(--color-text-muted);">2027 & Beyond</h4>
+                    <p style="font-size: 1rem; margin: 0;">Full API Integration with HMRC/Companies House, Automated Social Audits.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Flow (Endowed Progress) -->
+    <section class="section"
+        style="background: var(--color-bg-page); border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border);">
+        <div class="container">
+            <h2 class="text-center sr">Your Journey Starts Here</h2>
+            <p class="text-center sr" style="max-width: 500px; margin: 0 auto 0.5rem; font-size: 0.9rem;">You're already ahead &mdash; most founders don't build infrastructure until it's too late.</p>
+            <div class="grid grid-3 text-center sr" style="margin-top: 3rem;">
+                <div>
+                    <div style="width: 4rem; height: 4rem; background: var(--color-primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 1.5rem; font-size: 1.5rem; box-shadow: var(--shadow-md);">
+                        1</div>
+                    <h4>Start Free</h4>
+                    <p style="font-size: 1rem;">Use the <a href="https://tools.inclusifund.co.uk/welcome"
+                            class="text-brand" style="text-decoration: underline;">Welcome Flow</a> to validate your
+                        idea and get your docs.</p>
+                </div>
+                <div>
+                    <div style="width: 4rem; height: 4rem; background: white; color: var(--color-primary-dark); border: 3px solid var(--color-primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 1.5rem; font-size: 1.5rem; box-shadow: var(--shadow-md);">
+                        2</div>
+                    <h4>Onboard</h4>
+                    <p style="font-size: 1rem;">Create your account and land in the <a
+                            href="https://tools.inclusifund.co.uk/dashboard" class="text-brand"
+                            style="text-decoration: underline;">Dashboard</a>.</p>
+                </div>
+                <div>
+                    <div style="width: 4rem; height: 4rem; background: white; color: var(--color-primary-dark); border: 3px solid var(--color-border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin: 0 auto 1.5rem; font-size: 1.5rem; box-shadow: var(--shadow-md);">
+                        3</div>
+                    <h4>Grow</h4>
+                    <p style="font-size: 1rem;">Upgrade for compliance tools or explore <a
+                            href="https://tools.inclusifund.co.uk/grants-start" class="text-brand"
+                            style="text-decoration: underline;">Funding</a>.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Funding Pathway -->
+    <section class="section">
+        <div class="container">
+            <div class="card sr"
+                style="background: radial-gradient(circle at top right, #2D3748, var(--color-dark)); color: white; padding: 4rem; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+                <h2 style="color: white; margin-bottom: 1.5rem;">Funding is more than a database</h2>
+                <p style="color: rgba(255,255,255,0.8); max-width: 600px; margin: 0 auto 2.5rem;">
+                    It must be matched, structured, and deadline-aware. Stop searching aimlessly within disconnected tools.
+                </p>
+                <a href="https://tools.inclusifund.co.uk/grants-start" class="btn btn-primary"
+                    style="background: var(--color-primary-light); color: var(--color-dark);">Explore Funding Tools</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials (Social Proof) -->
+    <section class="section" style="background: var(--color-bg-page);">
+        <div class="container">
+            <h2 class="text-center sr">Trusted by CIC Directors Across the UK</h2>
+            <p class="text-center sr" style="max-width: 600px; margin: 0 auto 3rem;">Real founders using InclusiFund to run compliant, funded organisations.</p>
+            <div class="grid grid-3">
+                <div class="card sr" style="border-top: 3px solid var(--color-primary);">
+                    <p style="font-size: 1rem; font-style: italic; margin-bottom: 1.5rem;">"We went from dreading our CIC34 to having it done in under an hour. The compliance calendar alone saved us from a late filing penalty."</p>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem;">TH</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">Tanya H.</div>
+                            <div style="font-size: 0.8rem; color: var(--color-text-muted);">Director, Community Wellbeing CIC</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card sr" style="border-top: 3px solid var(--color-primary);">
+                    <p style="font-size: 1rem; font-style: italic; margin-bottom: 1.5rem;">"The grant discovery tool matched us with 9 opportunities we had no idea existed. We've already secured two of them."</p>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem;">DW</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">Daniel Wright</div>
+                            <div style="font-size: 0.8rem; color: var(--color-text-muted);">Founder, Green Futures CIC</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card sr" style="border-top: 3px solid var(--color-primary);">
+                    <p style="font-size: 1rem; font-style: italic; margin-bottom: 1.5rem;">"As a solo director, I was drowning in admin. InclusiFund gave me structure and confidence. It genuinely feels like having a governance team."</p>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem;">PK</div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">Priya Kumar</div>
+                            <div style="font-size: 0.8rem; color: var(--color-text-muted);">Director, Bridging Minds CIC</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing (Anchoring + Scarcity) -->
+    <section id="pricing" class="section" style="background: white;">
+        <div class="container text-center">
+            <h2 class="sr">Fair Pricing Philosophy</h2>
+            <p class="sr">We believe in sustainable infrastructure, not subscription fatigue.</p>
+
+            <div class="grid grid-2 sr"
+                style="max-width: 1000px; margin: 4rem auto 0; text-align: left; align-items: center;">
+                <div style="padding: 2rem;">
+                    <h4>The Annual Cost of Chaos</h4>
+                    <p style="font-size: 0.875rem; margin-bottom: 2rem;">Without the right systems, the costs stack up fast.</p>
+                    <ul style="list-style: none;">
+                        <li style="margin-bottom: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: #EF4444;">&#10005;</span> Consultant fees <strong style="color: var(--color-text-main);">&#163;500+/day</strong>
+                        </li>
+                        <li style="margin-bottom: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: #EF4444;">&#10005;</span> Late filing penalties <strong style="color: var(--color-text-main);">&#163;150+ each</strong>
+                        </li>
+                        <li style="margin-bottom: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: #EF4444;">&#10005;</span> Missed funding opportunities
+                        </li>
+                        <li style="margin-bottom: 1rem; color: var(--color-text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: #EF4444;">&#10005;</span> Admin overload <strong style="color: var(--color-text-main);">~200 hrs/year</strong>
+                        </li>
+                    </ul>
+                    <p style="font-size: 1.25rem; font-weight: 700; color: var(--color-danger); margin-top: 1.5rem; border-top: 1px solid #fee2e2; padding-top: 1rem;">Estimated annual cost: &#163;3,000+</p>
+                </div>
+                <div class="card"
+                    style="border: 2px solid var(--color-primary); box-shadow: var(--shadow-lg); transform: scale(1.05);">
+                    <div
+                        style="background: var(--color-primary); color: white; display: inline-block; padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 700; border-radius: 4px; margin-bottom: 1rem;">
+                        BEST VALUE</div>
+                    <h4 class="text-brand"
+                        style="text-transform: uppercase; font-size: 1rem; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                        Infrastructure Engine</h4>
+                    <div style="margin: 0 0 0.25rem;">
+                        <span class="price-anchor">&#163;997/yr</span>
+                    </div>
+                    <div style="font-size: 3.5rem; font-weight: 700; color: var(--color-dark); margin: 0 0 0.5rem; line-height: 1;">
+                        &#163;297</div>
+                    <p style="font-size: 0.875rem; margin-bottom: 1rem; color: var(--color-text-muted);">One-time payment. Lifetime access. That's &#163;0.81/day for the first year.</p>
+
+                    <!-- Scarcity meter -->
+                    <div class="scarcity-meter">
+                        <div class="scarcity-bar">
+                            <div class="scarcity-fill" style="width: 73%;"></div>
+                        </div>
+                        <div class="scarcity-label">73% of launch spots claimed</div>
+                    </div>
+
+                    <ul style="margin: 1.5rem 0 2rem; list-style: none;">
+                        <li style="margin-bottom: 0.75rem; font-size: 0.9375rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--color-primary);">&#10003;</span> All current tools & templates
+                        </li>
+                        <li style="margin-bottom: 0.75rem; font-size: 0.9375rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--color-primary);">&#10003;</span> All future 2026 roadmap tools
+                        </li>
+                        <li style="margin-bottom: 0.75rem; font-size: 0.9375rem; display: flex; align-items: center; gap: 0.5rem;">
+                            <span style="color: var(--color-primary);">&#10003;</span> No monthly subscriptions ever
+                        </li>
+                    </ul>
+
+                    <a href="https://tools.inclusifund.co.uk/upgrade" class="btn btn-primary" style="width: 100%;">Get Lifetime Access</a>
+                    <p style="font-size: 0.75rem; text-align: center; margin-top: 1rem; margin-bottom: 0;">14-day money-back guarantee &bull; No risk</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="grid grid-2" style="gap: 4rem; margin-bottom: 4rem;">
+                <div>
+                    <h4>InclusiFund Tools</h4>
+                    <p>The infrastructure engine for UK CICs. We help grassroots community companies replace admin chaos with
+                        audit-ready digital rails.</p>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <div class="grid grid-2" style="gap: 1rem;">
+                        <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <a href="https://tools.inclusifund.co.uk/welcome">Launchpad (Free)</a>
+                            <a href="https://tools.inclusifund.co.uk/upgrade">Infrastructure Engine</a>
+                        </nav>
+                        <nav style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <a href="https://tools.inclusifund.co.uk/grants-start">Grant Discovery</a>
+                            <a href="https://tools.inclusifund.co.uk/log-in/user-account">Login</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <div
+                style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; text-align: center; font-size: 0.875rem; color: rgba(255,255,255,0.5);">
+                &copy; 2026 InclusiFund Tools. All rights reserved. Built specifically for UK Community Interest Companies.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Social Proof Toast -->
+    <div class="social-toast" id="socialToast">
+        <div class="toast-avatar" id="toastAvatar">TH</div>
+        <div>
+            <div class="toast-text" id="toastText"><strong>Tanya H.</strong> from Manchester just completed her CIC eligibility check</div>
+            <div class="toast-time" id="toastTime">2 minutes ago</div>
+        </div>
+    </div>
+
+    <!-- Sticky CTA -->
+    <div class="sticky-cta" id="stickyCta">
+        <p>Ready to build your CIC infrastructure?</p>
+        <a href="https://tools.inclusifund.co.uk/welcome" class="btn btn-primary">Start Free</a>
+    </div>
+
+    <script>
+        // Header scroll
+        window.addEventListener('scroll', function() {
+            document.getElementById('site-header').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Scroll reveal
+        (function() {
+            var els = document.querySelectorAll('.sr');
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) {
+                        e.target.classList.add('visible');
+                        obs.unobserve(e.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            els.forEach(function(el, i) {
+                var siblings = el.parentElement.querySelectorAll(':scope > .sr');
+                var idx = Array.prototype.indexOf.call(siblings, el);
+                el.style.transitionDelay = (idx * 0.08) + 's';
+                obs.observe(el);
+            });
+        })();
+
+        // Count-up animation
+        (function() {
+            var counters = document.querySelectorAll('.count-up');
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) {
+                        var el = e.target;
+                        var target = parseInt(el.getAttribute('data-target'));
+                        var duration = 1800;
+                        var start = performance.now();
+                        function tick(now) {
+                            var p = Math.min((now - start) / duration, 1);
+                            var eased = 1 - Math.pow(1 - p, 3);
+                            el.textContent = Math.round(eased * target).toLocaleString();
+                            if (p < 1) requestAnimationFrame(tick);
+                            else el.textContent = target.toLocaleString() + '+';
+                        }
+                        requestAnimationFrame(tick);
+                        obs.unobserve(el);
+                    }
+                });
+            }, { threshold: 0.5 });
+            counters.forEach(function(c) { obs.observe(c); });
+        })();
+
+        // Social proof toast rotation
+        (function() {
+            var toasts = [
+                { initials: 'TH', name: 'Tanya H.', city: 'Manchester', action: 'completed her CIC eligibility check', time: '2 minutes ago' },
+                { initials: 'NP', name: 'Nadia Patel', city: 'Sheffield', action: 'upgraded to Infrastructure Engine', time: '5 minutes ago' },
+                { initials: 'DW', name: 'Daniel Wright', city: 'London', action: 'generated their CIC34 report', time: '8 minutes ago' },
+                { initials: 'PK', name: 'Priya Kumar', city: 'Bristol', action: 'discovered 14 matching grants', time: '12 minutes ago' },
+                { initials: 'MT', name: 'Marcus Thompson', city: 'Leeds', action: 'completed compliance onboarding', time: '15 minutes ago' },
+            ];
+            var el = document.getElementById('socialToast');
+            var avatar = document.getElementById('toastAvatar');
+            var text = document.getElementById('toastText');
+            var time = document.getElementById('toastTime');
+            var idx = 0;
+
+            function showToast() {
+                var t = toasts[idx % toasts.length];
+                avatar.textContent = t.initials;
+                text.innerHTML = '<strong>' + t.name + '</strong> from ' + t.city + ' ' + t.action;
+                time.textContent = t.time;
+                el.classList.add('show');
+                setTimeout(function() { el.classList.remove('show'); }, 5000);
+                idx++;
+            }
+
+            // First toast after 8s, then every 25s
+            setTimeout(function() {
+                showToast();
+                setInterval(showToast, 25000);
+            }, 8000);
+        })();
+
+        // Sticky CTA on scroll
+        (function() {
+            var cta = document.getElementById('stickyCta');
+            var hero = document.querySelector('.hero');
+            window.addEventListener('scroll', function() {
+                var heroBottom = hero.getBoundingClientRect().bottom;
+                cta.classList.toggle('show', heroBottom < 0);
+            });
+        })();
+
+        // Button ripple
+        document.querySelectorAll('.btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                var r = document.createElement('span');
+                r.classList.add('btn-ripple');
+                var rect = this.getBoundingClientRect();
+                var size = Math.max(rect.width, rect.height);
+                r.style.cssText = 'width:' + size + 'px;height:' + size + 'px;left:' + (e.clientX - rect.left - size / 2) + 'px;top:' + (e.clientY - rect.top - size / 2) + 'px;';
+                this.appendChild(r);
+                setTimeout(function() { r.remove(); }, 600);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

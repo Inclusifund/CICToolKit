@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support & Help - InclusiFund</title>
+
+    <!-- CDN Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+
+    <!-- PostHog -->
+    <script>
+        !function (t, e) { var o, n, p, r; e.__SV || (window.posthog = e, e._i = [], e.init = function (i, s, a) { function g(t, e) { var o = e.split("."); 2 == o.length && (t = t[o[0]], e = o[1]), t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } } (p = t.createElement("script")).type = "text/javascript", p.async = !0, p.src = s.api_host + "/static/array.js", (r = t.getElementsByTagName("script")[0]).parentNode.insertBefore(p, r); var u = e; for (void 0 !== a ? u = e[a] = [] : a = "posthog", u.people = u.people || [], u.toString = function (t) { var e = "posthog"; return "posthog" !== a && (e += "." + a), t || (e += " (stub)"), e }, u.people.toString = function () { return u.toString(1) + ".people (stub)" }, o = "capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys getNextSurveyStep".split(" "), n = 0; n < o.length; n++)g(u, o[n]); e._i.push([i, s, a]) }, e.__SV = 1) }(document, window.posthog || []);
+        posthog.init('phc_w5zFmD9OVZVV9z93WnpvT9NFKsKIHzWaruG4GZIasle', { api_host: 'https://us.i.posthog.com' });
+    </script>
+
+    <!-- InclusiFund Brand Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand': {
+                            'primary': '#008080',
+                            'dark': '#005461',
+                            'light': '#6BB6B6',
+                            'surface': '#D5ECEC',
+                            'premium': '#d4a853',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'slide-down': 'slideDown 0.3s ease-out forwards',
+                        'ripple': 'rippleEffect 0.6s linear',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        rippleEffect: {
+                            'to': { transform: 'scale(4)', opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Scroll Reveal */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button Ripple */
+        .btn-ripple-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Urgency Badge */
+        .urgency-badge-pulse {
+            animation: urgencyPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes urgencyPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-gray-900">
+    <div id="root"></div>
+
+    <!-- Auth Logic -->
+    <script src="assets/js/auth.js"></script>
+
+    <script type="text/babel">
+        // Auth Check
+        const user = InclusiFundAuth.requireAuth();
+        if (!user) {
+            throw new Error("Redirecting to login...");
+        }
+
+        const { useState, useEffect, useRef } = React;
+        const {
+            LayoutDashboard,
+            FileText,
+            Search,
+            Settings,
+            LogOut,
+            User,
+            Menu,
+            X,
+            HelpCircle,
+            Mail,
+            BookOpen,
+            MessageCircle,
+            ChevronDown,
+            ChevronUp,
+            ArrowRight,
+            Clock,
+            Shield,
+            Zap
+        } = lucide;
+
+        // --- Scroll Reveal Hook ---
+        function useScrollReveal() {
+            const ref = useRef(null);
+            useEffect(() => {
+                const el = ref.current;
+                if (!el) return;
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            el.classList.add('revealed');
+                            observer.unobserve(el);
+                        }
+                    },
+                    { threshold: 0.1 }
+                );
+                observer.observe(el);
+                return () => observer.disconnect();
+            }, []);
+            return ref;
+        }
+
+        // --- Button Ripple Handler ---
+        function handleRipple(e) {
+            const btn = e.currentTarget;
+            const rect = btn.getBoundingClientRect();
+            const ripple = document.createElement('span');
+            ripple.classList.add('btn-ripple-effect');
+            ripple.style.left = (e.clientX - rect.left) + 'px';
+            ripple.style.top = (e.clientY - rect.top) + 'px';
+            ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+            btn.appendChild(ripple);
+            ripple.addEventListener('animationend', () => ripple.remove());
+        }
+
+        // --- Scroll Reveal Wrapper ---
+        function ScrollReveal({ children, className = '', delay = 0 }) {
+            const ref = useScrollReveal();
+            return (
+                <div ref={ref} className={`scroll-reveal ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+                    {children}
+                </div>
+            );
+        }
+
+        // --- Shared Sidebar Component ---
+        function Sidebar() {
+            const [isOpen, setIsOpen] = useState(false);
+            const menuItems = [
+                { icon: LayoutDashboard, label: 'Dashboard', href: 'dashboard.html', active: false },
+                { icon: Search, label: 'Find Grants', href: 'grants-list.html', active: false },
+                { icon: FileText, label: 'CIC34 Report', href: 'cic34-generator.html', active: false },
+                { icon: FileText, label: 'Policy Generator', href: 'policy-generator.html', active: false },
+                { icon: Settings, label: 'Settings', href: 'settings.html', active: false },
+                { icon: HelpCircle, label: 'Support', href: 'support.html', active: true },
+            ];
+
+            const toggleMenu = () => setIsOpen(!isOpen);
+
+            return (
+                <>
+                    <button onClick={toggleMenu} className="lg:hidden fixed top-4 right-4 z-50 p-2 bg-white rounded-lg shadow-md hover:bg-gray-50 transition-colors">
+                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+
+                    <aside className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-40 transform transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                        <div className="p-6 border-b border-gray-100">
+                            <h1 className="text-2xl font-bold text-brand-dark flex items-center gap-2">
+                                <div className="w-8 h-8 bg-brand-primary rounded-lg flex items-center justify-center text-white text-lg">I</div>
+                                InclusiFund
+                            </h1>
+                            <p className="text-xs text-gray-500 mt-1 ml-10">The Infrastructure Engine for UK CICs</p>
+                        </div>
+
+                        <nav className="p-4 space-y-1">
+                            {menuItems.map((item, index) => (
+                                <a
+                                    key={index}
+                                    href={item.href}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${item.active
+                                        ? 'bg-brand-surface text-brand-dark'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        }`}
+                                >
+                                    <item.icon size={18} className={item.active ? 'text-brand-primary' : 'text-gray-400'} />
+                                    {item.label}
+                                </a>
+                            ))}
+                        </nav>
+
+                        <div className="absolute bottom-0 w-full p-4 border-t border-gray-100">
+                            <button onClick={() => InclusiFundAuth.logout()} className="flex items-center gap-3 px-4 py-3 w-full text-left text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <LogOut size={18} />
+                                Sign Out
+                            </button>
+                        </div>
+                    </aside>
+
+                    {isOpen && (
+                        <div onClick={toggleMenu} className="fixed inset-0 bg-black/20 z-30 lg:hidden backdrop-blur-sm"></div>
+                    )}
+                </>
+            );
+        }
+
+        // --- FAQ Accordion Component ---
+        function FAQItem({ question, answer, defaultOpen = false }) {
+            const [localOpen, setLocalOpen] = useState(defaultOpen);
+            return (
+                <div className="border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors rounded-lg overflow-hidden">
+                    <button
+                        onClick={() => setLocalOpen(!localOpen)}
+                        className="w-full flex justify-between items-center text-left p-5 focus:outline-none"
+                    >
+                        <span className="font-semibold text-gray-900">{question}</span>
+                        <div className={`text-brand-primary transition-transform duration-200 ${localOpen ? 'rotate-180' : ''}`}>
+                            <ChevronDown size={20} />
+                        </div>
+                    </button>
+                    {localOpen && (
+                        <div className="px-5 pb-5 pt-0 text-gray-600 text-sm leading-relaxed animate-slide-down">
+                            {answer}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // --- Urgency Badge ---
+        function UrgencyBadge({ text }) {
+            return (
+                <span className="urgency-badge-pulse inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-amber-100 to-yellow-100 text-amber-800 border border-amber-300">
+                    <Zap size={12} /> {text}
+                </span>
+            );
+        }
+
+        // --- Support Channel Card ---
+        function SupportChannel({ icon: Icon, iconBg, iconColor, title, subtitle, action, actionType = 'button', href, delay = 0 }) {
+            return (
+                <ScrollReveal delay={delay}>
+                    <div
+                        className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center text-center hover:shadow-md transition-all duration-300 group cursor-pointer hover:-translate-y-1"
+                        onClick={() => { if (href) window.location.href = href; }}
+                    >
+                        <div className={`w-16 h-16 ${iconBg} ${iconColor} rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                            <Icon size={32} />
+                        </div>
+                        <h3 className="font-bold text-lg text-gray-900 mb-2">{title}</h3>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">{subtitle}</p>
+                        {actionType === 'link' ? (
+                            <a href={href} className="text-brand-primary font-bold hover:underline flex items-center gap-1">
+                                {action}
+                            </a>
+                        ) : (
+                            <button className="btn-ripple-container px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition-colors" onClick={handleRipple}>
+                                {action}
+                            </button>
+                        )}
+                    </div>
+                </ScrollReveal>
+            );
+        }
+
+        // --- Trust Indicators ---
+        function TrustBar() {
+            const ref = useScrollReveal();
+            return (
+                <div ref={ref} className="scroll-reveal grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
+                            <Clock size={20} />
+                        </div>
+                        <div>
+                            <div className="text-sm font-bold text-gray-900">Avg. Response: 4h</div>
+                            <div className="text-xs text-gray-500">During business hours</div>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                            <Shield size={20} />
+                        </div>
+                        <div>
+                            <div className="text-sm font-bold text-gray-900">98% Satisfaction</div>
+                            <div className="text-xs text-gray-500">Based on resolved tickets</div>
+                        </div>
+                    </div>
+                    <div className="bg-white rounded-xl border border-gray-100 p-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+                            <Zap size={20} />
+                        </div>
+                        <div>
+                            <div className="text-sm font-bold text-gray-900">CIC-Specialist Team</div>
+                            <div className="text-xs text-gray-500">UK compliance experts</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Testimonial Mini ---
+        function TestimonialMini() {
+            const ref = useScrollReveal();
+            return (
+                <div ref={ref} className="scroll-reveal bg-gradient-to-r from-brand-dark to-[#003640] rounded-2xl p-6 text-white flex items-center gap-6">
+                    <div className="flex-1">
+                        <blockquote className="text-sm italic leading-relaxed opacity-95 mb-2">
+                            "I raised a support ticket about our CIC34 report deadline and had a working solution within two hours. Genuinely impressed."
+                        </blockquote>
+                        <cite className="text-xs opacity-60 not-italic">&mdash; Adebayo Mensah, Treasurer, Green Pathways CIC, Birmingham</cite>
+                    </div>
+                    <div className="text-center flex-shrink-0">
+                        <div className="text-3xl font-extrabold text-brand-premium leading-none">2h</div>
+                        <div className="text-xs opacity-60 mt-1">resolution time</div>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- Main Page Component ---
+        function SupportPage() {
+            return (
+                <div className="min-h-screen bg-gray-50">
+                    <Sidebar />
+
+                    <main className="lg:ml-64 min-h-screen p-4 lg:p-8">
+                        <div className="max-w-4xl mx-auto space-y-8">
+
+                            {/* Header */}
+                            <ScrollReveal>
+                                <div className="text-center md:text-left flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                                    <div>
+                                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Support & Help</h1>
+                                        <p className="text-gray-600">We're here to help you navigate your CIC compliance and infrastructure.</p>
+                                    </div>
+                                    <UrgencyBadge text="Priority Support Active" />
+                                </div>
+                            </ScrollReveal>
+
+                            {/* Trust Bar */}
+                            <TrustBar />
+
+                            {/* Support Channels Grid */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <SupportChannel
+                                    icon={Mail}
+                                    iconBg="bg-blue-50"
+                                    iconColor="text-blue-600"
+                                    title="Email Support"
+                                    subtitle="Typical response: 4h"
+                                    action="support@inclusifund.co.uk"
+                                    actionType="link"
+                                    href="mailto:support@inclusifund.co.uk"
+                                    delay={0}
+                                />
+                                <SupportChannel
+                                    icon={BookOpen}
+                                    iconBg="bg-purple-50"
+                                    iconColor="text-purple-600"
+                                    title="Knowledge Base"
+                                    subtitle="CIC Management Tips"
+                                    action="Browse Guides"
+                                    delay={100}
+                                />
+                                <SupportChannel
+                                    icon={MessageCircle}
+                                    iconBg="bg-green-50"
+                                    iconColor="text-green-600"
+                                    title="Community"
+                                    subtitle="Join 500+ Directors"
+                                    action="WhatsApp Community"
+                                    delay={200}
+                                />
+                            </div>
+
+                            {/* Testimonial */}
+                            <TestimonialMini />
+
+                            {/* FAQ Section */}
+                            <ScrollReveal>
+                                <section className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                                    <div className="p-6 border-b border-gray-100 bg-gray-50/50">
+                                        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                            <HelpCircle size={20} className="text-brand-primary" />
+                                            Frequently Asked Questions
+                                        </h2>
+                                    </div>
+                                    <div className="divide-y divide-gray-100">
+                                        <FAQItem
+                                            question="How do I update my CIC details?"
+                                            answer="You can update your company name, number, and year-end dates in the Settings page under the 'Company Profile' tab. These details are used to pre-fill your forms."
+                                            defaultOpen={true}
+                                        />
+                                        <FAQItem
+                                            question="What is the Compliance Calendar?"
+                                            answer="The Compliance Calendar automatically tracks your statutory deadlines for Companies House (accounts and confirmation statements) and the CIC Regulator (CIC34 report) based on your financial year-end."
+                                        />
+                                        <FAQItem
+                                            question="How do I cancel my subscription?"
+                                            answer="If you are on a lifetime plan, there are no recurring fees. If you wish to close your account completely, you can do so in the Settings page under the 'Security' section."
+                                        />
+                                        <FAQItem
+                                            question="Can I export my generated reports?"
+                                            answer="Yes, all tools like the CIC34 Generator and Board Pack Builder allow you to export your data as professional PDF or Word documents ready for submission."
+                                        />
+                                        <FAQItem
+                                            question="Is my data secure?"
+                                            answer="Absolutely. We use industry-standard encryption and secure session management. Your data is stored in a secure cloud database and is never shared with third parties without your explicit consent."
+                                        />
+                                        <FAQItem
+                                            question="What happens if I miss a compliance deadline?"
+                                            answer="The Compliance Calendar sends you multiple reminders before any deadline. If you do miss one, our support team can guide you through late filing procedures and help minimise any penalties."
+                                        />
+                                    </div>
+                                </section>
+                            </ScrollReveal>
+
+                            {/* Contact Footer */}
+                            <ScrollReveal>
+                                <footer className="bg-brand-dark rounded-2xl p-8 text-center text-white shadow-lg relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+                                    <div className="absolute bottom-0 left-0 -ml-10 -mb-10 w-40 h-40 bg-brand-light/20 rounded-full blur-2xl"></div>
+
+                                    <div className="relative z-10">
+                                        <h3 className="text-2xl font-bold mb-2">Still need help?</h3>
+                                        <p className="text-brand-surface/80 mb-6">Our team of CIC experts is ready to assist you personally.</p>
+                                        <button
+                                            onClick={(e) => { handleRipple(e); window.location.href = 'mailto:support@inclusifund.co.uk'; }}
+                                            className="btn-ripple-container bg-white text-brand-dark px-6 py-3 rounded-xl font-bold hover:bg-brand-surface transition-colors shadow-lg flex items-center gap-2 mx-auto"
+                                        >
+                                            Submit a Support Ticket <ArrowRight size={18} />
+                                        </button>
+                                    </div>
+                                </footer>
+                            </ScrollReveal>
+                        </div>
+                    </main>
+                </div>
+            );
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<SupportPage />);
+    </script>
+</body>
+
+</html>

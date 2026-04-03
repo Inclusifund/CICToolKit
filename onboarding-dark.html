@@ -1,0 +1,904 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund | Your CIC Setup Toolkit</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            'shadow-grey': '#1F2232',
+                            'tropical-teal': '#6BB6B6',
+                            'dark-teal': '#005461',
+                            'teal': '#008080',
+                            'light-cyan': '#D5ECEC',
+                            'card-bg': '#2A2F42',
+                            'border': '#3A3F52',
+                            'text-primary': '#FFFFFF',
+                            'text-secondary': '#D5ECEC',
+                            'brown': '#8B6F47',
+                            'beige': '#C9B99B'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Lora', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'scale-in': 'scaleIn 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- React -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Convex + Auth -->
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script src="assets/js/auth.js"></script>
+
+    <style>
+        html {
+            background: #1F2232 !important;
+            color-scheme: dark;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #1F2232 !important;
+            color: #FFFFFF;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Ambient Background (Matching Payment Success) */
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-slow 8s ease-in-out infinite;
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -15%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(107, 182, 182, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-slow 10s ease-in-out infinite 2s;
+        }
+
+        /* Override any GHL wrapper/iframe backgrounds */
+        .body-wrapper,
+        .page-wrapper,
+        .hl-page-creator,
+        [class*="wrapper"],
+        [class*="container"],
+        main,
+        section {
+            background: transparent !important;
+            max-width: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #root {
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-panel {
+            background: rgba(42, 47, 66, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(107, 182, 182, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-dot {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1F2232;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3A3F52;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6BB6B6;
+        }
+
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #2A2F42 inset !important;
+            -webkit-text-fill-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+    </style>
+</head>
+
+<body class="antialiased font-sans">
+    <div class="bg-glow"></div>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // --- ICONS (Embedded SVGs) ---
+        const Icon = ({ path, size = 24, className = "" }) => (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={size}
+                height={size}
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={className}
+            >
+                {path}
+            </svg>
+        );
+
+        const ArrowRight = (props) => <Icon {...props} path={<><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></>} />;
+        const Check = (props) => <Icon {...props} path={<polyline points="20 6 9 17 4 12" />} />;
+        const LayoutDashboard = (props) => <Icon {...props} path={<><rect x="3" y="3" width="7" height="9" /><rect x="14" y="3" width="7" height="5" /><rect x="14" y="12" width="7" height="9" /><rect x="3" y="16" width="7" height="5" /></>} />;
+        const Mail = (props) => <Icon {...props} path={<><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></>} />;
+        const ShieldCheck = (props) => <Icon {...props} path={<><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /><path d="m9 12 2 2 4-4" /></>} />;
+
+        // --- COMPONENTS ---
+
+        // Button with color variations
+        const Button = ({ children, onClick, variant = 'primary', color = 'tropical-teal', className = '', ...props }) => {
+            const baseStyles = "w-full py-4 px-8 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden shadow-lg hover:shadow-xl";
+
+            const colorVariants = {
+                'tropical-teal': "bg-gradient-to-r from-brand-tropical-teal to-brand-teal text-white hover:shadow-brand-tropical-teal/30",
+                'dark-teal': "bg-gradient-to-r from-brand-dark-teal to-brand-teal text-white hover:shadow-brand-dark-teal/30",
+                'brown': "bg-gradient-to-r from-brand-brown to-brand-beige text-white hover:shadow-brand-brown/30",
+                'teal': "bg-brand-teal text-white hover:shadow-brand-teal/30"
+            };
+
+            const variants = {
+                primary: colorVariants[color] || colorVariants['tropical-teal'],
+                secondary: "bg-transparent border-2 border-brand-border text-brand-text-secondary hover:border-brand-tropical-teal hover:bg-brand-card-bg",
+                ghost: "bg-transparent text-brand-text-secondary hover:text-brand-text-primary hover:bg-brand-card-bg"
+            };
+
+            return (
+                <button
+                    onClick={onClick}
+                    className={`${baseStyles} ${variants[variant]} ${className}`}
+                    {...props}
+                >
+                    <span className="relative z-10 flex items-center justify-center gap-2">{children}</span>
+                </button>
+            );
+        };
+
+        // Option Card with color variations
+        const OptionCard = ({ icon, title, subtitle, selected, onClick, color = 'tropical-teal', className = '' }) => {
+            const colorMap = {
+                'tropical-teal': { bg: 'bg-brand-tropical-teal/10', border: 'border-brand-tropical-teal', ring: 'ring-brand-tropical-teal/50', text: 'text-brand-tropical-teal' },
+                'dark-teal': { bg: 'bg-brand-dark-teal/10', border: 'border-brand-dark-teal', ring: 'ring-brand-dark-teal/50', text: 'text-brand-dark-teal' },
+                'teal': { bg: 'bg-brand-teal/10', border: 'border-brand-teal', ring: 'ring-brand-teal/50', text: 'text-brand-teal' },
+                'brown': { bg: 'bg-brand-brown/10', border: 'border-brand-brown', ring: 'ring-brand-brown/50', text: 'text-brand-brown' },
+                'beige': { bg: 'bg-brand-beige/10', border: 'border-brand-beige', ring: 'ring-brand-beige/50', text: 'text-brand-beige' }
+            };
+
+            const colors = colorMap[color] || colorMap['tropical-teal'];
+
+            return (
+                <button
+                    onClick={onClick}
+                    className={`w-full text-left p-5 md:p-6 rounded-2xl border transition-all duration-300 group relative overflow-hidden ${selected
+                        ? `${colors.bg} ${colors.border} ring-1 ${colors.ring} shadow-md`
+                        : 'bg-brand-card-bg border-brand-border hover:border-brand-tropical-teal/50 hover:shadow-lg'
+                        } ${className}`}
+                >
+                    <div className="flex items-start gap-4 z-10 relative">
+                        <div className={`mt-1 text-2xl transition-transform duration-300 ${selected ? 'scale-110' : 'group-hover:scale-110'}`}>
+                            {icon}
+                        </div>
+                        <div className="flex-1">
+                            <h3 className={`font-serif text-xl font-medium mb-1 transition-colors ${selected ? colors.text : 'text-brand-text-primary'}`}>
+                                {title}
+                            </h3>
+                            {subtitle && (
+                                <p className="text-brand-text-secondary text-sm leading-relaxed font-sans">
+                                    {subtitle}
+                                </p>
+                            )}
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${selected
+                            ? `${colors.bg.replace('/10', '')} ${colors.border} text-white scale-100 opacity-100`
+                            : 'border-brand-border scale-100 opacity-40 group-hover:opacity-100'
+                            }`}>
+                            {selected && <Check size={14} strokeWidth={3} />}
+                        </div>
+                    </div>
+                </button>
+            );
+        };
+
+        // Progress Dots
+        const ProgressBar = ({ current, total }) => {
+            return (
+                <div className="fixed bottom-8 left-0 right-0 flex justify-center gap-3 z-50 pointer-events-none">
+                    {Array.from({ length: total }).map((_, i) => (
+                        <div
+                            key={i}
+                            className={`h-2 rounded-full transition-all duration-500 ease-out ${i + 1 <= current ? 'w-8 bg-brand-tropical-teal' : 'w-2 bg-brand-border'
+                                }`}
+                        />
+                    ))}
+                </div>
+            );
+        };
+
+        // --- SCREENS ---
+
+        const Screen1_Welcome = ({ onNext }) => (
+            <div className="flex flex-col items-center text-center justify-center min-h-[60vh] animate-fade-in">
+                <div className="mb-8 opacity-0 animate-slide-up" style={{ animationDelay: '100ms' }}>
+                    <div className="w-16 h-16 bg-gradient-to-br from-brand-tropical-teal to-brand-teal rounded-2xl flex items-center justify-center text-white font-serif font-bold text-3xl shadow-lg relative overflow-hidden group">
+                        <span className="relative z-10">IF</span>
+                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                    </div>
+                </div>
+
+                <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-brand-tropical-teal mb-6 leading-tight max-w-2xl opacity-0 animate-slide-up" style={{ animationDelay: '200ms' }}>
+                    Welcome. <span className="text-brand-text-primary">You're building something for the public good.</span>
+                </h1>
+
+                <p className="text-xl text-brand-text-secondary mb-12 font-sans opacity-0 animate-slide-up" style={{ animationDelay: '300ms' }}>
+                    Let's get you set up without wasting time or money.
+                </p>
+
+                <div className="opacity-0 animate-slide-up" style={{ animationDelay: '400ms' }}>
+                    <Button onClick={onNext} color="tropical-teal">
+                        Let's begin <ArrowRight size={20} />
+                    </Button>
+                </div>
+            </div>
+        );
+
+        const Screen2_Role = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'planning', icon: '🌱', title: 'Starting a CIC', subtitle: 'Still in the planning stage', color: 'tropical-teal' },
+                { id: 'early', icon: '🚀', title: 'Running an early-stage CIC', subtitle: 'Operating for less than 2 years', color: 'teal' },
+                { id: 'established', icon: '💪🏽', title: 'Managing an established CIC', subtitle: 'Operating for 2+ years', color: 'dark-teal' },
+                { id: 'advisor', icon: '🤝🏽', title: 'Supporting CICs', subtitle: 'Consultant, trustee, or advisor', color: 'brown' },
+            ];
+
+            const handleSelect = (id) => {
+                setData({ ...data, role: id });
+                setTimeout(onNext, 400);
+            };
+
+            return (
+                <div className="animate-fade-in w-full max-w-xl mx-auto">
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-text-primary mb-3 text-center">What best describes you right now?</h2>
+                    <p className="text-brand-text-secondary text-center mb-10 text-lg">Just so we know how to help</p>
+
+                    <div className="space-y-4">
+                        {options.map((opt, i) => (
+                            <div key={opt.id} className="opacity-0 animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
+                                <OptionCard
+                                    {...opt}
+                                    selected={data.role === opt.id}
+                                    onClick={() => handleSelect(opt.id)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen3_PressurePoints = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'funding', icon: '💰', title: 'Funding confusion', color: 'tropical-teal' },
+                { id: 'compliance', icon: '📋', title: 'Compliance & reporting', color: 'teal' },
+                { id: 'governance', icon: '👥', title: 'Governance & trustees', color: 'dark-teal' },
+                { id: 'impact', icon: '📊', title: 'Impact measurement', color: 'brown' },
+                { id: 'strategy', icon: '🎯', title: 'Strategy & sustainability', color: 'beige' },
+                { id: 'assets', icon: '🏠', title: 'Land or asset access', color: 'tropical-teal' },
+                { id: 'team', icon: '💪🏽', title: 'Team & burnout', color: 'teal' },
+            ];
+
+            const toggle = (id) => {
+                const current = data.pressurePoints || [];
+                const next = current.includes(id)
+                    ? current.filter(x => x !== id)
+                    : [...current, id];
+                setData({ ...data, pressurePoints: next });
+            };
+
+            const hasSelection = (data.pressurePoints?.length || 0) > 0;
+
+            return (
+                <div className="animate-fade-in w-full max-w-2xl mx-auto">
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-text-primary mb-3 text-center">What are you dealing with most right now?</h2>
+                    <p className="text-brand-text-secondary text-center mb-10 text-lg">Select all that apply - no judgment</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        {options.map((opt, i) => (
+                            <div key={opt.id} className="opacity-0 animate-slide-up" style={{ animationDelay: `${i * 50}ms` }}>
+                                <OptionCard
+                                    {...opt}
+                                    subtitle={null}
+                                    selected={data.pressurePoints?.includes(opt.id)}
+                                    onClick={() => toggle(opt.id)}
+                                    className="h-full"
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className={`flex justify-end transition-all duration-500 ${hasSelection ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}>
+                        <Button onClick={onNext} color="tropical-teal">
+                            Continue <ArrowRight size={20} />
+                        </Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen4_Pause = ({ onNext }) => {
+            useEffect(() => {
+                const timer = setTimeout(onNext, 4000);
+                return () => clearTimeout(timer);
+            }, [onNext]);
+
+            return (
+                <div className="flex flex-col items-center justify-center text-center py-20 animate-fade-in cursor-pointer" onClick={onNext}>
+                    <div className="mb-8 relative">
+                        <div className="absolute inset-0 bg-brand-tropical-teal/20 rounded-full blur-xl animate-pulse-slow"></div>
+                        <div className="relative text-6xl animate-float">🤝🏽</div>
+                    </div>
+
+                    <h2 className="font-serif text-4xl md:text-5xl text-brand-text-primary mb-6">You're not alone.</h2>
+                    <p className="text-xl text-brand-text-secondary font-light max-w-md mx-auto mb-12">
+                        Most CICs struggle with at least three of these early on. It gets easier with the right systems.
+                    </p>
+
+                    <p className="text-brand-text-secondary/60 text-sm italic animate-pulse-slow">
+                        87% of CIC founders say compliance feels overwhelming at first
+                    </p>
+
+                    <div className="mt-12 opacity-0 animate-slide-up" style={{ animationDelay: '2s' }}>
+                        <Button variant="ghost" onClick={onNext}>Continue <ArrowRight size={16} /></Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen5_Success = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'funding', icon: '💰', title: 'Secure funding', subtitle: 'Find grants and investment', color: 'tropical-teal' },
+                { id: 'compliant', icon: '✅', title: 'Get compliant and organised', subtitle: 'Never miss a deadline again', color: 'teal' },
+                { id: 'sustainability', icon: '🌱', title: 'Build long-term sustainability', subtitle: 'Systems that last beyond you', color: 'dark-teal' },
+                { id: 'impact', icon: '📈', title: 'Prove impact properly', subtitle: 'Show your community benefit clearly', color: 'brown' },
+                { id: 'mistakes', icon: '🛡️', title: 'Avoid costly mistakes', subtitle: 'Prevent penalties and regulator issues', color: 'beige' },
+            ];
+
+            const handleSelect = (id) => {
+                setData({ ...data, successGoal: id });
+                setTimeout(onNext, 400);
+            };
+
+            return (
+                <div className="animate-fade-in w-full max-w-xl mx-auto">
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-text-primary mb-3 text-center">What would make this year a success?</h2>
+                    <p className="text-brand-text-secondary text-center mb-10 text-lg">Choose your top priority</p>
+
+                    <div className="space-y-4">
+                        {options.map((opt, i) => (
+                            <div key={opt.id} className="opacity-0 animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
+                                <OptionCard
+                                    {...opt}
+                                    selected={data.successGoal === opt.id}
+                                    onClick={() => handleSelect(opt.id)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen6_WorkingStyle = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'visual', icon: '📺', title: 'Visual walkthroughs', subtitle: 'Videos and interactive demos', color: 'tropical-teal' },
+                { id: 'written', icon: '📝', title: 'Plain-English explanations', subtitle: 'Detailed written guides', color: 'teal' },
+                { id: 'templates', icon: '✅', title: 'Templates and checklists', subtitle: 'Fill-in-the-blank resources', color: 'dark-teal' },
+                { id: 'live', icon: '🤝🏽', title: 'Live support and reviews', subtitle: 'Book a session with an expert', color: 'brown' },
+            ];
+
+            const handleSelect = (id) => {
+                setData({ ...data, workingStyle: id });
+                setTimeout(onNext, 400);
+            };
+
+            return (
+                <div className="animate-fade-in w-full max-w-xl mx-auto">
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-text-primary mb-3 text-center">How do you prefer to work?</h2>
+                    <p className="text-brand-text-secondary text-center mb-10 text-lg">We'll match your style</p>
+
+                    <div className="space-y-4">
+                        {options.map((opt, i) => (
+                            <div key={opt.id} className="opacity-0 animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
+                                <OptionCard
+                                    {...opt}
+                                    selected={data.workingStyle === opt.id}
+                                    onClick={() => handleSelect(opt.id)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen7_Time = ({ data, setData, onNext }) => {
+            const options = [
+                { id: '5min', icon: '⚡', title: '5–10 minutes', subtitle: 'Quick wins, one task at a time', color: 'tropical-teal' },
+                { id: '15min', icon: '🎯', title: '15–20 minutes', subtitle: 'Focused sessions (most common choice)', color: 'teal' },
+                { id: '30min', icon: '💪🏽', title: '30–45 minutes', subtitle: 'Deep work to get meaningful progress', color: 'dark-teal' },
+                { id: '1hour', icon: '🚀', title: '1 hour or more', subtitle: 'Power mode: knock out major tasks', color: 'brown' },
+            ];
+
+            const handleSelect = (id) => {
+                setData({ ...data, timeCapacity: id });
+                setTimeout(onNext, 400);
+            };
+
+            return (
+                <div className="animate-fade-in w-full max-w-xl mx-auto">
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-text-primary mb-3 text-center">How much time can you realistically give?</h2>
+                    <p className="text-brand-text-secondary text-center mb-10 text-lg">Be honest - we'll adjust to your pace</p>
+
+                    <div className="space-y-4">
+                        {options.map((opt, i) => (
+                            <div key={opt.id} className="opacity-0 animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
+                                <OptionCard
+                                    {...opt}
+                                    selected={data.timeCapacity === opt.id}
+                                    onClick={() => handleSelect(opt.id)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen8_SocialProof = ({ onNext }) => (
+            <div className="flex flex-col items-center text-center justify-center animate-fade-in">
+                <div className="mb-6 text-5xl animate-pulse-slow">🤎</div>
+
+                <h2 className="font-serif text-4xl md:text-5xl text-brand-text-primary mb-4">Good choice.</h2>
+                <p className="text-xl text-brand-text-secondary mb-12">You're in excellent company</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-12">
+                    {[
+                        { num: '500+', label: 'CICs supported' },
+                        { num: '£50K+', label: 'Penalties prevented' },
+                        { num: '10k+', label: 'Hours saved' },
+                    ].map((stat, i) => (
+                        <div key={i} className="glass-panel p-6 rounded-2xl animate-scale-in" style={{ animationDelay: `${i * 150}ms` }}>
+                            <div className="text-3xl font-bold text-brand-tropical-teal mb-1 font-serif">{stat.num}</div>
+                            <div className="text-sm text-brand-text-secondary uppercase tracking-wider font-medium">{stat.label}</div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="max-w-lg glass-panel p-6 rounded-2xl mb-12 animate-slide-up relative" style={{ animationDelay: '600ms' }}>
+                    <div className="absolute -top-3 -left-3 text-4xl text-brand-tropical-teal opacity-30">"</div>
+                    <p className="text-lg text-brand-text-secondary/80 italic mb-4 font-serif">
+                        Set up in 5 minutes. Caught a deadline I'd completely forgotten. Worth every penny.
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-brand-tropical-teal/20 text-brand-tropical-teal flex items-center justify-center font-bold text-xs">TH</div>
+                        <div className="text-sm text-brand-text-secondary/50">Tanya H., Nottingham CIC Director</div>
+                    </div>
+                </div>
+
+                <Button onClick={onNext} color="tropical-teal">
+                    Continue <ArrowRight size={20} />
+                </Button>
+            </div>
+        );
+
+        const Screen9_Preview = ({ data, onNext }) => {
+            const recommendations = [];
+            recommendations.push(data.role === 'planning' ? 'Validation Roadmap' : 'Compliance Calendar');
+            if (data.pressurePoints?.includes('impact')) recommendations.push('Impact Measurement Template');
+            else recommendations.push('CIC34 Report Generator');
+            recommendations.push(data.timeCapacity === '5min' ? 'Quick-Win Guides' : 'Detailed Masterclass');
+
+            return (
+                <div className="animate-fade-in w-full max-w-2xl mx-auto text-center">
+                    <div className="text-5xl mb-6 mx-auto w-20 h-20 bg-brand-tropical-teal/10 rounded-full flex items-center justify-center text-brand-tropical-teal">
+                        <LayoutDashboard size={40} />
+                    </div>
+
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-text-primary mb-4">We'll use this to set up your toolkit</h2>
+                    <p className="text-brand-text-secondary mb-10 text-lg">What you see next is tailored to your specific needs</p>
+
+                    <div className="glass-panel rounded-2xl p-8 mb-10 text-left relative overflow-hidden group border-brand-tropical-teal/30">
+                        <div className="absolute inset-0 bg-gradient-to-b from-brand-tropical-teal/5 to-transparent pointer-events-none"></div>
+
+                        <h3 className="font-serif text-xl border-b border-brand-border pb-4 mb-4 text-brand-text-primary flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-brand-tropical-teal"></span>
+                            Your Dashboard Plan
+                        </h3>
+
+                        <div className="space-y-4">
+                            {recommendations.map((rec, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-brand-card-bg/50 border border-brand-border animate-slide-up" style={{ animationDelay: `${i * 150}ms` }}>
+                                    <div className="text-brand-tropical-teal"><Check size={20} /></div>
+                                    <span className="text-brand-text-primary font-medium">{rec}</span>
+                                </div>
+                            ))}
+                            <div className="flex items-center gap-3 p-3 rounded-lg bg-brand-card-bg/50 border border-brand-border opacity-50">
+                                <span className="text-brand-text-secondary ml-8 text-sm">+ 12 more tailored tools</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <Button onClick={onNext} color="tropical-teal">
+                        Show me my dashboard <ArrowRight size={20} />
+                    </Button>
+                </div>
+            );
+        };
+
+        const Screen10_Email = ({ data, setData, onSubmit }) => {
+            const [email, setEmail] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (!email) return;
+
+                setLoading(true);
+                setData({ ...data, email, timestamp: new Date().toISOString() });
+
+                setTimeout(() => {
+                    onSubmit({ ...data, email });
+                }, 1500);
+            };
+
+            const handleGoogleAuth = () => {
+                console.log('GOOGLE_AUTH_CLICKED', data);
+                window.location.href = 'https://tools.inclusifund.co.uk/dashboard?auth=google';
+            };
+
+            const handleLinkedInAuth = () => {
+                console.log('LINKEDIN_AUTH_CLICKED', data);
+                window.location.href = 'https://tools.inclusifund.co.uk/dashboard?auth=linkedin';
+            };
+
+            return (
+                <div className="animate-fade-in w-full max-w-xl mx-auto text-center">
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-text-primary mb-4">Save your setup</h2>
+                    <p className="text-brand-text-secondary mb-10 text-lg">We'll create your dashboard and send you secure access</p>
+
+                    <form onSubmit={handleSubmit} className="mb-8">
+                        <div className="relative mb-6">
+                            <input
+                                type="email"
+                                placeholder="your@email.com"
+                                className="w-full h-16 px-6 rounded-xl bg-brand-card-bg border border-brand-border text-brand-text-primary placeholder:text-brand-text-secondary/30 focus:outline-none focus:border-brand-tropical-teal focus:ring-1 focus:ring-brand-tropical-teal text-lg transition-all"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-text-secondary/20 pointer-events-none">
+                                <Mail size={24} />
+                            </div>
+                        </div>
+
+                        <div className="space-y-3 mb-8 text-left max-w-sm mx-auto">
+                            <div className="flex items-center gap-3 text-brand-text-secondary">
+                                <div className="text-brand-tropical-teal"><Check size={18} /></div>
+                                <span className="text-sm">Free access to all planning tools</span>
+                            </div>
+                            <div className="flex items-center gap-3 text-brand-text-secondary">
+                                <div className="text-brand-tropical-teal"><Check size={18} /></div>
+                                <span className="text-sm">Monthly CIC compliance tips (no spam)</span>
+                            </div>
+                        </div>
+
+                        <Button
+                            type="submit"
+                            disabled={loading || !email}
+                            className={`w-full ${loading ? 'opacity-80 cursor-wait' : ''}`}
+                            color="tropical-teal"
+                        >
+                            {loading ? (
+                                <span className="flex items-center gap-2">
+                                    <div className="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                                    Creating Dashboard...
+                                </span>
+                            ) : (
+                                <span>Create my dashboard <ArrowRight size={20} /></span>
+                            )}
+                        </Button>
+                    </form>
+
+                    <p className="text-xs text-brand-text-secondary/50 mb-8 flex items-center justify-center gap-2">
+                        <ShieldCheck size={12} /> We'll never share your email. Unsubscribe anytime.
+                    </p>
+
+                    <div className="border-t border-brand-border pt-8 mt-8">
+                        <p className="text-brand-text-secondary/40 text-sm mb-4">Or continue with</p>
+                        <div className="flex gap-4 justify-center">
+                            <button type="button" onClick={handleGoogleAuth} className="px-6 py-3 rounded-lg border border-brand-border hover:bg-brand-card-bg transition flex items-center gap-2 text-brand-text-primary font-medium text-sm">
+                                <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" /></svg>
+                                Google
+                            </button>
+                            <button type="button" onClick={handleLinkedInAuth} className="px-6 py-3 rounded-lg border border-brand-border hover:bg-brand-card-bg transition flex items-center gap-2 text-brand-text-primary font-medium text-sm">
+                                <svg className="w-5 h-5" viewBox="0 0 24 24"><path fill="currentColor" d="M19,3H5C3.895,3,3,3.895,3,5v14c0,1.105,0.895,2,2,2h14c1.105,0,2-0.895,2-2V5C21,3.895,20.105,3,19,3z M9,17H6.477v-7.575H9V17z M7.694,8.717c-0.771,0-1.286-0.514-1.286-1.2s0.514-1.2,1.371-1.2c0.771,0,1.286,0.514,1.286,1.2S8.551,8.717,7.694,8.717z M18,17h-2.442v-3.826c0-1.058-0.651-1.302-0.895-1.302s-1.058,0.163-1.058,1.302V17h-2.442v-7.575h2.442v1.187C13.937,10.298,14.662,9.973,15.354,9.973c1.604,0,2.646,1.2,2.646,3.465V17z" /></svg>
+                                LinkedIn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [screen, setScreen] = useState(1);
+            const [data, setData] = useState({
+                role: '',
+                pressurePoints: [],
+                successGoal: '',
+                workingStyle: '',
+                timeCapacity: '',
+                email: '',
+                timestamp: ''
+            });
+
+            const totalScreens = 10;
+
+            const nextScreen = () => {
+                if (screen < totalScreens) {
+                    setScreen(screen + 1);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
+            // --- Auth Guard: skip onboarding for returning users ---
+            useEffect(() => {
+                try {
+                    const sessionUser = window.InclusiFundAuth ? InclusiFundAuth.checkSession() : null;
+                    if (sessionUser && sessionUser.onboardingComplete === true) {
+                        console.log("[onboarding-dark] User already onboarded, redirecting to dashboard");
+                        window.location.href = '/dashboard';
+                        return;
+                    }
+
+                    // Double-check against Convex for users with stale local cache
+                    const storedUser = localStorage.getItem('inclusifund_user');
+                    if (storedUser) {
+                        const parsed = JSON.parse(storedUser);
+                        if (parsed.onboardingComplete === true) {
+                            console.log("[onboarding-dark] Stored user already onboarded, redirecting to dashboard");
+                            window.location.href = '/dashboard';
+                            return;
+                        }
+
+                        // Verify with Convex if email is present
+                        if (parsed.email) {
+                            const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+                            convexClient.query("onboarding:checkOnboardingStatus", { email: parsed.email.toLowerCase().trim() })
+                                .then(status => {
+                                    if (status && status.onboardingComplete === true) {
+                                        console.log("[onboarding-dark] Convex confirmed onboarding complete, redirecting");
+                                        window.location.href = '/dashboard';
+                                    }
+                                })
+                                .catch(err => console.warn("[onboarding-dark] Convex check failed (non-blocking):", err));
+                        }
+                    }
+                } catch (err) {
+                    console.warn("[onboarding-dark] Auth guard check failed (non-blocking):", err);
+                }
+            }, []);
+
+            useEffect(() => {
+                const handleMouseLeave = (e) => {
+                    if (e.clientY <= 0 && screen > 1 && screen < 10) {
+                        try {
+                            console.log("Exit intent detected - show modal");
+                        } catch (e) { }
+                    }
+                };
+                document.addEventListener('mouseleave', handleMouseLeave);
+                return () => document.removeEventListener('mouseleave', handleMouseLeave);
+            }, [screen]);
+
+            const handleSubmit = async (finalData) => {
+                console.log("FORM SUBMITTED", finalData);
+
+                // 1. Get user session (if logged in via login.html)
+                const sessionUser = window.InclusiFundAuth ? InclusiFundAuth.checkSession() : null;
+                const email = sessionUser?.email || finalData.email;
+
+                if (!email) {
+                    console.warn("No email found — redirecting to login");
+                    window.location.href = '/dashboard';
+                    return;
+                }
+
+                try {
+                    // 2. Initialize Convex
+                    const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+
+                    // 3. Save discovery responses to Convex (also marks onboardingComplete)
+                    await convexClient.mutation("onboarding:saveDiscoveryResponses", {
+                        userId: email,
+                        role: finalData.role || "not_specified",
+                        goals: finalData.pressurePoints || [],
+                    });
+
+                    console.log("Discovery data saved for:", email);
+
+                    // 4. Update local session to reflect onboarding completion
+                    if (sessionUser) {
+                        sessionUser.onboardingComplete = true;
+                        if (window.InclusiFundAuth) {
+                            InclusiFundAuth.setSession(sessionUser);
+                        }
+                    } else {
+                        // Fallback: set minimal session for non-logged-in users
+                        localStorage.setItem('inclusifund_user', JSON.stringify({
+                            email: email,
+                            onboardingComplete: true,
+                            role: finalData.role,
+                            loginTime: Date.now()
+                        }));
+                    }
+
+                } catch (err) {
+                    console.error("Convex save failed (non-blocking):", err);
+                }
+
+                // 5. Always redirect to dashboard
+                window.location.href = '/dashboard';
+            };
+
+            const CurrentScreen = [
+                null,
+                Screen1_Welcome,
+                Screen2_Role,
+                Screen3_PressurePoints,
+                Screen4_Pause,
+                Screen5_Success,
+                Screen6_WorkingStyle,
+                Screen7_Time,
+                Screen8_SocialProof,
+                Screen9_Preview,
+                Screen10_Email
+            ][screen];
+
+            return (
+                <div className="min-h-screen py-12 md:py-0 w-full bg-brand-shadow-grey flex flex-col items-center justify-center relative overflow-hidden text-brand-text-primary selection:bg-brand-tropical-teal selection:text-white font-sans">
+
+                    {/* Background Decoration */}
+                    <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-brand-tropical-teal/5 rounded-full blur-3xl opacity-50 animate-pulse-slow"></div>
+                        <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-brand-teal/5 rounded-full blur-3xl opacity-30"></div>
+                    </div>
+
+                    {/* Top Bar */}
+                    {screen > 1 && (
+                        <div className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-50 pointer-events-none animate-fade-in w-full max-w-2xl mx-auto">
+                            <div className="font-serif font-bold text-xl text-brand-tropical-teal pointer-events-auto cursor-pointer" onClick={() => setScreen(1)}>
+                                InclusiFund
+                            </div>
+                            {screen < 10 && (
+                                <div className="text-brand-text-secondary/50 text-sm font-medium">
+                                    Step {screen} of 10
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Main Content Area */}
+                    <main className="w-full max-w-2xl px-6 relative z-10 transition-all duration-500 ease-in-out">
+                        <CurrentScreen
+                            data={data}
+                            setData={setData}
+                            onNext={nextScreen}
+                            onSubmit={handleSubmit}
+                        />
+                    </main>
+
+                    {/* Footer Progress */}
+                    {screen > 1 && screen < 10 && (
+                        <ProgressBar current={screen} total={totalScreens} />
+                    )}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

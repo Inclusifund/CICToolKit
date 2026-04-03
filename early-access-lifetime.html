@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund | Anniversary Lifetime Offer</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/shim.css">
+
+    <style>
+        /* Marketing-specific overrides */
+        body {
+            background-color: var(--bg-surface-alt);
+        }
+
+        .promo-hero {
+            background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+            color: white;
+            padding: 8rem 1rem 10rem;
+            text-align: center;
+            border-radius: 0 0 3rem 3rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: -5rem;
+        }
+
+        .promo-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 80%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .offer-badge {
+            display: inline-block;
+            background: var(--color-accent);
+            color: #fff;
+            padding: 0.5rem 1.5rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+            }
+
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(245, 158, 11, 0);
+            }
+
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+            }
+        }
+
+        .pricing-card {
+            max-width: 500px;
+            margin: 0 auto 4rem;
+            position: relative;
+            z-index: 10;
+            padding: 3rem;
+            border: 2px solid var(--color-accent);
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-2xl);
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .countdown-box {
+            background: var(--bg-surface-alt);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+
+        .countdown-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--color-primary);
+            line-height: 1;
+            font-family: var(--font-heading);
+        }
+
+        .countdown-lbl {
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+
+<body class="light-mode">
+    <div class="promo-hero">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="offer-badge">🎉 Anniversary Exclusive</div>
+            <h1 class="heading-1 mb-6 text-white text-5xl md:text-6xl">Lifetime Access</h1>
+            <p class="text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
+                One year ago, we went viral. Today, we're giving our community unrestricted access to the complete CIC
+                infrastructure.
+            </p>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-6">
+        <!-- Pricing & Countdown -->
+        <div class="pricing-card">
+            <div class="text-center mb-8">
+                <div class="text-muted text-lg mb-2 line-through font-bold">Regular Price: £297</div>
+                <div class="text-6xl font-black text-primary mb-2 tracking-tight">£97</div>
+                <p class="text-secondary font-medium">One-time payment • Lifetime Access</p>
+            </div>
+
+            <div class="bg-surface-alt rounded-xl p-6 text-center mb-8 border border-border-light">
+                <div class="text-xs font-bold text-muted uppercase tracking-widest mb-2">Offer Ends Soon</div>
+                <div id="countdown" class="countdown-grid">
+                    <div class="countdown-box">
+                        <div class="countdown-val">0</div>
+                        <div class="countdown-lbl">Days</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-val">00</div>
+                        <div class="countdown-lbl">Hours</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-val">00</div>
+                        <div class="countdown-lbl">Mins</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-val">00</div>
+                        <div class="countdown-lbl">Secs</div>
+                    </div>
+                </div>
+                <div class="text-xs text-secondary font-medium">February 18th at 11:59 PM</div>
+            </div>
+
+            <a href="https://admin.inclusifund.co.uk/payment-link/698a02636202c1d7f0e903de"
+                class="btn-primary w-full py-4 text-xl font-bold shadow-lg hover:scale-[1.02] transition-transform block text-center no-underline">
+                Claim Lifetime Access →
+            </a>
+
+            <p class="text-center text-xs text-muted mt-4 flex items-center justify-center gap-2">
+                <span>🔒 Secure Checkout</span>
+                <span>•</span>
+                <span>30-Day Guarantee</span>
+            </p>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid grid-2 gap-6 mb-20">
+            <div class="card flex gap-4 border-l-4 border-primary">
+                <div class="text-3xl">🗓️</div>
+                <div>
+                    <h3 class="heading-4 mb-1">Compliance Calendar Pro</h3>
+                    <p class="text-sm text-secondary">Automated deadline tracking and reminders. Never miss a filing
+                        date.</p>
+                </div>
+            </div>
+            <div class="card flex gap-4 border-l-4 border-primary">
+                <div class="text-3xl">📄</div>
+                <div>
+                    <h3 class="heading-4 mb-1">CIC34 Report Generator</h3>
+                    <p class="text-sm text-secondary">Create regulator-compliant annual reports in minutes, not days.
+                    </p>
+                </div>
+            </div>
+            <div class="card flex gap-4 border-l-4 border-primary">
+                <div class="text-3xl">📝</div>
+                <div>
+                    <h3 class="heading-4 mb-1">Board Pack Builder</h3>
+                    <p class="text-sm text-secondary">Streamline agendas, minutes, and decision papers for audits.</p>
+                </div>
+            </div>
+            <div class="card flex gap-4 border-l-4 border-primary">
+                <div class="text-3xl">🔍</div>
+                <div>
+                    <h3 class="heading-4 mb-1">Grant Discovery Engine</h3>
+                    <p class="text-sm text-secondary">AI-powered matching for 2000+ UK grants with success predictions.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Why Section -->
+        <div class="card p-8 bg-primary text-white text-center mb-20 border-none shadow-xl">
+            <h2 class="heading-2 text-white mb-6">Why this special offer?</h2>
+            <div class="space-y-4 text-white/90 text-lg leading-relaxed max-w-2xl mx-auto">
+                <p>On February 18th, 2025, InclusiFund started as a viral TikTok. Many of you have been with us since
+                    Day One.</p>
+                <p>This anniversary price is our way of saying thank you for trusting us with your CIC's mission.</p>
+            </div>
+        </div>
+
+        <div class="text-center pb-20">
+            <a href="dashboard.html" class="text-primary font-bold hover:underline">← Return to Free Tools</a>
+        </div>
+    </div>
+
+    <script>
+        function updateCountdown() {
+            const deadline = new Date('2026-02-18T23:59:59');
+            const now = new Date();
+            const diff = deadline - now;
+
+            if (diff <= 0) {
+                document.getElementById('countdown').innerHTML = '<div class="col-span-4 text-center text-xl font-bold text-error">OFFER CLOSED</div>';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+            const boxes = document.querySelectorAll('.countdown-val');
+            if (boxes.length === 4) {
+                boxes[0].textContent = days;
+                boxes[1].textContent = hours.toString().padStart(2, '0');
+                boxes[2].textContent = minutes.toString().padStart(2, '0');
+                boxes[3].textContent = seconds.toString().padStart(2, '0');
+            }
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+
+</html>

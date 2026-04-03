@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund Tools | Board Pack Builder</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="assets/theme.css">
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+
+<body class="dark-mode">
+    <div class="app-shell">
+        <main class="app-content">
+            <header class="app-header">
+                <div>
+                    <h1 class="page-title">Board Pack Builder</h1>
+                    <p class="page-subtitle">Generate professional, compliant meeting packs in minutes.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button class="btn btn-secondary"
+                        onclick="window.location.href='https://tools.inclusifund.co.uk/dashboard'">Return to Tools
+                        Suite</button>
+                </div>
+            </header>
+
+            <div id="root"></div>
+        </main>
+    </div>
+
+    <!-- Core Logic -->
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/nav.js"></script>
+
+    <script type="text/babel">
+        // Auth Check
+        const user = InclusiFundAuth.requireAuth();
+        if (!user) {
+            console.log("Redirecting to login...");
+        }
+
+        const { useState, useEffect, useRef } = React;
+
+        function BoardPackBuilder() {
+            const [step, setStep] = useState(1);
+            const [state, setState] = useState(() => {
+                const saved = localStorage.getItem('boardPackState');
+                return saved ? JSON.parse(saved) : {
+                    meetingDetails: {
+                        cicName: '',
+                        companyNumber: '',
+                        date: new Date().toISOString().split('T')[0],
+                        time: '10:00',
+                        location: 'Zoom / Video Conference'
+                    },
+                    attendance: [
+                        { id: 1, name: 'Chairperson', role: 'Director', status: 'present' },
+                        { id: 2, name: 'Treasurer', role: 'Director', status: 'present' }
+                    ],
+                    agenda: [
+                        { id: '1', title: 'Apologies for Absence', type: 'info', duration: 5, fixed: true },
+                        { id: '2', title: 'Declarations of Interest', type: 'info', duration: 5, fixed: true },
+                        { id: '3', title: 'Minutes of Previous Meeting', type: 'decision', duration: 10, fixed: true }
+                    ],
+                    decisions: {}
+                };
+            });
+
+            const [loading, setLoading] = useState(false);
+            const [generated, setGenerated] = useState(false);
+            const agendaListRef = useRef(null);
+
+            useEffect(() => {
+                localStorage.setItem('boardPackState', JSON.stringify(state));
+            }, [state]);
+
+            useEffect(() => {
+                if (step === 3 && agendaListRef.current) {
+                    const sortable = new Sortable(agendaListRef.current, {
+                        animation: 150,
+                        handle: '.drag-handle',
+                        onEnd: (evt) => {
+                            const newAgenda = [...state.agenda];
+                            const [movedItem] = newAgenda.splice(evt.oldIndex, 1);
+                            newAgenda.splice(evt.newIndex, 0, movedItem);
+                            setState(prev => ({ ...prev, agenda: newAgenda }));
+                        }
+                    });
+                    return () => sortable.destroy();
+                }
+            }, [step]);
+
+            const updateDetails = (field, value) => {
+                setState(prev => ({
+                    ...prev,
+                    meetingDetails: { ...prev.meetingDetails, [field]: value }
+                }));
+            };
+
+            const addAttendance = () => {
+                const newId = Date.now();
+                setState(prev => ({
+                    ...prev,
+                    attendance: [...prev.attendance, { id: newId, name: '', role: 'Director', status: 'present' }]
+                }));
+            };
+
+            const updateAttendance = (id, field, value) => {
+                setState(prev => ({
+                    ...prev,
+                    attendance: prev.attendance.map(a => a.id === id ? { ...a, [field]: value } : a)
+                }));
+            };
+
+            const removeAttendance = (id) => {
+                setState(prev => ({
+                    ...prev,
+                    attendance: prev.attendance.filter(a => a.id !== id)
+                }));
+            };
+
+            const addAgendaItem = (title, type, duration) => {
+                if (!title) return;
+                const newItem = { id: Date.now().toString(), title, type, duration: parseInt(duration) || 10, fixed: false };
+                setState(prev => ({ ...prev, agenda: [...prev.agenda, newItem] }));
+            };
+
+            const removeAgendaItem = (id) => {
+                setState(prev => ({ ...prev, agenda: prev.agenda.filter(a => a.id !== id) }));
+            };
+
+            const updateDecision = (itemId, field, value) => {
+                setState(prev => ({
+                    ...prev,
+                    decisions: {
+                        ...prev.decisions,
+                        [itemId]: { ...(prev.decisions[itemId] || {}), [field]: value }
+                    }
+                }));
+            };
+
+            const handleGenerate = () => {
+                setLoading(true);
+                setTimeout(() => {
+                    setLoading(false);
+                    setGenerated(true);
+                }, 2500);
+            };
+
+            const isQuorate = () => {
+                const directors = state.attendance.filter(a => a.role === 'Director');
+                const present = directors.filter(d => d.status === 'present');
+                return present.length >= Math.max(2, Math.ceil(directors.length / 2));
+            };
+
+            const totalSteps = 5;
+
+            if (generated) {
+                return (
+                    <div className="card text-center space-y-8 animate-fade-in py-12">
+                        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-success-bg text-success text-5xl">✨</div>
+                        <div className="space-y-2">
+                            <h2 className="text-3xl font-bold">Board Pack Ready!</h2>
+                            <p className="text-secondary max-w-md mx-auto">Your agenda, minutes template, and decision covers are compiled and ready for download.</p>
+                        </div>
+                        <div className="flex justify-center gap-4">
+                            <button className="btn btn-primary px-10" onClick={() => alert('Downloading Board Pack ZIP...')}>Download ZIP</button>
+                            <button className="btn btn-secondary" onClick={() => setGenerated(false)}>Back to Editor</button>
+                        </div>
+                    </div>
+                );
+            }
+
+            if (loading) {
+                return (
+                    <div className="card flex flex-col items-center justify-center space-y-6 py-24">
+                        <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin"></div>
+                        <div className="text-center">
+                            <h3 className="text-xl font-bold">Compiling Board Pack</h3>
+                            <p className="text-muted">Drafting minutes template and checking quorum requirements...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="space-y-8 max-w-4xl mx-auto">
+                    {/* Progress Nav */}
+                    <div className="grid grid-cols-5 gap-2">
+                        {[1, 2, 3, 4, 5].map(s => (
+                            <div key={s} className="space-y-2">
+                                <div className={`h-1.5 rounded-full transition-all duration-500 ${step >= s ? 'bg-accent' : 'bg-surface-alt'}`}></div>
+                                <div className={`text-[10px] font-bold uppercase tracking-wider text-center ${step === s ? 'text-accent' : 'text-muted'}`}>
+                                    {['Basics', 'Attendance', 'Agenda', 'Decisions', 'Review'][s - 1]}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="card p-8">
+                        {step === 1 && (
+                            <div className="space-y-6">
+                                <h2 className="text-2xl font-bold">Meeting Details</h2>
+                                <div className="grid grid-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">CIC Name</label>
+                                        <input className="input" placeholder="e.g. Youth Forward CIC" value={state.meetingDetails.cicName} onChange={e => updateDetails('cicName', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">Company Number</label>
+                                        <input className="input" placeholder="e.g. 12345678" value={state.meetingDetails.companyNumber} onChange={e => updateDetails('companyNumber', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">Date</label>
+                                        <input type="date" className="input" value={state.meetingDetails.date} onChange={e => updateDetails('date', e.target.value)} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-muted uppercase">Location</label>
+                                        <input className="input" value={state.meetingDetails.location} onChange={e => updateDetails('location', e.target.value)} />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 2 && (
+                            <div className="space-y-6">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-2xl font-bold">Attendance Tracking</h2>
+                                    <div className={`px-4 py-2 rounded-full text-sm font-bold ${isQuorate() ? 'bg-success-bg text-success' : 'bg-warning-bg text-warning'}`}>
+                                        {isQuorate() ? '✅ Quorate' : '⚠️ Not Quorate'}
+                                    </div>
+                                </div>
+                                <div className="space-y-3">
+                                    {state.attendance.map((person, idx) => (
+                                        <div key={person.id} className="flex gap-3 items-center bg-surface-alt p-3 rounded-xl border border-border-light">
+                                            <input className="input bg-transparent border-none flex-1 font-bold" value={person.name} placeholder="Name" onChange={e => updateAttendance(person.id, 'name', e.target.value)} />
+                                            <select className="input bg-transparent border-none w-40" value={person.role} onChange={e => updateAttendance(person.id, 'role', e.target.value)}>
+                                                <option>Director</option>
+                                                <option>Observer</option>
+                                                <option>Secretary</option>
+                                            </select>
+                                            <select className="input bg-transparent border-none w-40" value={person.status} onChange={e => updateAttendance(person.id, 'status', e.target.value)}>
+                                                <option value="present">Present</option>
+                                                <option value="apologies">Apologies</option>
+                                                <option value="absent">Absent</option>
+                                            </select>
+                                            <button className="text-error p-2 hover:bg-error-bg rounded-lg" onClick={() => removeAttendance(person.id)}>✖</button>
+                                        </div>
+                                    ))}
+                                    <button className="btn btn-secondary w-full border-dashed" onClick={addAttendance}>+ Add Attendee</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div className="space-y-6">
+                                <h2 className="text-2xl font-bold">Agenda Builder</h2>
+                                <p className="text-secondary">Drag and drop to reorder items.</p>
+                                <div className="space-y-2" ref={agendaListRef}>
+                                    {state.agenda.map((item, idx) => (
+                                        <div key={item.id} className="flex items-center gap-4 bg-surface-alt p-4 rounded-xl border border-border-light group cursor-move">
+                                            <div className="drag-handle text-muted"><i className="fas fa-grip-vertical"></i></div>
+                                            <div className="flex-1">
+                                                <div className="font-bold">{item.title}</div>
+                                                <div className="flex gap-2 text-xs uppercase font-bold tracking-wider mt-1">
+                                                    <span className={item.type === 'decision' ? 'text-accent' : 'text-primary'}>{item.type}</span>
+                                                    <span className="text-muted">• {item.duration} mins</span>
+                                                </div>
+                                            </div>
+                                            {!item.fixed && <button className="text-error opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removeAgendaItem(item.id)}>✖</button>}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="bg-surface p-4 rounded-xl border border-dashed flex gap-3 items-center">
+                                    <input className="input flex-1" id="new-title" placeholder="New Agenda Item Title" />
+                                    <select className="input w-32" id="new-type text-dark">
+                                        <option value="info">Info</option>
+                                        <option value="discussion">Discussion</option>
+                                        <option value="decision">Decision</option>
+                                    </select>
+                                    <button className="btn btn-primary" onClick={() => {
+                                        const t = document.getElementById('new-title');
+                                        const type = document.getElementById('new-type text-dark');
+                                        addAgendaItem(t.value, type.value, 15);
+                                        t.value = '';
+                                    }}>Add</button>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 4 && (
+                            <div className="space-y-6">
+                                <h2 className="text-2xl font-bold">Decision Details</h2>
+                                <p className="text-secondary text-sm">Provide context for each agenda item marked as 'Decision'.</p>
+                                <div className="space-y-6">
+                                    {state.agenda.filter(a => a.type === 'decision').map(item => (
+                                        <div key={item.id} className="p-6 bg-surface-alt rounded-xl border border-border-light space-y-4">
+                                            <div className="text-accent font-bold uppercase text-xs tracking-widest">Item: {item.title}</div>
+                                            <div className="space-y-2">
+                                                <label className="text-sm font-bold text-muted uppercase">Recommendation</label>
+                                                <textarea className="input min-h-[80px]" value={state.decisions[item.id]?.rec || ''} onChange={e => updateDecision(item.id, 'rec', e.target.value)} placeholder="What is the board being asked to do?" />
+                                            </div>
+                                            <div className="grid grid-2 gap-4">
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-bold text-muted uppercase">Financial Impact</label>
+                                                    <input className="input" value={state.decisions[item.id]?.finance || ''} onChange={e => updateDecision(item.id, 'finance', e.target.value)} placeholder="e.g. £500, Budgeted" />
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <label className="text-sm font-bold text-muted uppercase">Key Risk</label>
+                                                    <input className="input" value={state.decisions[item.id]?.risk || ''} onChange={e => updateDecision(item.id, 'risk', e.target.value)} placeholder="e.g. Reputational" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {state.agenda.filter(a => a.type === 'decision').length === 0 && (
+                                        <div className="text-center py-10 text-muted">No decisions on this agenda.</div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 5 && (
+                            <div className="space-y-8">
+                                <h2 className="text-2xl font-bold">Review & Finalize</h2>
+                                <div className="grid grid-2 gap-6">
+                                    <div className="space-y-1">
+                                        <div className="text-xs font-bold text-muted uppercase">Meeting Info</div>
+                                        <div className="text-lg font-bold">{state.meetingDetails.cicName || 'InclusiFund CIC'}</div>
+                                        <div className="text-sm text-secondary">{state.meetingDetails.date} @ {state.meetingDetails.time}</div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <div className="text-xs font-bold text-muted uppercase">Quorum Status</div>
+                                        <div className={`text-lg font-bold ${isQuorate() ? 'text-success' : 'text-warning'}`}>{isQuorate() ? 'Quorate' : 'Not Quorate'}</div>
+                                        <div className="text-sm text-secondary">{state.attendance.filter(d => d.role === 'Director' && d.status === 'present').length} Directors Present</div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="text-xs font-bold text-muted uppercase">Agenda Snapshot</div>
+                                    <div className="space-y-2">
+                                        {state.agenda.map((item, i) => (
+                                            <div key={i} className="flex justify-between text-sm py-2 border-b border-surface-alt">
+                                                <span>{i + 1}. {item.title}</span>
+                                                <span className="text-muted uppercase font-bold text-[10px]">{item.type}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button className="btn btn-primary w-full py-4 text-lg" onClick={handleGenerate}>Generate Board Pack</button>
+                            </div>
+                        )}
+
+                        <div className="flex justify-between pt-8 border-t border-border-light mt-8">
+                            <button className={`btn btn-secondary ${step === 1 ? 'invisible' : ''}`} onClick={() => setStep(s => s - 1)}>Back</button>
+                            {step < 5 && <button className="btn btn-primary" onClick={() => setStep(s => s + 1)}>Continue</button>}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<BoardPackBuilder />);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund Tools | Dashboard</title>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // Auth Check
+        const userSession = localStorage.getItem('inclusifund_user');
+        if (!userSession) {
+            window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+        }
+    </script>
+
+    <link rel="stylesheet" href="assets/theme.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            emerald: { 50: '#ecfdf5', 600: '#059669' },
+                            teal: { 50: '#D5ECEC', 600: '#008080', 700: '#005461' },
+                            cyan: { 50: '#ecfeff', 500: '#06b6d4' },
+                            premium: '#d4a853',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Base Styles -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        /* Scroll Reveal */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Button Ripple */
+        .btn-ripple-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Urgency Badge */
+        .urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            animation: urgencyPulse 2s ease-in-out infinite;
+        }
+
+        .urgency-badge--amber {
+            background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+            color: #92400E;
+            border: 1px solid #F59E0B;
+        }
+
+        .urgency-badge--red {
+            background: linear-gradient(135deg, #FEE2E2, #FECACA);
+            color: #991B1B;
+            border: 1px solid #EF4444;
+        }
+
+        @keyframes urgencyPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Loss Aversion - Deadline Countdown */
+        .deadline-countdown {
+            position: relative;
+        }
+
+        .deadline-countdown-number {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.02em;
+        }
+
+        .deadline-countdown-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Stat Card Counter Animation */
+        .stat-counter {
+            transition: all 0.8s ease-out;
+        }
+
+        /* Progress Ring for Compliance */
+        .compliance-ring {
+            width: 80px;
+            height: 80px;
+            transform: rotate(-90deg);
+        }
+
+        .compliance-ring-bg {
+            fill: none;
+            stroke: #E5E7EB;
+            stroke-width: 6;
+        }
+
+        .compliance-ring-fill {
+            fill: none;
+            stroke: #008080;
+            stroke-width: 6;
+            stroke-linecap: round;
+            stroke-dasharray: 220;
+            stroke-dashoffset: 220;
+            transition: stroke-dashoffset 1.5s ease-out;
+        }
+
+        .compliance-ring-fill--warning {
+            stroke: #EF4444;
+        }
+
+        /* Greeting Shimmer */
+        .greeting-shimmer {
+            background: linear-gradient(90deg, transparent, rgba(0, 128, 128, 0.08), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Testimonial ticker */
+        .testimonial-ticker {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .testimonial-ticker-inner {
+            display: inline-flex;
+            gap: 3rem;
+            animation: tickerScroll 30s linear infinite;
+        }
+
+        @keyframes tickerScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .testimonial-ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.8125rem;
+            color: #64748B;
+            white-space: nowrap;
+        }
+
+        .testimonial-ticker-item strong {
+            color: #334155;
+        }
+    </style>
+</head>
+
+<body class="antialiased opacity-0 transition-opacity duration-500"
+    onload="document.body.classList.remove('opacity-0')">
+
+    <div class="flex min-h-screen bg-slate-50">
+        <!-- Sidebar -->
+        <aside
+            class="w-64 bg-slate-900 text-white flex flex-col sticky top-0 h-screen border-r border-slate-800 transition-all duration-300">
+            <div class="p-6">
+                <!-- Logo -->
+                <div class="text-2xl font-bold mb-10 text-brand-cyan tracking-tight flex items-center gap-3">
+                    <img src="" alt="InclusiFund Logo" class="app-logo h-8 w-8 object-contain hidden" />
+                    <span>InclusiFund</span>
+                </div>
+
+                <!-- Navigation -->
+                <nav class="flex flex-col gap-2 flex-1">
+                    <a href="https://tools.inclusifund.co.uk/dashboard/user-account"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg bg-brand-teal text-white shadow-md font-medium transition-all">
+                        <span class="text-xl">&#x1F4CA;</span>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="https://tools.inclusifund.co.uk/dashboard"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-all group">
+                        <span class="text-xl group-hover:scale-110 transition-transform">&#x1F4C1;</span>
+                        <span>Tools</span>
+                    </a>
+                    <a href="https://tools.inclusifund.co.uk/subscription/user-account"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-all group">
+                        <span class="text-xl group-hover:scale-110 transition-transform">&#x1F4B3;</span>
+                        <span>Subscription</span>
+                    </a>
+                    <a href="https://tools.inclusifund.co.uk/settings/user-account"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white font-medium transition-all group">
+                        <span class="text-xl group-hover:scale-110 transition-transform">&#x2699;&#xFE0F;</span>
+                        <span>Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- User Profile (Bottom) -->
+            <div class="mt-auto p-6 border-t border-slate-800 flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-brand-emerald-50 text-brand-emerald-600 flex items-center justify-center font-bold text-sm"
+                    id="user-avatar">
+                    ?
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="font-semibold text-sm truncate" id="user-name">Loading...</div>
+                    <div class="text-slate-400 text-xs truncate" id="user-email">...</div>
+                </div>
+            </div>
+
+            <!-- Logout -->
+            <div class="px-6 pb-6 pt-0">
+                <a href="#" id="logoutBtn"
+                    class="flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-500/10 hover:text-red-300 font-medium transition-all">
+                    <span class="text-xl">&#x1F6AA;</span>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 md:p-12 overflow-y-auto w-full max-w-7xl mx-auto">
+
+            <!-- Header -->
+            <header class="scroll-reveal flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+                <div>
+                    <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight leading-none mb-2">Dashboard</h1>
+                    <p class="text-slate-500 text-lg" id="welcome-msg">Welcome back. Here's what's happening today.</p>
+                </div>
+                <button onclick="navigateToToolsSuite()" id="toolsSuiteBtn"
+                    class="btn-ripple-container inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand-teal-600 hover:bg-brand-teal-700 text-white font-semibold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5">
+                    Return to Tools Suite
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"
+                        class="transition-transform group-hover:translate-x-1">
+                        <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </header>
+
+            <!-- Testimonial Ticker -->
+            <div class="scroll-reveal testimonial-ticker bg-white rounded-xl border border-slate-100 p-3 mb-8 shadow-sm">
+                <div class="testimonial-ticker-inner" id="testimonialTicker">
+                    <span class="testimonial-ticker-item">"<strong>Reduced our admin by 60%</strong>" &mdash; Nkechi Adeyemi, Inclusive Futures CIC</span>
+                    <span class="testimonial-ticker-item">"<strong>The compliance calendar is a lifesaver</strong>" &mdash; Tom Hargreaves, Riverside Community CIC</span>
+                    <span class="testimonial-ticker-item">"<strong>Grant discovery found us 3 new funders</strong>" &mdash; Fatima Al-Rashid, Horizons Together CIC</span>
+                    <span class="testimonial-ticker-item">"<strong>Board pack in 20 minutes, not 2 days</strong>" &mdash; Rhiannon Lloyd, Cymru Social Enterprise CIC</span>
+                    <span class="testimonial-ticker-item">"<strong>Reduced our admin by 60%</strong>" &mdash; Nkechi Adeyemi, Inclusive Futures CIC</span>
+                    <span class="testimonial-ticker-item">"<strong>The compliance calendar is a lifesaver</strong>" &mdash; Tom Hargreaves, Riverside Community CIC</span>
+                    <span class="testimonial-ticker-item">"<strong>Grant discovery found us 3 new funders</strong>" &mdash; Fatima Al-Rashid, Horizons Together CIC</span>
+                    <span class="testimonial-ticker-item">"<strong>Board pack in 20 minutes, not 2 days</strong>" &mdash; Rhiannon Lloyd, Cymru Social Enterprise CIC</span>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="scroll-reveal stat-card bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-xl bg-brand-cyan-50 text-brand-teal-600 flex items-center justify-center text-3xl">
+                        &#x1F6E0;&#xFE0F;</div>
+                    <div>
+                        <div class="stat-value text-3xl font-extrabold text-slate-900 leading-none mb-1">0</div>
+                        <div class="text-sm font-medium text-slate-500">Tools Used</div>
+                    </div>
+                </div>
+                <div class="scroll-reveal stat-card bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex items-center gap-5" style="transition-delay: 100ms;">
+                    <div class="w-14 h-14 rounded-xl bg-brand-cyan-50 text-brand-teal-600 flex items-center justify-center text-3xl">
+                        &#x1F4C4;</div>
+                    <div>
+                        <div class="stat-value text-3xl font-extrabold text-slate-900 leading-none mb-1">0</div>
+                        <div class="text-sm font-medium text-slate-500">Docs Generated</div>
+                    </div>
+                </div>
+                <div class="scroll-reveal stat-card bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex items-center gap-5" style="transition-delay: 200ms;">
+                    <div class="w-14 h-14 rounded-xl bg-brand-cyan-50 text-brand-teal-600 flex items-center justify-center text-3xl">
+                        &#x23F1;&#xFE0F;</div>
+                    <div>
+                        <div class="stat-value text-3xl font-extrabold text-slate-900 leading-none mb-1">0h</div>
+                        <div class="text-sm font-medium text-slate-500">Time Saved</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Activity Feed (takes up 2 columns on large screens) -->
+                <div class="scroll-reveal lg:col-span-2 bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100 h-fit">
+                    <h2 class="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100 flex items-center gap-2">
+                        <span>&#x26A1;</span> Recent Activity
+                    </h2>
+
+                    <div id="activity-timeline-container" class="relative pl-2">
+                        <!-- Connecting line for timeline -->
+                        <div class="absolute left-[1.15rem] top-8 bottom-4 w-0.5 bg-slate-100 hidden"></div>
+
+                        <div class="timeline-item mb-0 relative">
+                            <div class="flex gap-4">
+                                <div class="timeline-content text-slate-500 italic text-sm py-2">
+                                    No recent activity found.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="flex flex-col gap-8">
+                    <!-- Deadline / Compliance Alert -->
+                    <div id="deadline-container" class="scroll-reveal" style="transition-delay: 150ms;">
+                        <div class="deadline-card bg-amber-50 border border-amber-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+                            <!-- Decorative background accent -->
+                            <div class="absolute -right-4 -top-4 w-24 h-24 bg-amber-100 rounded-full opacity-50 blur-xl pointer-events-none"></div>
+
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-amber-800 font-bold text-lg flex items-center gap-2 relative z-10">&#x26A0;&#xFE0F; Action Required</h3>
+                                <span class="urgency-badge urgency-badge--amber">Setup Needed</span>
+                            </div>
+                            <p class="text-sm text-amber-900/80 mb-5 relative z-10">Complete your compliance onboarding to unlock personalized deadlines and tracking.</p>
+
+                            <a href="https://tools.inclusifund.co.uk/compliance-onboarding"
+                                class="btn-ripple-container inline-flex items-center justify-center bg-red-500 hover:bg-red-600 text-white font-medium px-5 py-2.5 rounded-lg text-sm transition-colors shadow-sm relative z-10 group">
+                                Start Setup
+                                <span class="ml-1 group-hover:translate-x-1 transition-transform">&rarr;</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Compliance Progress (new widget) -->
+                    <div class="scroll-reveal bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100" style="transition-delay: 250ms;" id="complianceProgressWidget">
+                        <h2 class="text-xl font-bold text-slate-900 mb-4 pb-4 border-b border-slate-100">Compliance Score</h2>
+                        <div class="flex items-center gap-6">
+                            <svg class="compliance-ring" viewBox="0 0 80 80">
+                                <circle class="compliance-ring-bg" cx="40" cy="40" r="35" />
+                                <circle class="compliance-ring-fill" id="complianceRingFill" cx="40" cy="40" r="35" />
+                            </svg>
+                            <div>
+                                <div class="text-3xl font-extrabold text-slate-900" id="complianceScore">--</div>
+                                <div class="text-sm text-slate-500">Complete onboarding to begin tracking</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="scroll-reveal bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-slate-100" style="transition-delay: 350ms;">
+                        <h2 class="text-xl font-bold text-slate-900 mb-6 pb-4 border-b border-slate-100">Quick Access</h2>
+                        <div class="flex flex-col gap-2">
+                            <a href="https://tools.inclusifund.co.uk/benefit-statement"
+                                class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-brand-teal-600 transition-colors group">
+                                <div class="w-10 h-10 rounded-lg bg-slate-100 group-hover:bg-brand-teal-50 flex items-center justify-center text-lg transition-colors">
+                                    &#x1F4C4;</div>
+                                <span class="font-medium text-sm">Create Benefit Statement</span>
+                            </a>
+                            <a href="https://tools.inclusifund.co.uk/grants"
+                                class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-brand-teal-600 transition-colors group">
+                                <div class="w-10 h-10 rounded-lg bg-slate-100 group-hover:bg-brand-teal-50 flex items-center justify-center text-lg transition-colors">
+                                    &#x1F4B0;</div>
+                                <span class="font-medium text-sm">Find Grants</span>
+                            </a>
+                            <a href="https://tools.inclusifund.co.uk/business-model"
+                                class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-brand-teal-600 transition-colors group">
+                                <div class="w-10 h-10 rounded-lg bg-slate-100 group-hover:bg-brand-teal-50 flex items-center justify-center text-lg transition-colors">
+                                    &#x2696;&#xFE0F;</div>
+                                <span class="font-medium text-sm">Stress Test Model</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+
+
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/logo.js"></script>
+    <script>document.querySelectorAll(".app-logo").forEach(img => img.src = window.INCLUSIFUND_LOGO_BASE64);</script>
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script>
+        // --- Scroll Reveal ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const revealEls = document.querySelectorAll('.scroll-reveal');
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('revealed');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            revealEls.forEach(el => revealObserver.observe(el));
+        });
+
+        // --- Button Ripple ---
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.btn-ripple-container');
+            if (!btn) return;
+            const ripple = document.createElement('span');
+            ripple.classList.add('btn-ripple-effect');
+            const rect = btn.getBoundingClientRect();
+            ripple.style.left = (e.clientX - rect.left) + 'px';
+            ripple.style.top = (e.clientY - rect.top) + 'px';
+            ripple.style.width = ripple.style.height = Math.max(rect.width, rect.height) + 'px';
+            btn.appendChild(ripple);
+            ripple.addEventListener('animationend', () => ripple.remove());
+        });
+
+        // Initialize Convex client
+        const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+
+        // Populate User Data from localStorage immediately
+        const user = JSON.parse(localStorage.getItem('inclusifund_user'));
+        if (user) {
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-name').textContent = user.name || user.email.split('@')[0];
+
+            // Avatar initials
+            const initials = (user.name || user.email).slice(0, 2).toUpperCase();
+            document.getElementById('user-avatar').textContent = initials;
+
+            // Welcome message
+            const welcomeMsg = document.getElementById('welcome-msg');
+            if (welcomeMsg) {
+                const firstName = user.name ? user.name.split(' ')[0] : user.email.split('@')[0];
+                welcomeMsg.textContent = `Welcome back, ${firstName}. Here's what's happening today.`;
+            }
+
+            // Fetch and populate real data from Convex
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Fetch user stats
+                const stats = await convexClient.query("activity:getUserStats", { userId: user.email });
+                if (stats) {
+                    const statsCards = document.querySelectorAll('.stat-card');
+                    if (statsCards[0]) {
+                        animateCounter(statsCards[0].querySelector('.stat-value'), stats.toolsUsed || 0);
+                    }
+                    if (statsCards[1]) {
+                        animateCounter(statsCards[1].querySelector('.stat-value'), stats.docsGenerated || 0);
+                    }
+                    if (statsCards[2]) {
+                        statsCards[2].querySelector('.stat-value').textContent = stats.timeSaved || '0h';
+                    }
+                }
+
+                // Check compliance status and fetch next deadline
+                const complianceData = await convexClient.query("compliance:getComplianceData", { userId: user.email });
+                const deadlineContainer = document.getElementById('deadline-container');
+
+                if (complianceData) {
+                    // Update compliance ring
+                    updateComplianceRing(complianceData);
+
+                    // User has completed onboarding, fetch real upcoming deadline
+                    const nextDeadline = await convexClient.query("compliance:getNextDeadline", { userId: user.email });
+
+                    if (nextDeadline) {
+                        const dueDate = new Date(nextDeadline.dueDate);
+                        const daysUntil = Math.ceil((dueDate - new Date()) / (1000 * 60 * 60 * 24));
+                        const isUrgent = daysUntil <= 14;
+
+                        deadlineContainer.innerHTML = `
+                            <div class="deadline-card bg-white border ${isUrgent ? 'border-red-200 bg-red-50' : 'border-slate-200'} rounded-2xl p-6 shadow-sm overflow-hidden relative">
+                                ${isUrgent ? '<div class="absolute -right-4 -top-4 w-24 h-24 bg-red-100 rounded-full opacity-50 blur-xl pointer-events-none"></div>' : ''}
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="font-bold text-lg flex items-center gap-2 relative z-10 ${isUrgent ? 'text-red-700' : 'text-slate-800'}">
+                                        ${isUrgent ? '&#x26A0;&#xFE0F;' : '&#x1F4C5;'} ${escapeHTML(nextDeadline.type)} ${isUrgent ? 'Due Soon' : 'Upcoming'}
+                                    </div>
+                                    ${isUrgent ? '<span class="urgency-badge urgency-badge--red">Urgent</span>' : ''}
+                                </div>
+                                <p class="text-sm mb-5 relative z-10 ${isUrgent ? 'text-red-900/80' : 'text-slate-600'}">${escapeHTML(nextDeadline.description)}</p>
+                                <div class="deadline-countdown relative z-10">
+                                    <div class="deadline-countdown-number ${isUrgent ? 'text-red-600' : 'text-brand-teal-600'}">${daysUntil}</div>
+                                    <div class="deadline-countdown-label ${isUrgent ? 'text-red-800' : 'text-slate-500'}">Days Remaining</div>
+                                </div>
+                                <a href="https://tools.inclusifund.co.uk/compliance-calendar" class="mt-4 inline-flex items-center text-sm font-semibold transition-colors group relative z-10 ${isUrgent ? 'text-red-700 hover:text-red-800' : 'text-brand-teal-600 hover:text-brand-teal-700'}">
+                                    View Compliance Calendar
+                                    <span class="ml-1 group-hover:translate-x-1 transition-transform">&rarr;</span>
+                                </a>
+                            </div>
+                        `;
+                    } else {
+                        // Compliant but no imminent deadlines
+                        deadlineContainer.innerHTML = `
+                            <div class="deadline-card bg-emerald-50 border border-emerald-200 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+                                <div class="absolute -right-4 -top-4 w-24 h-24 bg-emerald-100 rounded-full opacity-50 blur-xl pointer-events-none"></div>
+                                <h3 class="text-emerald-800 font-bold text-lg flex items-center gap-2 mb-2 relative z-10">&#x2705; All Caught Up</h3>
+                                <p class="text-sm text-emerald-900/80 mb-5 relative z-10">You have no upcoming deadlines in the near future.</p>
+                                <a href="https://tools.inclusifund.co.uk/compliance-calendar" class="inline-flex items-center text-emerald-700 hover:text-emerald-800 font-semibold text-sm group transition-colors relative z-10">
+                                    Open Calendar
+                                    <span class="ml-1 group-hover:translate-x-1 transition-transform">&rarr;</span>
+                                </a>
+                            </div>
+                        `;
+                    }
+                }
+
+                // Fetch recent activity
+                const recentActivity = await convexClient.query("activity:getRecentActivity", {
+                    userId: user.email,
+                    limit: 5
+                });
+
+                if (recentActivity && recentActivity.length > 0) {
+                    const activityContainer = document.getElementById('activity-timeline-container');
+                    if (activityContainer) {
+                        const timelineHTML = recentActivity.map(activity => {
+                            const date = new Date(activity.timestamp);
+                            const timeAgo = getTimeAgo(date);
+
+                            return `
+                                <div class="timeline-item mb-6 relative group">
+                                    <div class="flex gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-brand-cyan-50 border-2 border-white shadow-sm flex items-center justify-center text-brand-teal-600 flex-shrink-0 z-10 text-lg group-hover:bg-brand-teal-100 transition-colors">
+                                            &#x26A1;
+                                        </div>
+                                        <div class="flex-1 pt-1">
+                                            <div class="text-xs text-slate-400 font-medium mb-1 tracking-wide uppercase">${timeAgo}</div>
+                                            <div class="text-slate-900 font-semibold mb-1">${escapeHTML(activity.action)}</div>
+                                            ${activity.description ? `<div class="text-slate-500 text-sm leading-relaxed">${escapeHTML(activity.description)}</div>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+
+                        activityContainer.innerHTML = timelineHTML;
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+
+        // Animate stat counters
+        function animateCounter(el, target) {
+            if (!el) return;
+            const val = parseInt(target) || 0;
+            if (val === 0) { el.textContent = '0'; return; }
+            let current = 0;
+            const step = Math.max(1, Math.floor(val / 30));
+            const interval = setInterval(() => {
+                current += step;
+                if (current >= val) {
+                    current = val;
+                    clearInterval(interval);
+                }
+                el.textContent = current;
+            }, 30);
+        }
+
+        // Update compliance ring
+        function updateComplianceRing(data) {
+            const ring = document.getElementById('complianceRingFill');
+            const scoreEl = document.getElementById('complianceScore');
+            if (!ring || !scoreEl) return;
+
+            const score = data.complianceScore || 0;
+            const circumference = 2 * Math.PI * 35; // r=35
+            const offset = circumference - (score / 100) * circumference;
+
+            scoreEl.textContent = score + '%';
+
+            if (score < 50) {
+                ring.classList.add('compliance-ring-fill--warning');
+            }
+
+            // Animate after a short delay
+            setTimeout(() => {
+                ring.style.strokeDashoffset = offset;
+            }, 500);
+        }
+
+        // Helper to escape HTML for safety
+        function escapeHTML(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+
+            return "Just now";
+        }
+
+        // Navigate to Tools Suite with compliance check
+        async function navigateToToolsSuite() {
+            try {
+                const complianceData = await convexClient.query("compliance:getComplianceData", { userId: user.email });
+
+                if (complianceData) {
+                    window.location.href = 'https://tools.inclusifund.co.uk/dashboard';
+                } else {
+                    window.location.href = 'https://tools.inclusifund.co.uk/compliance-onboarding';
+                }
+            } catch (error) {
+                console.error('Error checking compliance data:', error);
+                window.location.href = 'https://tools.inclusifund.co.uk/dashboard';
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (typeof InclusiFundAuth !== 'undefined') {
+                InclusiFundAuth.logout();
+            } else {
+                localStorage.removeItem('inclusifund_user');
+                window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+            }
+        });
+    </script>
+</body>
+
+</html>

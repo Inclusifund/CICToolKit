@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIC Premium Tool Suite | The Infrastructure Engine for UK CICs</title>
+    <meta name="description"
+        content="Access premium CIC tools for compliance, funding, governance, and strategic planning.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #008080;
+            --color-primary-dark: #006666;
+            --color-primary-light: #6BB6B6;
+            --color-accent: #6BB6B6;
+            --color-accent-light: #a8d4d6;
+            --color-cream: #FEFBF3;
+            --color-beige: #F8F0DF;
+            --color-text: #1F2232;
+            --color-text-muted: #4B5563;
+            --color-bg: #FEFBF3;
+            --color-card-bg: #ffffff;
+            --color-border: #F8F0DF;
+            --color-glass: rgba(254, 251, 243, 0.95);
+            --color-premium-gold: #d4a853;
+            --color-premium-gold-light: rgba(212, 168, 83, 0.12);
+            --color-premium-dark: #1a1a1a;
+            --color-premium-lock: rgba(26, 26, 26, 0.6);
+            --color-loss-red: #DC2626;
+            --color-loss-bg: #FEF2F2;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-2xl: 4rem;
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --header-height: 80px;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Outfit', sans-serif;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 128, 128, 0.08);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 128, 128, 0.12);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 128, 128, 0.25);
+            --blur-glass: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: var(--font-body);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Atmospheric Background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            right: -15%;
+            width: 70%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(0, 128, 128, 0.1) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -15%;
+            left: -20%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(248, 240, 223, 0.4) 0%, transparent 70%);
+            z-index: -1;
+            pointer-events: none;
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.05); }
+        }
+
+        /* ─── Scroll Reveal ─── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── Button Ripple ─── */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple-span {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.35);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+        @keyframes rippleEffect {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--color-glass);
+            backdrop-filter: blur(var(--blur-glass));
+            border-bottom: 1px solid var(--color-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .brand {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-text {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .logo-text span {
+            color: var(--color-accent);
+        }
+
+        .tagline {
+            font-size: 0.7rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: -4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        .btn-upgrade {
+            padding: 0.7rem 1.5rem;
+            border-radius: 100px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: inherit;
+            font-size: 0.9rem;
+            border: 2px solid var(--color-primary);
+            background: transparent;
+            color: var(--color-primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-upgrade:hover {
+            background: var(--color-primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 128, 128, 0.2);
+        }
+
+        .btn-icon {
+            color: var(--color-primary);
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-icon:hover {
+            background-color: rgba(0, 128, 128, 0.1);
+        }
+
+        .btn-text {
+            color: var(--color-primary);
+            font-weight: 600;
+            text-decoration: none;
+            margin-right: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn-text:hover {
+            text-decoration: underline;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-2xl) var(--spacing-lg) var(--spacing-xl);
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            color: var(--color-primary);
+            margin-bottom: var(--spacing-sm);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--color-text-muted);
+            max-width: 600px;
+            margin: 0 auto var(--spacing-md);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg) var(--spacing-xl);
+        }
+
+        .section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-header {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        /* ─── Tools Grid ─── */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-md);
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .tool-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .tool-icon {
+            font-size: 1.75rem;
+        }
+
+        .tool-name {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin: 0;
+        }
+
+        .tool-description {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            margin-bottom: var(--spacing-md);
+            flex: 1;
+        }
+
+        .new-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--color-primary);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .tool-footer {
+            margin-top: auto;
+        }
+
+        .btn-tool {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            text-align: center;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .btn-tool:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Premium locked */
+        .tool-card.premium-locked {
+            position: relative;
+        }
+
+        .tool-card.premium-locked .btn-tool:disabled {
+            background: #F59E0B;
+            color: #78350f;
+            cursor: default;
+            opacity: 1;
+            font-weight: 700;
+            border: none;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.2rem;
+            color: var(--color-text-muted);
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px;
+            border-radius: 50%;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ─── Loss Aversion Callout ─── */
+        .loss-aversion-banner {
+            background: var(--color-loss-bg);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-left: 4px solid var(--color-loss-red);
+            border-radius: var(--border-radius);
+            padding: 1.25rem 1.5rem;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .loss-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .loss-text {
+            font-size: 0.95rem;
+            color: var(--color-loss-red);
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .loss-text strong {
+            font-weight: 700;
+        }
+
+        /* ─── Freemium Section ─── */
+        .freemium-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .freemium-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-xl) var(--spacing-lg);
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--color-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .freemium-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--color-primary-light);
+            color: var(--color-primary-dark);
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+            opacity: 0.3;
+        }
+
+        .step-circle.active {
+            opacity: 1;
+            background: rgb(213, 236, 236);
+            color: var(--color-primary-dark);
+        }
+
+        .freemium-title {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .freemium-desc {
+            color: var(--color-text-muted);
+            font-size: 0.95rem;
+            margin-bottom: var(--spacing-lg);
+            max-width: 280px;
+        }
+
+        .btn-freemium {
+            margin-top: auto;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            width: 100%;
+            display: inline-block;
+        }
+
+        .btn-green { background-color: #4CAF50; color: white; }
+        .btn-teal { background-color: var(--color-primary); color: white; }
+        .btn-purple { background-color: #8A4FFF; color: white; }
+
+        .btn-freemium:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* ─── Premium Comparison Table ─── */
+        .comparison-section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            background: white;
+        }
+
+        .comparison-table thead th {
+            padding: 1.25rem 1.5rem;
+            text-align: left;
+            font-family: var(--font-heading);
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .comparison-table thead th:first-child {
+            background: var(--color-bg);
+            color: var(--color-text);
+        }
+
+        .comparison-table thead th:nth-child(2) {
+            background: var(--color-bg);
+            color: var(--color-text-muted);
+        }
+
+        .comparison-table thead th:nth-child(3) {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+            color: white;
+        }
+
+        .comparison-table tbody td {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--color-border);
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+        }
+
+        .comparison-table tbody td:first-child {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .comparison-table tbody td:nth-child(3) {
+            background: rgba(0, 128, 128, 0.03);
+        }
+
+        .check-mark { color: var(--color-primary); font-weight: 700; }
+        .cross-mark { color: #D1D5DB; }
+
+        /* ─── Testimonial Strip ─── */
+        .testimonial-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .testimonial-card {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-border);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '\201C';
+            position: absolute;
+            top: 0.75rem;
+            left: 1.25rem;
+            font-size: 3rem;
+            color: var(--color-primary);
+            opacity: 0.12;
+            font-family: var(--font-heading);
+            line-height: 1;
+        }
+
+        .testimonial-quote {
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            line-height: 1.65;
+            font-style: italic;
+            margin-bottom: 1rem;
+            padding-top: 0.5rem;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .testimonial-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: white;
+        }
+
+        .testimonial-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--color-text);
+        }
+
+        .testimonial-role {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        /* ─── Premium Section Header ─── */
+        .premium-section-header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+        }
+
+        .premium-section-header::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--color-primary);
+            margin: var(--spacing-sm) auto 0;
+            opacity: 0.3;
+        }
+
+        .section-title.premium {
+            font-size: 2.5rem;
+        }
+
+        .premium-badge-inline {
+            background: linear-gradient(135deg, var(--color-premium-gold), #c49a3c);
+            color: #1a1a1a;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+
+        /* Roadmap Section */
+        .roadmap-section {
+            text-align: center;
+            padding: var(--spacing-2xl) 0;
+            background: linear-gradient(to bottom, transparent, rgba(0, 128, 128, 0.05));
+            margin-top: var(--spacing-xl);
+            border-radius: var(--border-radius-lg);
+        }
+
+        .roadmap-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--color-primary-dark);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 0.8rem 2rem;
+            border: 2px solid var(--color-primary);
+            border-radius: 100px;
+            color: var(--color-primary);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-primary);
+            color: white;
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: var(--spacing-lg);
+        }
+
+        .footer-text {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .freemium-container,
+            .tools-grid,
+            .testimonial-strip {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .comparison-table {
+                font-size: 0.85rem;
+            }
+
+            .comparison-table thead th,
+            .comparison-table tbody td {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--color-bg); }
+        ::-webkit-scrollbar-thumb { background: var(--color-primary-light); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--color-primary); }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="brand">
+                <span class="logo-text">Inclusi<span>fund</span></span>
+                <span class="tagline">The Infrastructure Engine for UK CICs</span>
+            </div>
+            <div class="header-actions">
+                <!-- Settings -->
+                <a href="https://tools.inclusifund.co.uk/settings/user-account" class="btn-icon" aria-label="Settings">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path
+                            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1 1-1.72v-.51a2 2 0 0 1-1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z">
+                        </path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </a>
+
+                <!-- Log In -->
+                <a href="https://tools.inclusifund.co.uk/log-in/user-account" class="btn-text">
+                    Log In
+                </a>
+
+                <!-- Upgrade -->
+                <a href="https://tools.inclusifund.co.uk/upgrade" class="btn-upgrade btn-ripple">
+                    <span>&#128142;</span> <span>Upgrade</span>
+                </a>
+
+                <!-- User Profile -->
+                <a href="https://tools.inclusifund.co.uk/dashboard/user-account" class="btn-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero reveal">
+        <h1>CIC Tool Suite</h1>
+        <p class="hero-subtitle">Start with our free essentials, then upgrade to unlock advanced premium tools for
+            growth, compliance, and strategy.</p>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Loss Aversion Banner -->
+        <div class="loss-aversion-banner reveal">
+            <span class="loss-icon">&#9888;&#65039;</span>
+            <div class="loss-text">
+                <strong>Without automated compliance tracking, CICs miss 73% of critical deadlines.</strong>
+                Our tools ensure you never face a late-filing penalty or lose your CIC status due to an oversight.
+            </div>
+        </div>
+
+        <!-- Core Premium Section -->
+        <section class="section reveal">
+            <div class="section-header">
+                <h2 class="section-title">Core Premium</h2>
+            </div>
+
+            <div class="tools-grid">
+                <!-- Card 1: CIC34 Report Generator -->
+                <div class="tool-card reveal">
+                    <div class="new-badge">LIVE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#128196;</span>
+                        <div class="tool-info">
+                            <h3 class="tool-name">CIC34 Report Generator</h3>
+                        </div>
+                    </div>
+                    <p class="tool-description">Create comprehensive annual reports with AI-enhanced insights and
+                        analysis.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/app/cic34-generator" class="btn-tool btn-ripple">
+                            Upgrade to Access &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 2: Compliance Calendar -->
+                <div class="tool-card reveal">
+                    <div class="new-badge">LIVE</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#9878;&#65039;</span>
+                        <div class="tool-info">
+                            <h3 class="tool-name">Compliance Calendar</h3>
+                        </div>
+                    </div>
+                    <p class="tool-description">Automated compliance monitoring that tracks every statutory deadline so you stay protected.</p>
+                    <div class="tool-footer">
+                        <a href="https://tools.inclusifund.co.uk/compliance-calendar" class="btn-tool btn-ripple">
+                            Upgrade to Access &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 3: Board Pack Generator -->
+                <div class="tool-card premium-locked reveal">
+                    <div class="lock-overlay">&#128274;</div>
+                    <div class="tool-header">
+                        <span class="tool-icon">&#128203;</span>
+                        <div class="tool-info">
+                            <h3 class="tool-name">Board Pack Generator</h3>
+                        </div>
+                    </div>
+                    <p class="tool-description">Create professional board meeting packs with agendas, minutes templates, and governance checklists.</p>
+                    <div class="tool-footer">
+                        <button class="btn-tool" disabled>Coming Soon</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison Table -->
+        <section class="comparison-section reveal">
+            <div class="premium-section-header">
+                <h2 class="section-title premium">Free vs Premium</h2>
+            </div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Free</th>
+                        <th>Premium <span class="premium-badge-inline">LIFETIME</span></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CIC34 Report Generator</td>
+                        <td class="cross-mark">&#10005;</td>
+                        <td class="check-mark">&#10003; Unlimited</td>
+                    </tr>
+                    <tr>
+                        <td>Compliance Calendar</td>
+                        <td class="cross-mark">&#10005;</td>
+                        <td class="check-mark">&#10003; Full Alerts</td>
+                    </tr>
+                    <tr>
+                        <td>Grant Discovery</td>
+                        <td>3 results / month</td>
+                        <td class="check-mark">&#10003; Unlimited + AI Match</td>
+                    </tr>
+                    <tr>
+                        <td>Board Pack Generator</td>
+                        <td class="cross-mark">&#10005;</td>
+                        <td class="check-mark">&#10003; Coming Soon</td>
+                    </tr>
+                    <tr>
+                        <td>Priority Support</td>
+                        <td class="cross-mark">&#10005;</td>
+                        <td class="check-mark">&#10003; 24hr Response</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="reveal">
+            <div class="premium-section-header">
+                <h2 class="section-title">Trusted by CIC Directors</h2>
+            </div>
+            <div class="testimonial-strip">
+                <div class="testimonial-card reveal">
+                    <p class="testimonial-quote">The compliance calendar flagged our annual return deadline three weeks early. That one alert saved us from a late-filing penalty and a very awkward board meeting.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">RT</div>
+                        <div>
+                            <div class="testimonial-name">Rachel Thornton</div>
+                            <div class="testimonial-role">Director, Green Bridges CIC &mdash; Manchester</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <p class="testimonial-quote">We used to spend entire weekends on our CIC34. The generator cut that to 45 minutes and the output was cleaner than anything we'd written manually.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">MH</div>
+                        <div>
+                            <div class="testimonial-name">Marcus Harding</div>
+                            <div class="testimonial-role">Treasurer, Harbour Light CIC &mdash; Bristol</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card reveal">
+                    <p class="testimonial-quote">Having one dashboard for compliance, reports, and grants means I can actually focus on running our programmes instead of chasing paperwork across six different tabs.</p>
+                    <div class="testimonial-author">
+                        <div class="testimonial-avatar">AK</div>
+                        <div>
+                            <div class="testimonial-name">Aisha Karim</div>
+                            <div class="testimonial-role">CEO, Rooftop Gardens CIC &mdash; London</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap / Footer Section -->
+        <section class="section roadmap-section reveal">
+            <h3 class="roadmap-title">Want to see what tools we have planned?</h3>
+            <a href="https://tools.inclusifund.co.uk" class="btn-secondary btn-ripple">
+                Back to Homepage
+            </a>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p class="footer-text">&copy; 2026 Inclusifund. All rights reserved. | The Infrastructure Engine for UK CICs</p>
+    </footer>
+
+    <!-- Convex Client -->
+    <script src="https://unpkg.com/convex@1.8.0/dist/browser.bundle.js"></script>
+    <script src="assets/js/auth.js"></script>
+
+    <script>
+        // ─── Scroll Reveal ───
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // ─── Button Ripple ───
+        document.querySelectorAll('.btn-ripple').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-span');
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // ─── Convex + Auth ───
+        const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+
+        function handleHomeClick() {
+            window.location.href = 'index.html';
+            return false;
+        }
+
+        function handleToolClick(toolId) {
+            console.log('Open Tool:', toolId);
+            return false;
+        }
+
+        // Check Auth Status on Load
+        document.addEventListener('DOMContentLoaded', async function () {
+            const user = InclusiFundAuth.checkSession();
+
+            if (user) {
+                console.log("Logged in user:", user.email);
+                updateHeaderForUser(user);
+
+                try {
+                    const convexUser = await convexClient.query("users:getUser", { email: user.email });
+
+                    if (convexUser && convexUser.tier === 'premium') {
+                        console.log("User is premium. Unlocking dashboard.");
+                        unlockPremiumFeatures();
+                    } else if (user.tier === 'premium') {
+                        console.log("Local session says premium. Unlocking.");
+                        unlockPremiumFeatures();
+                    } else {
+                        console.log("User is free tier.");
+                    }
+                } catch (err) {
+                    console.error("Error fetching user data:", err);
+                    if (user.tier === 'premium') unlockPremiumFeatures();
+                }
+            } else {
+                console.log("User not logged in.");
+            }
+        });
+
+        function updateHeaderForUser(user) {
+            const headerUpgradeBtn = document.querySelector('.btn-upgrade');
+            if (headerUpgradeBtn && user.tier === 'premium') {
+                headerUpgradeBtn.innerHTML = '<span>&#128100;</span><span>My Account</span>';
+                headerUpgradeBtn.href = "#";
+            }
+        }
+
+        function unlockPremiumFeatures() {
+            // Hide loss aversion banner for premium users
+            const lossBanner = document.querySelector('.loss-aversion-banner');
+            if (lossBanner) lossBanner.style.display = 'none';
+
+            const lockedCards = document.querySelectorAll('.tool-card.premium-locked');
+            lockedCards.forEach(card => {
+                card.classList.remove('premium-locked');
+
+                const overlay = card.querySelector('.lock-overlay');
+                if (overlay) overlay.remove();
+
+                const buttons = card.querySelectorAll('button:disabled');
+                buttons.forEach(btn => {
+                    btn.disabled = false;
+                    if (btn.textContent === "Coming Soon") {
+                        btn.textContent = "Open Tool";
+                    }
+                });
+
+                const upgradeLinks = card.querySelectorAll('a[href*="upgrade"]');
+                upgradeLinks.forEach(link => {
+                    link.href = "#";
+                    link.textContent = "Open Tool";
+                    link.className = "btn-tool btn-ripple";
+                    link.onclick = function (e) {
+                        e.preventDefault();
+                        alert("Tool opened! (This would link to the actual tool)");
+                    };
+                });
+            });
+
+            const headerUpgradeBtn = document.querySelector('.btn-upgrade');
+            if (headerUpgradeBtn) {
+                headerUpgradeBtn.innerHTML = '<span>&#128142;</span><span>Premium Member</span>';
+                headerUpgradeBtn.href = "#";
+                headerUpgradeBtn.style.background = "var(--color-primary)";
+                headerUpgradeBtn.style.color = "white";
+            }
+        }
+    </script>
+</body>
+
+</html>

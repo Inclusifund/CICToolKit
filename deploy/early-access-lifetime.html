@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund | Anniversary Lifetime Offer — The Infrastructure Engine for UK CICs</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #008080;
+            --primary-dark: #005f5f;
+            --accent: #6BB6B6;
+            --premium: #d4a853;
+            --text-dark: #1F2232;
+            --text-muted: #4B5563;
+            --bg-page: #f8fafb;
+            --bg-surface: #ffffff;
+            --bg-surface-alt: #f1f5f9;
+            --border-light: #e2e8f0;
+            --radius-md: 0.75rem;
+            --radius-xl: 1.25rem;
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08);
+            --shadow-2xl: 0 25px 50px -12px rgba(0,0,0,0.12);
+            --font-heading: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-page);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+
+        .max-w-4xl { max-width: 56rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .text-center { text-align: center; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-10 { margin-bottom: 2.5rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mb-16 { margin-bottom: 4rem; }
+        .mb-20 { margin-bottom: 5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .pb-20 { padding-bottom: 5rem; }
+        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+        .p-6 { padding: 1.5rem; }
+        .p-8 { padding: 2rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .inline-block { display: inline-block; }
+        .block { display: block; }
+        .flex { display: flex; }
+        .grid { display: grid; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-5xl { font-size: 3rem; }
+        .text-6xl { font-size: 3.75rem; }
+        .font-bold { font-weight: 700; }
+        .font-black { font-weight: 900; }
+        .font-medium { font-weight: 500; }
+        .leading-relaxed { line-height: 1.625; }
+        .tracking-tight { letter-spacing: -0.02em; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .uppercase { text-transform: uppercase; }
+        .line-through { text-decoration: line-through; }
+        .no-underline { text-decoration: none; }
+        .rounded-xl { border-radius: var(--radius-xl); }
+        .rounded-full { border-radius: 999px; }
+        .shadow-lg { box-shadow: var(--shadow-lg); }
+        .shadow-2xl { box-shadow: var(--shadow-2xl); }
+        .w-full { width: 100%; }
+        .col-span-4 { grid-column: span 4; }
+        .opacity-80 { opacity: 0.8; }
+        .opacity-90 { opacity: 0.9; }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .text-5xl { font-size: 2.25rem; }
+            .text-6xl { font-size: 2.75rem; }
+            .md\:text-6xl { font-size: 3.75rem; }
+        }
+        @media (min-width: 769px) {
+            .md\:text-6xl { font-size: 3.75rem; }
+        }
+
+        /* Hero */
+        .promo-hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 8rem 1rem 10rem;
+            text-align: center;
+            border-radius: 0 0 3rem 3rem;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: -5rem;
+        }
+        .promo-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -20%;
+            width: 80%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Urgency Badge */
+        .urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, var(--premium), #c4943f);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            animation: pulseBadge 2s infinite;
+        }
+        @keyframes pulseBadge {
+            0%,100% { box-shadow: 0 0 0 0 rgba(212,168,83,0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(212,168,83,0); }
+        }
+
+        /* Pricing card */
+        .pricing-card {
+            max-width: 500px;
+            margin: 0 auto 4rem;
+            position: relative;
+            z-index: 10;
+            padding: 3rem;
+            border: 2px solid var(--premium);
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-2xl);
+        }
+
+        /* Countdown */
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+        .countdown-box {
+            background: var(--bg-surface-alt);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--border-light);
+        }
+        .countdown-val {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            font-family: var(--font-heading);
+        }
+        .countdown-lbl {
+            font-size: 0.625rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-top: 0.25rem;
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Scarcity Meter */
+        .scarcity-meter {
+            background: #e5e7eb;
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        .scarcity-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--premium), #e6b84d);
+            transition: width 1.5s ease;
+        }
+
+        /* Button ripple */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .btn-ripple .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            transform: scale(0);
+            animation: rippleAnim 0.6s ease-out;
+            pointer-events: none;
+        }
+        @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+        .btn-ripple:hover { transform: scale(1.03); box-shadow: 0 12px 30px rgba(0,128,128,0.3); }
+
+        /* Count-up */
+        .stat-number {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        /* Feature card */
+        .card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-2xl); }
+        .border-l-4 { border-left: 4px solid var(--primary); }
+
+        /* Primary button */
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 1.125rem;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        /* Social proof toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 24px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 999;
+            transform: translateX(-120%);
+            transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+            max-width: 340px;
+            border-left: 4px solid var(--premium);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .toast-text { font-size: 13px; color: var(--text-dark); line-height: 1.4; }
+        .toast-text strong { color: var(--primary); }
+        .toast-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Sticky CTA */
+        .sticky-cta {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-light);
+            padding: 12px 24px;
+            z-index: 900;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+        .sticky-cta.show { transform: translateY(0); }
+
+        /* Testimonial cards */
+        .testimonial-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-lg);
+        }
+
+        a:focus, button:focus { outline: 3px solid var(--premium); outline-offset: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="promo-hero">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="urgency-badge mb-8">Early access -- limited spots</div>
+            <h1 class="mb-6 text-5xl md:text-6xl" style="color:#fff;">Lifetime Access</h1>
+            <p class="text-xl opacity-90 leading-relaxed" style="max-width:42rem; margin:0 auto;">
+                One year ago, we went viral. Today, we're giving our community unrestricted access to the complete CIC infrastructure engine.
+            </p>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-6">
+
+        <!-- Pricing & Countdown -->
+        <div class="pricing-card reveal">
+            <div class="text-center mb-8">
+                <div class="text-lg mb-2 line-through font-bold" style="color:var(--text-muted);">Regular Price: &pound;297</div>
+                <div class="text-6xl font-black mb-2 tracking-tight" style="color:var(--primary);">&pound;97</div>
+                <p class="font-medium" style="color:var(--text-muted);">One-time payment &bull; Lifetime Access</p>
+            </div>
+
+            <!-- Scarcity Meter -->
+            <div class="text-center mb-6">
+                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted);">Spots Claimed</p>
+                <div class="scarcity-meter">
+                    <div class="scarcity-fill" style="width:0%;" data-target="82"></div>
+                </div>
+                <p class="text-xs mt-4" style="color:var(--text-muted);">82% of lifetime spots taken</p>
+            </div>
+
+            <div class="rounded-xl p-6 text-center mb-8" style="background:var(--bg-surface-alt); border:1px solid var(--border-light);">
+                <div class="text-xs font-bold uppercase tracking-widest mb-2" style="color:var(--text-muted);">Offer Ends Soon</div>
+                <div id="countdown" class="countdown-grid">
+                    <div class="countdown-box">
+                        <div class="countdown-val">0</div>
+                        <div class="countdown-lbl">Days</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-val">00</div>
+                        <div class="countdown-lbl">Hours</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-val">00</div>
+                        <div class="countdown-lbl">Mins</div>
+                    </div>
+                    <div class="countdown-box">
+                        <div class="countdown-val">00</div>
+                        <div class="countdown-lbl">Secs</div>
+                    </div>
+                </div>
+                <div class="text-xs font-medium" style="color:var(--text-muted);">February 18th at 11:59 PM</div>
+            </div>
+
+            <a href="https://admin.inclusifund.co.uk/payment-link/698a02636202c1d7f0e903de"
+               class="btn-ripple btn-primary w-full text-center no-underline block" style="padding:1.125rem 2rem; font-size:1.25rem;">
+                Claim Lifetime Access
+            </a>
+
+            <p class="text-center text-xs mt-4 flex items-center justify-center gap-4" style="color:var(--text-muted);">
+                <span>Secure Checkout</span>
+                <span>&bull;</span>
+                <span>30-Day Guarantee</span>
+            </p>
+        </div>
+
+        <!-- Stats -->
+        <div class="reveal" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; margin-bottom:3rem; text-align:center;">
+            <div>
+                <div class="stat-number" data-target="1240">0</div>
+                <p class="text-sm font-medium" style="color:var(--text-muted);">CICs Validated</p>
+            </div>
+            <div>
+                <div class="stat-number" data-target="340">0</div>
+                <p class="text-sm font-medium" style="color:var(--text-muted);">Statements Written</p>
+            </div>
+            <div>
+                <div class="stat-number" data-target="97">0</div>
+                <p class="text-sm font-medium" style="color:var(--text-muted);">% Approval Rate</p>
+            </div>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="grid grid-2 gap-6 mb-16 reveal">
+            <div class="card flex gap-4 border-l-4">
+                <div style="font-size:2rem;">&#128197;</div>
+                <div>
+                    <h3 class="font-bold mb-2" style="font-family:var(--font-heading);">Compliance Calendar Pro</h3>
+                    <p class="text-sm" style="color:var(--text-muted);">Automated deadline tracking and reminders. Never miss a filing date.</p>
+                </div>
+            </div>
+            <div class="card flex gap-4 border-l-4">
+                <div style="font-size:2rem;">&#128196;</div>
+                <div>
+                    <h3 class="font-bold mb-2" style="font-family:var(--font-heading);">CIC34 Report Generator</h3>
+                    <p class="text-sm" style="color:var(--text-muted);">Create regulator-compliant annual reports in minutes, not days.</p>
+                </div>
+            </div>
+            <div class="card flex gap-4 border-l-4">
+                <div style="font-size:2rem;">&#128221;</div>
+                <div>
+                    <h3 class="font-bold mb-2" style="font-family:var(--font-heading);">Board Pack Builder</h3>
+                    <p class="text-sm" style="color:var(--text-muted);">Streamline agendas, minutes, and decision papers for audits.</p>
+                </div>
+            </div>
+            <div class="card flex gap-4 border-l-4">
+                <div style="font-size:2rem;">&#128269;</div>
+                <div>
+                    <h3 class="font-bold mb-2" style="font-family:var(--font-heading);">Grant Discovery Engine</h3>
+                    <p class="text-sm" style="color:var(--text-muted);">AI-powered matching for 2000+ UK grants with success predictions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonials -->
+        <div class="mb-16 reveal">
+            <h2 class="text-2xl font-bold text-center mb-8" style="color:var(--primary);">What Our Community Says</h2>
+            <div class="grid grid-2 gap-6">
+                <div class="testimonial-card">
+                    <div class="flex items-center gap-4 mb-4" style="gap:12px;">
+                        <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">NP</div>
+                        <div>
+                            <p class="font-bold">Nadia Patel</p>
+                            <p class="text-xs" style="color:var(--text-muted);">Sheffield Community Harvest CIC</p>
+                        </div>
+                    </div>
+                    <p class="text-sm" style="color:var(--text-dark);font-style:italic;">"The compliance calendar alone has saved us from two missed deadlines. Worth every penny of the lifetime price."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="flex items-center gap-4 mb-4" style="gap:12px;">
+                        <div style="width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">DW</div>
+                        <div>
+                            <p class="font-bold">Daniel Wright</p>
+                            <p class="text-xs" style="color:var(--text-muted);">Coventry Skills Bridge CIC</p>
+                        </div>
+                    </div>
+                    <p class="text-sm" style="color:var(--text-dark);font-style:italic;">"The grant discovery engine matched us with three funding sources we'd never have found manually. We secured our first one within a month."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="flex items-center gap-4 mb-4" style="gap:12px;">
+                        <div style="width:44px;height:44px;border-radius:50%;background:var(--premium);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">PK</div>
+                        <div>
+                            <p class="font-bold">Priya Kumar</p>
+                            <p class="text-xs" style="color:var(--text-muted);">Bristol Green Futures CIC</p>
+                        </div>
+                    </div>
+                    <p class="text-sm" style="color:var(--text-dark);font-style:italic;">"Board pack builder turned our chaotic meeting prep into a 15-minute task. Our directors actually read the packs now."</p>
+                </div>
+                <div class="testimonial-card">
+                    <div class="flex items-center gap-4 mb-4" style="gap:12px;">
+                        <div style="width:44px;height:44px;border-radius:50%;background:var(--primary-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">MT</div>
+                        <div>
+                            <p class="font-bold">Marcus Thompson</p>
+                            <p class="text-xs" style="color:var(--text-muted);">Liverpool Social Enterprise CIC</p>
+                        </div>
+                    </div>
+                    <p class="text-sm" style="color:var(--text-dark);font-style:italic;">"At this price, it's a no-brainer. The CIC34 report generator alone would cost you more if you outsourced it every year."</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Why Section -->
+        <div class="rounded-xl p-8 text-center mb-20 reveal" style="background:var(--primary); color:#fff; border:none; box-shadow:var(--shadow-2xl);">
+            <h2 class="text-2xl font-bold mb-6" style="color:#fff; font-family:var(--font-heading);">Why this special offer?</h2>
+            <div class="space-y-4" style="max-width:42rem; margin:0 auto; opacity:0.92; font-size:1.125rem; line-height:1.625;">
+                <p>On February 18th, 2025, InclusiFund started as a viral TikTok. Many of you have been with us since Day One.</p>
+                <p>This anniversary price is our way of saying thank you for trusting us with your CIC's mission.</p>
+            </div>
+        </div>
+
+        <div class="text-center pb-20">
+            <a href="dashboard.html" style="color:var(--primary); font-weight:700; text-decoration:none;">&larr; Return to Free Tools</a>
+        </div>
+    </div>
+
+    <!-- Social Proof Toast -->
+    <div id="social-toast" class="toast">
+        <div class="toast-avatar" id="toast-avatar">NP</div>
+        <div>
+            <div class="toast-text" id="toast-text"><strong>Nadia P.</strong> just claimed lifetime access</div>
+            <div class="toast-time" id="toast-time">3 minutes ago</div>
+        </div>
+    </div>
+
+    <!-- Sticky CTA -->
+    <div class="sticky-cta" id="sticky-cta">
+        <span class="text-sm font-bold" style="color:var(--text-dark);">&pound;97 Lifetime &mdash; Offer ends soon</span>
+        <a href="https://admin.inclusifund.co.uk/payment-link/698a02636202c1d7f0e903de"
+           class="btn-ripple no-underline" style="background:var(--primary); color:#fff; padding:10px 24px; border-radius:999px; font-size:0.875rem; font-weight:700;">
+            Claim Access
+        </a>
+    </div>
+
+    <script>
+        // Countdown
+        function updateCountdown() {
+            const deadline = new Date('2026-02-18T23:59:59');
+            const now = new Date();
+            const diff = deadline - now;
+
+            if (diff <= 0) {
+                document.getElementById('countdown').innerHTML = '<div class="col-span-4 text-center text-xl font-bold" style="color:#dc2626;">OFFER CLOSED</div>';
+                return;
+            }
+
+            const days = Math.floor(diff / (1000*60*60*24));
+            const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+            const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+            const seconds = Math.floor((diff % (1000*60)) / 1000);
+
+            const boxes = document.querySelectorAll('.countdown-val');
+            if (boxes.length === 4) {
+                boxes[0].textContent = days;
+                boxes[1].textContent = hours.toString().padStart(2,'0');
+                boxes[2].textContent = minutes.toString().padStart(2,'0');
+                boxes[3].textContent = seconds.toString().padStart(2,'0');
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Scroll Reveal
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Scarcity Meter
+        const meterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fill = entry.target.querySelector('.scarcity-fill');
+                    if (fill) fill.style.width = fill.getAttribute('data-target') + '%';
+                    meterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.scarcity-meter').forEach(el => meterObserver.observe(el));
+
+        // Count-Up
+        function countUp(el, target) {
+            let current = 0;
+            const step = Math.ceil(target / 60);
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) { current = target; clearInterval(timer); }
+                el.textContent = current.toLocaleString();
+            }, 30);
+        }
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.getAttribute('data-target'));
+                    if (target) countUp(entry.target, target);
+                    statObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
+
+        // Button Ripple
+        document.querySelectorAll('.btn-ripple').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-effect');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Social Proof Toast
+        const toastData = [
+            { initials: 'NP', name: 'Nadia P.', action: 'just claimed lifetime access', time: '3 minutes ago' },
+            { initials: 'MT', name: 'Marcus T.', action: 'upgraded to lifetime', time: '7 minutes ago' },
+            { initials: 'PK', name: 'Priya K.', action: 'just claimed lifetime access', time: '11 minutes ago' },
+            { initials: 'DW', name: 'Daniel W.', action: 'upgraded to lifetime', time: '14 minutes ago' },
+        ];
+        let toastIndex = 0;
+        function showToast() {
+            const toast = document.getElementById('social-toast');
+            const data = toastData[toastIndex % toastData.length];
+            document.getElementById('toast-avatar').textContent = data.initials;
+            document.getElementById('toast-text').innerHTML = '<strong>' + data.name + '</strong> ' + data.action;
+            document.getElementById('toast-time').textContent = data.time;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); toastIndex++; }, 4000);
+        }
+        setTimeout(showToast, 5000);
+        setInterval(showToast, 16000);
+
+        // Sticky CTA
+        window.addEventListener('scroll', () => {
+            const sticky = document.getElementById('sticky-cta');
+            if (window.scrollY > 500) { sticky.classList.add('show'); }
+            else { sticky.classList.remove('show'); }
+        });
+    </script>
+</body>
+</html>

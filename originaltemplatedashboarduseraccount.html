@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund Tools | Dashboard</title>
+    <script>
+        // Auth Check
+        const userSession = localStorage.getItem('inclusifund_user');
+        if (!userSession) {
+            window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+        }
+    </script>
+
+    <link rel="stylesheet" href="assets/theme.css">
+
+    <!-- Convex Client -->
+    <script src="https://cdn.jsdelivr.net/npm/convex@latest/dist/browser.umd.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Styles -->
+    <style>
+        :root {
+            /* Map to canonical widget variables */
+            --card-bg: var(--brand-surface);
+            --card-border: var(--color-border);
+            --card-hover-shadow: var(--shadow-lg);
+
+            /* Brand colors - Mapped to Global Theme */
+            --color-brand-tropical-teal: var(--brand-tropical-teal);
+            --color-brand-dark-teal: var(--brand-dark-teal);
+            --color-brand-teal: var(--brand-teal);
+            --color-brand-light-cyan: #D5ECEC;
+            --color-brand-shadow-grey: var(--brand-shadow-grey);
+            --color-brand-card-bg: var(--brand-surface);
+            --color-brand-border: var(--color-border);
+            --color-text-primary: var(--color-text-primary);
+            --color-text-secondary: var(--color-text-secondary);
+            --color-bg-primary: var(--color-bg-primary);
+            --color-bg-secondary: #F3F4F6;
+            --color-white: #FFFFFF;
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+            --spacing-section: 6rem;
+            --spacing-grid: 2rem;
+        }
+
+        /* Reset & Base */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.2s;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Typography */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: var(--color-brand-dark-teal);
+        }
+
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+        }
+
+        h3 {
+            font-size: 1.75rem;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--color-text-secondary);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-brand {
+            color: var(--color-brand-teal);
+        }
+
+        .text-highlight {
+            color: var(--color-brand-tropical-teal);
+        }
+
+        /* Layout Utilities */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .section {
+            padding: var(--spacing-section) 0;
+        }
+
+        .grid {
+            display: grid;
+            gap: var(--spacing-grid);
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-8 {
+            gap: 2rem;
+        }
+
+        /* Components */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-brand-teal), var(--color-brand-dark-teal));
+            color: var(--color-white);
+            box-shadow: 0 4px 6px rgba(0, 128, 128, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 128, 128, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--color-brand-teal);
+            color: var(--color-brand-teal);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-brand-light-cyan);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .app-sidebar {
+                display: none;
+            }
+
+            .app-main {
+                padding: 1.5rem;
+            }
+        }
+
+        /* DASHBOARD / APP STYLES */
+        .app-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            background-color: var(--color-bg-secondary);
+        }
+
+        .app-sidebar {
+            background: #1F2232;
+            color: var(--color-white);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--color-brand-tropical-teal);
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--color-white);
+        }
+
+        .nav-item.active {
+            background: var(--color-brand-teal);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .user-profile {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--color-brand-tropical-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-brand-dark-teal);
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .app-main {
+            padding: 2rem 3rem;
+            overflow-y: auto;
+        }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            color: var(--color-brand-dark-teal);
+            margin: 0;
+        }
+
+        .page-subtitle {
+            color: var(--color-text-secondary);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .settings-card {
+            background: var(--color-white);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .settings-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--color-brand-dark-teal);
+            border-bottom: 1px solid var(--color-bg-secondary);
+            padding-bottom: 0.75rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group-app {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label-app {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input-app {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            transition: all 0.2s;
+            background: #F9FAFB;
+        }
+
+        .form-input-app:focus {
+            outline: none;
+            background: var(--color-white);
+            border-color: var(--color-brand-teal);
+            box-shadow: 0 0 0 3px var(--color-brand-light-cyan);
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .toggle-switch:last-child {
+            border-bottom: none;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #E5E7EB;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.slider {
+            background-color: var(--color-brand-teal);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        .danger-zone {
+            border: 1px solid #FECACA;
+            background: #FEF2F2;
+        }
+
+        .danger-zone .settings-section-title {
+            color: #DC2626;
+            border-color: #FECACA;
+        }
+
+        .btn-danger {
+            background: #DC2626;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-danger:hover {
+            background: #B91C1C;
+        }
+    </style>
+
+    <style>
+        /* Dashboard specific styles */
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.75rem;
+            background: var(--color-brand-light-cyan);
+            color: var(--color-brand-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-brand-dark-teal);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0.7rem;
+            top: 2rem;
+            bottom: 0;
+            width: 2px;
+            background: var(--color-bg-secondary);
+        }
+
+        .timeline-item:last-child::before {
+            display: none;
+        }
+
+        .timeline-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background: var(--color-brand-teal);
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--color-bg-secondary);
+            flex-shrink: 0;
+            z-index: 1;
+        }
+
+        .timeline-content {
+            flex: 1;
+            margin-top: -0.2rem;
+        }
+
+        .timeline-date {
+            font-size: 0.75rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-title {
+            font-weight: 500;
+            color: var(--color-text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+        }
+
+        .deadline-card {
+            background: linear-gradient(135deg, #FEF3C7 0%, #FFFBEB 100%);
+            border: 1px solid #FCD34D;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .deadline-title {
+            color: #92400E;
+            font-weight: 700;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .deadline-days {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #B45309;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="app-sidebar">
+            <div class="sidebar-logo">
+                InclusiFund
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="https://tools.inclusifund.co.uk/dashboard/user-account" class="nav-item active">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="https://tools.inclusifund.co.uk/dashboard" class="nav-item">
+                    <span>📁</span> Tools
+                </a>
+                <a href="https://tools.inclusifund.co.uk/subscription/user-account" class="nav-item">
+                    <span>💳</span> Subscription
+                </a>
+                <a href="https://tools.inclusifund.co.uk/settings/user-account" class="nav-item">
+                    <span>⚙️</span> Settings
+                </a>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">JS</div>
+                <div style="font-size: 0.875rem;">
+                    <div style="font-weight: 600;" id="user-name">Loading...</div>
+                    <div style="opacity: 0.7;" id="user-email">...</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <header class="app-header">
+                <div>
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Welcome back, Jane. Here's what's happening today.</p>
+                </div>
+                <a href="javascript:void(0)" onclick="navigateToToolsSuite()"
+                    style="display: inline-flex; align-items: center; gap: 0.5rem; background: var(--color-brand-teal); color: white; padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem; transition: all 0.2s; text-decoration: none; cursor: pointer;"
+                    onmouseover="this.style.background='var(--color-brand-dark-teal)'"
+                    onmouseout="this.style.background='var(--color-brand-teal)'">
+                    ← Return to Tools Suite
+                </a>
+            </header>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-3" style="margin-bottom: 2rem;">
+                <div class="stat-card card">
+                    <div class="stat-icon">🛠️</div>
+                    <div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Tools Used</div>
+                    </div>
+                </div>
+                <div class="stat-card card">
+                    <div class="stat-icon">📄</div>
+                    <div>
+                        <div class="stat-value">45</div>
+                        <div class="stat-label">Docs Generated</div>
+                    </div>
+                </div>
+                <div class="stat-card card">
+                    <div class="stat-icon">⏱️</div>
+                    <div>
+                        <div class="stat-value">24h</div>
+                        <div class="stat-label">Time Saved</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-2" style="grid-template-columns: 2fr 1fr; gap: 2rem;">
+                <!-- Activity Feed -->
+                <div class="settings-card card">
+                    <div class="settings-section-title">Recent Activity</div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: var(--color-brand-teal);"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Today, 10:23 AM</div>
+                            <div class="timeline-title">Generated CIC34 Report</div>
+                            <div class="timeline-desc">Draft version created for 2025 financial year.</div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: var(--color-brand-tropical-teal);"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Yesterday, 4:15 PM</div>
+                            <div class="timeline-title">Used Eligibility Checker</div>
+                            <div class="timeline-desc">Validated new project criteria against regulator guidelines.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: #9CA3AF;"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">Feb 8, 2026</div>
+                            <div class="timeline-title">Updated Profile</div>
+                            <div class="timeline-desc">Changed contact email address.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div>
+                    <!-- Deadline Alert -->
+                    <div class="deadline-card card">
+                        <div class="deadline-title">⚠️ Upcoming Deadline</div>
+                        <p style="font-size: 0.875rem; color: #92400E; margin-bottom: 1rem;">Your Annual Confirmation
+                            Statement (CS01) is due to Companies House.</p>
+                        <div class="deadline-days">14 Days</div>
+                        <a href="https://tools.inclusifund.co.uk/compliance-calendar"
+                            style="display: inline-block; margin-top: 1rem; color: #92400E; font-weight: 600; font-size: 0.875rem; text-decoration: underline;">View
+                            Compliance Calendar →</a>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="settings-card card">
+                        <div style="font-weight: 600; color: var(--color-brand-dark-teal); margin-bottom: 1rem;">Quick
+                            Access</div>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <a href="https://tools.inclusifund.co.uk/benefit-statement"
+                                style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-text-secondary); font-size: 0.9375rem; padding: 0.5rem; border-radius: 0.5rem; transition: background 0.2s;">
+                                <span>📄</span> Create Benefit Statement
+                            </a>
+                            <a href="https://tools.inclusifund.co.uk/grants"
+                                style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-text-secondary); font-size: 0.9375rem; padding: 0.5rem; border-radius: 0.5rem; transition: background 0.2s;">
+                                <span>💰</span> Find Grants
+                            </a>
+                            <a href="https://tools.inclusifund.co.uk/business-model"
+                                style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-text-secondary); font-size: 0.9375rem; padding: 0.5rem; border-radius: 0.5rem; transition: background 0.2s;">
+                                <span>⚖️</span> Stress Test Model
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+
+
+    <script src="assets/js/logo.js"></script>
+    <script>document.querySelectorAll(".app-logo").forEach(img => img.src = window.INCLUSIFUND_LOGO_BASE64);</script>
+    <script>
+        // ─── Auth Guard ───────────────────────────────────────────
+        const user = JSON.parse(localStorage.getItem('inclusifund_user'));
+        if (!user || !user.email) {
+            window.location.href = 'https://tools.inclusifund.co.uk/login';
+        }
+
+        // Initialize Convex client
+        const convex = new window.Convex("https://terrific-bloodhound-927.convex.cloud");
+
+        // Populate User Data from localStorage first (fast)
+        if (user) {
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-name').textContent = user.name || user.email.split('@')[0];
+
+            // Avatar initials
+            const initials = (user.name || user.email).slice(0, 2).toUpperCase();
+            document.getElementById('user-avatar').textContent = initials;
+
+            // Welcome message
+            const welcomeMsg = document.querySelector('.page-subtitle');
+            if (welcomeMsg && welcomeMsg.textContent.includes('Jane')) {
+                welcomeMsg.textContent = `Welcome back, ${user.name ? user.name.split(' ')[0] : 'User'}. Here's what's happening today.`;
+            }
+
+            // Fetch and populate real data from Convex
+            loadDashboardData();
+        }
+
+        async function loadDashboardData() {
+            try {
+                // Fetch user profile from Convex (enrich sidebar)
+                const userData = await convex.query('users:getUser', { email: user.email });
+                if (userData) {
+                    if (userData.fullName) {
+                        document.getElementById('user-name').textContent = userData.fullName;
+                        document.getElementById('user-avatar').textContent = userData.fullName.slice(0, 2).toUpperCase();
+
+                        // Update welcome message with real name
+                        const welcomeMsg = document.querySelector('.page-subtitle');
+                        if (welcomeMsg) {
+                            welcomeMsg.textContent = `Welcome back, ${userData.fullName.split(' ')[0]}. Here's what's happening today.`;
+                        }
+                    }
+                    if (userData.organizationName) {
+                        document.getElementById('user-email').textContent = userData.organizationName;
+                    }
+                }
+
+                // Fetch user stats
+                const stats = await convex.query("activity:getUserStats", { userId: user.email });
+                if (stats) {
+                    // Update stats cards
+                    const statsCards = document.querySelectorAll('.stat-card');
+                    if (statsCards[0]) {
+                        statsCards[0].querySelector('.stat-value').textContent = stats.toolsUsed || '0';
+                    }
+                    if (statsCards[1]) {
+                        statsCards[1].querySelector('.stat-value').textContent = stats.docsGenerated || '0';
+                    }
+                    if (statsCards[2]) {
+                        statsCards[2].querySelector('.stat-value').textContent = stats.timeSaved || '0h';
+                    }
+                }
+
+                // Fetch next deadline
+                const nextDeadline = await convex.query("compliance:getNextDeadline", { userId: user.email });
+                if (nextDeadline) {
+                    // Update deadline alert card
+                    const deadlineCard = document.querySelector('.deadline-card');
+                    if (deadlineCard) {
+                        const dueDate = new Date(nextDeadline.dueDate);
+                        const daysUntil = Math.ceil((dueDate - new Date()) / (1000 * 60 * 60 * 24));
+
+                        deadlineCard.querySelector('.deadline-title').textContent = `⚠️ ${nextDeadline.type} Due Soon`;
+                        deadlineCard.querySelector('p').textContent = nextDeadline.description;
+                        deadlineCard.querySelector('.deadline-days').textContent = `${daysUntil} Days`;
+                    }
+                }
+
+                // Fetch recent activity
+                const recentActivity = await convex.query("activity:getRecentActivity", {
+                    userId: user.email,
+                    limit: 5
+                });
+
+                if (recentActivity && recentActivity.length > 0) {
+                    // Update activity timeline
+                    const activityContainer = document.querySelector('.settings-card');
+                    if (activityContainer) {
+                        const timelineHTML = recentActivity.map(activity => {
+                            const date = new Date(activity.timestamp);
+                            const timeAgo = getTimeAgo(date);
+
+                            return `
+                                <div class="timeline-item">
+                                    <div class="timeline-icon" style="background: var(--color-brand-teal);"></div>
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">${timeAgo}</div>
+                                        <div class="timeline-title">${activity.action}</div>
+                                        <div class="timeline-desc">${activity.description || ''}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+
+                        // Replace timeline items while keeping the section title
+                        const sectionTitle = activityContainer.querySelector('.settings-section-title');
+                        activityContainer.innerHTML = '';
+                        activityContainer.appendChild(sectionTitle);
+                        activityContainer.insertAdjacentHTML('beforeend', timelineHTML);
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                // Keep mock data if Convex fetch fails
+            }
+        }
+
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+
+            return "Just now";
+        }
+
+        // Navigate to Tools Suite with compliance check
+        async function navigateToToolsSuite() {
+            try {
+                // Check if user has compliance data
+                const complianceData = await convex.query("compliance:getComplianceData", { userId: user.email });
+
+                if (complianceData) {
+                    // User has completed compliance setup, go to tools suite
+                    window.location.href = 'https://tools.inclusifund.co.uk/dashboard';
+                } else {
+                    // New user, redirect to compliance onboarding first
+                    window.location.href = 'https://tools.inclusifund.co.uk/compliance-onboarding';
+                }
+            } catch (error) {
+                console.error('Error checking compliance data:', error);
+                // On error, default to tools suite
+                window.location.href = 'https://tools.inclusifund.co.uk/dashboard';
+            }
+        }
+    </script>
+</body>
+
+</html>

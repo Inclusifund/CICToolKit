@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund | Upgrade to Pro — The Infrastructure Engine for UK CICs</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #008080;
+            --primary-dark: #005f5f;
+            --accent: #6BB6B6;
+            --premium: #d4a853;
+            --text-dark: #1F2232;
+            --text-muted: #4B5563;
+            --bg-page: #f8fafb;
+            --bg-surface: #ffffff;
+            --bg-surface-alt: #f1f5f9;
+            --border-light: #e2e8f0;
+            --radius-md: 0.75rem;
+            --radius-xl: 1.25rem;
+            --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.08);
+            --shadow-xl: 0 20px 40px -8px rgba(0,0,0,0.1);
+            --shadow-2xl: 0 25px 50px -12px rgba(0,0,0,0.12);
+            --font-heading: 'Sora', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-page);
+            color: var(--text-dark);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; line-height: 1.2; }
+
+        .max-w-4xl { max-width: 56rem; }
+        .max-w-5xl { max-width: 64rem; }
+        .max-w-6xl { max-width: 72rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-20 { padding-top: 5rem; padding-bottom: 5rem; }
+        .pb-20 { padding-bottom: 5rem; }
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-10 { margin-bottom: 2.5rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mb-16 { margin-bottom: 4rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-12 { margin-top: 3rem; }
+        .p-8 { padding: 2rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        .px-12 { padding-left: 3rem; padding-right: 3rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-5 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-8 { gap: 2rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .flex { display: flex; }
+        .flex-wrap { flex-wrap: wrap; }
+        .grid { display: grid; }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .inline-block { display: inline-block; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .text-xs { font-size: 0.75rem; }
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-5xl { font-size: 3rem; }
+        .font-bold { font-weight: 700; }
+        .font-medium { font-size: 500; }
+        .leading-relaxed { line-height: 1.625; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .uppercase { text-transform: uppercase; }
+        .rounded-xl { border-radius: var(--radius-xl); }
+        .rounded-full { border-radius: 999px; }
+        .shadow-lg { box-shadow: var(--shadow-lg); }
+        .shadow-xl { box-shadow: var(--shadow-xl); }
+        .shadow-2xl { box-shadow: var(--shadow-2xl); }
+
+        @media (max-width: 768px) {
+            .grid-3 { grid-template-columns: 1fr; }
+            .md\:text-2xl { font-size: 1.5rem; }
+            .hide-mobile { display: none; }
+        }
+        @media (min-width: 769px) {
+            .md\:text-2xl { font-size: 1.5rem; }
+        }
+
+        /* Hero */
+        .upgrade-hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, var(--accent) 100%);
+            padding: 8rem 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .upgrade-hero::before {
+            content: '';
+            position: absolute;
+            top: -40%; right: -10%;
+            width: 60%; height: 160%;
+            background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Urgency Badge */
+        .urgency-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, var(--premium), #c4943f);
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            animation: pulseBadge 2s infinite;
+        }
+        @keyframes pulseBadge {
+            0%,100% { box-shadow: 0 0 0 0 rgba(212,168,83,0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(212,168,83,0); }
+        }
+
+        /* Benefit cards */
+        .benefit-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            border: 1px solid var(--border-light);
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+        .benefit-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-8px);
+            border-color: var(--primary);
+        }
+
+        /* Pricing */
+        .pricing-section {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #fff;
+            padding: 5rem 2rem;
+            margin: 4rem 0;
+            border-radius: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .pricing-section::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Scarcity Meter */
+        .scarcity-meter {
+            background: rgba(255,255,255,0.15);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        .scarcity-fill {
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--premium), #e6b84d);
+            transition: width 1.5s ease;
+        }
+
+        /* Button ripple */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-ripple .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.35);
+            transform: scale(0);
+            animation: rippleAnim 0.6s ease-out;
+            pointer-events: none;
+        }
+        @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
+        .btn-ripple:hover { transform: scale(1.04); box-shadow: 0 12px 30px rgba(0,0,0,0.2); }
+
+        /* Stat count-up */
+        .stat-number {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover { background: var(--primary); color: #fff; }
+
+        /* Testimonial */
+        .testimonial-card {
+            background: var(--bg-surface);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow-lg);
+        }
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) {
+            .testimonial-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Social proof toast */
+        .toast {
+            position: fixed;
+            bottom: 100px; left: 24px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 999;
+            transform: translateX(-120%);
+            transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+            max-width: 340px;
+            border-left: 4px solid var(--primary);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast-avatar {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .toast-text { font-size: 13px; color: var(--text-dark); line-height: 1.4; }
+        .toast-text strong { color: var(--primary); }
+        .toast-time { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Sticky CTA */
+        .sticky-cta {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-light);
+            padding: 12px 24px;
+            z-index: 900;
+            transform: translateY(100%);
+            transition: transform 0.4s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+        }
+        .sticky-cta.show { transform: translateY(0); }
+
+        a:focus, button:focus { outline: 3px solid var(--premium); outline-offset: 4px; }
+    </style>
+</head>
+<body>
+
+    <!-- Hero -->
+    <div class="upgrade-hero">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="urgency-badge mb-8">Early access -- limited spots</div>
+            <h1 class="mb-6 text-4xl" style="color:#fff; font-size:clamp(2rem,5vw,3.5rem);">The Infrastructure Engine for UK CICs</h1>
+            <p class="text-xl md:text-2xl mb-10 leading-relaxed" style="color:rgba(255,255,255,0.9); max-width:42rem; margin-left:auto; margin-right:auto;">
+                Unlock the complete suite of professional tools designed specifically for Community Interest Companies.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#pricing" class="btn-ripple" style="background:#fff; color:var(--primary); padding:1rem 2.5rem; border-radius:var(--radius-md); font-weight:700; font-size:1.125rem;">View Launch Offer</a>
+                <a href="dashboard.html" class="btn-secondary" style="border-color:rgba(255,255,255,0.5); color:#fff;">Back to Free Tools</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="max-w-5xl mx-auto px-6" style="padding-top:4rem; padding-bottom:2rem;">
+        <div class="reveal" style="display:grid; grid-template-columns:repeat(4,1fr); gap:1.5rem; text-align:center;">
+            <div>
+                <div class="stat-number" data-target="1240">0</div>
+                <p class="text-sm" style="color:var(--text-muted); font-weight:500;">CICs Validated</p>
+            </div>
+            <div>
+                <div class="stat-number" data-target="340">0</div>
+                <p class="text-sm" style="color:var(--text-muted); font-weight:500;">Statements Written</p>
+            </div>
+            <div>
+                <div class="stat-number" data-target="97">0</div>
+                <p class="text-sm" style="color:var(--text-muted); font-weight:500;">% Approval Rate</p>
+            </div>
+            <div>
+                <div class="stat-number" data-target="2000">0</div>
+                <p class="text-sm" style="color:var(--text-muted); font-weight:500;">Grants in Database</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="max-w-6xl mx-auto px-6 py-20">
+        <div class="text-center mb-16 reveal">
+            <h2 class="text-2xl mb-4" style="font-size:clamp(1.5rem,3vw,2.25rem); color:var(--text-dark);">Everything You Need to Scale</h2>
+            <p class="text-lg" style="color:var(--text-muted);">Replace manual admin with automated infrastructure.</p>
+        </div>
+
+        <div class="grid grid-3 gap-8">
+            <div class="benefit-card reveal">
+                <div style="font-size:2.5rem; margin-bottom:1.5rem;">&#128197;</div>
+                <h3 class="font-bold mb-3" style="font-family:var(--font-heading); font-size:1.25rem;">Compliance Calendar</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--text-muted);">Automated reminders for CIC34, Accounts, and Confirmation Statements. Zero missed deadlines.</p>
+            </div>
+            <div class="benefit-card reveal">
+                <div style="font-size:2.5rem; margin-bottom:1.5rem;">&#128196;</div>
+                <h3 class="font-bold mb-3" style="font-family:var(--font-heading); font-size:1.25rem;">Board Pack Builder</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--text-muted);">Generate professional meeting agendas, minutes, and decision records in minutes.</p>
+            </div>
+            <div class="benefit-card reveal">
+                <div style="font-size:2.5rem; margin-bottom:1.5rem;">&#128269;</div>
+                <h3 class="font-bold mb-3" style="font-family:var(--font-heading); font-size:1.25rem;">Grant Discovery</h3>
+                <p class="text-sm leading-relaxed" style="color:var(--text-muted);">Access a curated database of 2000+ UK grants with AI eligibility matching.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="max-w-5xl mx-auto px-6 mb-12">
+        <h2 class="text-2xl font-bold text-center mb-10 reveal" style="color:var(--primary);">What Directors Are Saying</h2>
+        <div class="testimonial-grid reveal">
+            <div class="testimonial-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <div style="width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">NP</div>
+                    <div>
+                        <p class="font-bold">Nadia Patel</p>
+                        <p class="text-xs" style="color:var(--text-muted);">Sheffield Community Harvest CIC</p>
+                    </div>
+                </div>
+                <p class="text-sm" style="font-style:italic; color:var(--text-dark);">"Upgrading to Pro was the best decision we made this year. The compliance calendar alone saved us from two missed deadlines worth of fines."</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <div style="width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">DW</div>
+                    <div>
+                        <p class="font-bold">Daniel Wright</p>
+                        <p class="text-xs" style="color:var(--text-muted);">Coventry Skills Bridge CIC</p>
+                    </div>
+                </div>
+                <p class="text-sm" style="font-style:italic; color:var(--text-dark);">"The grant discovery engine matched us with funding we had no idea existed. Within six weeks we'd secured our first successful application."</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <div style="width:44px;height:44px;border-radius:50%;background:var(--premium);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">PK</div>
+                    <div>
+                        <p class="font-bold">Priya Kumar</p>
+                        <p class="text-xs" style="color:var(--text-muted);">Bristol Green Futures CIC</p>
+                    </div>
+                </div>
+                <p class="text-sm" style="font-style:italic; color:var(--text-dark);">"Board pack builder cut our meeting prep from a full day to 20 minutes. Our governance documentation is now audit-ready at all times."</p>
+            </div>
+            <div class="testimonial-card">
+                <div class="flex items-center gap-3 mb-4">
+                    <div style="width:44px;height:44px;border-radius:50%;background:var(--primary-dark);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;">MT</div>
+                    <div>
+                        <p class="font-bold">Marcus Thompson</p>
+                        <p class="text-xs" style="color:var(--text-muted);">Liverpool Social Enterprise CIC</p>
+                    </div>
+                </div>
+                <p class="text-sm" style="font-style:italic; color:var(--text-dark);">"The Pro suite is genuinely what it should be -- infrastructure you can rely on. Every CIC director I've recommended it to has upgraded."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing -->
+    <div id="pricing" class="max-w-5xl mx-auto px-6 pb-20">
+        <div class="pricing-section text-center shadow-2xl reveal">
+            <div class="inline-block px-4 rounded-full text-xs font-bold uppercase tracking-widest mb-8" style="background:var(--premium); color:var(--primary-dark); padding:0.375rem 1rem;">
+                Launch Offer
+            </div>
+            <h2 class="font-bold text-5xl mb-4" style="font-family:var(--font-heading); color:#fff;">&pound;297 Lifetime</h2>
+            <p class="text-xl mb-6" style="opacity:0.8; font-weight:500;">One-time payment &bull; No subscriptions &bull; Forever access</p>
+
+            <!-- Scarcity Meter -->
+            <div class="text-center mb-10">
+                <p class="text-xs font-bold uppercase tracking-widest mb-2" style="color:rgba(255,255,255,0.7);">Launch Spots Remaining</p>
+                <div class="scarcity-meter">
+                    <div class="scarcity-fill" style="width:0%;" data-target="74"></div>
+                </div>
+                <p class="text-xs mt-4" style="color:rgba(255,255,255,0.6);">74% of launch spots claimed</p>
+            </div>
+
+            <div style="max-width:28rem; margin:0 auto 3rem; text-align:left; background:rgba(255,255,255,0.05); padding:2rem; border-radius:var(--radius-xl); border:1px solid rgba(255,255,255,0.1);">
+                <div class="flex items-center gap-3" style="margin-bottom:1rem;">
+                    <span style="color:var(--premium); font-weight:700;">&#10003;</span>
+                    <span style="color:#fff;">Full Board Pack Automation</span>
+                </div>
+                <div class="flex items-center gap-3" style="margin-bottom:1rem;">
+                    <span style="color:var(--premium); font-weight:700;">&#10003;</span>
+                    <span style="color:#fff;">Exclusive Grant Search Filters</span>
+                </div>
+                <div class="flex items-center gap-3" style="margin-bottom:1rem;">
+                    <span style="color:var(--premium); font-weight:700;">&#10003;</span>
+                    <span style="color:#fff;">Priority Support Access</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span style="color:var(--premium); font-weight:700;">&#10003;</span>
+                    <span style="color:#fff;">All Future Tool Updates</span>
+                </div>
+            </div>
+
+            <a href="https://admin.inclusifund.co.uk/payment-link/697ffe1a6503ca7b2c7df004"
+               class="btn-ripple"
+               style="background:#fff; color:var(--primary-dark); padding:1.25rem 3rem; font-size:1.25rem; font-weight:700; border-radius:var(--radius-xl); box-shadow:var(--shadow-lg); display:inline-block;">
+                Get Early Access Now
+            </a>
+            <p class="mt-6 text-sm" style="opacity:0.6;">30-day money-back guarantee</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center py-12 text-sm px-6 mt-12" style="color:var(--text-muted); border-top:1px solid var(--border-light); background:var(--bg-surface-alt);">
+        <p class="mb-2">&copy; 2026 InclusiFund CIC. Professional tools for professional missions.</p>
+        <a href="support.html" style="color:var(--primary); font-weight:700; text-decoration:none;">Help &amp; Support</a>
+    </footer>
+
+    <!-- Social Proof Toast -->
+    <div id="social-toast" class="toast">
+        <div class="toast-avatar" id="toast-avatar">PK</div>
+        <div>
+            <div class="toast-text" id="toast-text"><strong>Priya K.</strong> just upgraded to Pro</div>
+            <div class="toast-time" id="toast-time">4 minutes ago</div>
+        </div>
+    </div>
+
+    <!-- Sticky CTA -->
+    <div class="sticky-cta" id="sticky-cta">
+        <span class="text-sm font-bold hide-mobile" style="color:var(--text-dark);">&pound;297 Lifetime &mdash; Launch offer</span>
+        <a href="https://admin.inclusifund.co.uk/payment-link/697ffe1a6503ca7b2c7df004"
+           class="btn-ripple"
+           style="background:var(--primary); color:#fff; padding:10px 24px; border-radius:999px; font-size:0.875rem; font-weight:700;">
+            Get Early Access
+        </a>
+    </div>
+
+    <script>
+        // Scroll Reveal
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Count-Up
+        function countUp(el, target) {
+            let current = 0;
+            const step = Math.ceil(target / 60);
+            const timer = setInterval(() => {
+                current += step;
+                if (current >= target) { current = target; clearInterval(timer); }
+                el.textContent = current.toLocaleString();
+            }, 30);
+        }
+        const statObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = parseInt(entry.target.getAttribute('data-target'));
+                    if (target) countUp(entry.target, target);
+                    statObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        document.querySelectorAll('.stat-number').forEach(el => statObserver.observe(el));
+
+        // Scarcity Meter
+        const meterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fill = entry.target.querySelector('.scarcity-fill');
+                    if (fill) fill.style.width = fill.getAttribute('data-target') + '%';
+                    meterObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.scarcity-meter').forEach(el => meterObserver.observe(el));
+
+        // Button Ripple
+        document.querySelectorAll('.btn-ripple').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple-effect');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+                ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Social Proof Toast
+        const toastData = [
+            { initials: 'PK', name: 'Priya K.', action: 'just upgraded to Pro', time: '4 minutes ago' },
+            { initials: 'NP', name: 'Nadia P.', action: 'claimed early access', time: '9 minutes ago' },
+            { initials: 'DW', name: 'Daniel W.', action: 'just upgraded to Pro', time: '13 minutes ago' },
+            { initials: 'MT', name: 'Marcus T.', action: 'claimed early access', time: '18 minutes ago' },
+        ];
+        let toastIndex = 0;
+        function showToast() {
+            const toast = document.getElementById('social-toast');
+            const data = toastData[toastIndex % toastData.length];
+            document.getElementById('toast-avatar').textContent = data.initials;
+            document.getElementById('toast-text').innerHTML = '<strong>' + data.name + '</strong> ' + data.action;
+            document.getElementById('toast-time').textContent = data.time;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); toastIndex++; }, 4000);
+        }
+        setTimeout(showToast, 7000);
+        setInterval(showToast, 20000);
+
+        // Sticky CTA
+        window.addEventListener('scroll', () => {
+            const sticky = document.getElementById('sticky-cta');
+            if (window.scrollY > 500) { sticky.classList.add('show'); }
+            else { sticky.classList.remove('show'); }
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                const t = document.querySelector(this.getAttribute('href'));
+                if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+</html>

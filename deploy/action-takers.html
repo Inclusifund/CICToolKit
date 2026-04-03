@@ -1,0 +1,270 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="assets/theme.css">
+<style>
+    :root {
+        --color-primary-light: var(--brand-teal);
+        --radius-lg: 1.5rem;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background-color: var(--brand-bg-page);
+    }
+
+    details summary {
+        list-style: none;
+    }
+
+    details summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .step-number {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50 py-20 px-6">
+    <div class="max-w-4xl mx-auto">
+
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <div class="inline-block bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+                FOR COMMUNITY PROJECT LEADERS CONSIDERING CIC REGISTRATION
+            </div>
+            <h1 class="text-5xl font-bold text-gray-800 mb-4">
+                Action Takers Strategy Call
+            </h1>
+            <p class="text-2xl text-gray-600 max-w-2xl mx-auto">
+                30 minutes with Reece Dunn. One call to get clarity on whether a CIC is right for your project.
+            </p>
+        </div>
+
+        <!-- Main Offer Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-12 mb-12 border-4 border-orange-400">
+            <div class="text-center mb-10">
+                <div class="text-6xl font-bold text-orange-500 mb-2">&pound;35</div>
+                <div class="text-gray-600 text-lg">One-time payment &bull; 30-minute strategy call &bull; &pound;197 rate locked for life</div>
+            </div>
+
+            <!-- What You Get -->
+            <div class="space-y-4 mb-10">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">What We&rsquo;ll Cover:</h3>
+
+                <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
+                    <span class="text-orange-500 text-2xl flex-shrink-0">&#10003;</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Is a CIC right for your project?</div>
+                        <div class="text-gray-600">Honest assessment &mdash; if a CIC isn&rsquo;t the right vehicle, I&rsquo;ll tell you what is</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
+                    <span class="text-orange-500 text-2xl flex-shrink-0">&#10003;</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">What funding you&rsquo;d unlock</div>
+                        <div class="text-gray-600">Grants, contracts, and opportunities that open up once you&rsquo;re registered</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
+                    <span class="text-orange-500 text-2xl flex-shrink-0">&#10003;</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">The registration process &mdash; step by step</div>
+                        <div class="text-gray-600">No jargon, no confusion. Companies House, CIC Regulator, community interest statement &mdash; all demystified</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
+                    <span class="text-orange-500 text-2xl flex-shrink-0">&#10003;</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Your first 90-day action plan</div>
+                        <div class="text-gray-600">What to do in your first three months as a registered CIC to hit the ground running</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-3 p-4 bg-orange-50 rounded-lg">
+                    <span class="text-orange-500 text-2xl flex-shrink-0">&#10003;</span>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">&pound;197 lifetime rate &mdash; locked in forever</div>
+                        <div class="text-gray-600">When you&rsquo;re ready to upgrade to the full InclusiFund toolkit, your price is &pound;197 &mdash; even when everyone else is paying &pound;297</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Button -->
+            <a href="https://admin.inclusifund.co.uk/payment-link/6868222feba110676b8d5f23"
+                class="block w-full bg-orange-500 hover:bg-orange-600 text-white text-2xl font-bold py-6 rounded-2xl text-center shadow-lg transition-all transform hover:scale-105 mb-4">
+                Book Your Action Takers Call &mdash; &pound;35
+            </a>
+
+            <p class="text-center text-gray-500 text-sm">
+                &#128274; Secure payment via Stripe &bull; You&rsquo;ll be taken to schedule your call immediately after payment
+            </p>
+            <p class="text-center text-gray-400 text-xs mt-2">
+                &#9888;&#65039; Please note: payments via Klarna, Starling, Monzo, or Revolut may experience issues. We recommend using a standard debit or credit card.
+            </p>
+        </div>
+
+        <!-- How It Works -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-8 text-center">How It Works</h3>
+
+            <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-orange-100 text-orange-600">1</div>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Pay &pound;35</div>
+                        <div class="text-gray-600">Secure payment. Takes 30 seconds.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-orange-100 text-orange-600">2</div>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Schedule your call</div>
+                        <div class="text-gray-600">You&rsquo;ll be taken straight to Reece&rsquo;s calendar to pick a time that works for you.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-orange-100 text-orange-600">3</div>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">Get clarity</div>
+                        <div class="text-gray-600">30 minutes, 1-to-1. Walk away knowing exactly whether a CIC is right and what to do next.</div>
+                    </div>
+                </div>
+
+                <div class="flex items-start gap-4">
+                    <div class="step-number bg-teal-100 text-teal-600">4</div>
+                    <div>
+                        <div class="font-semibold text-gray-800 text-lg">&pound;197 locked for life</div>
+                        <div class="text-gray-600">When you&rsquo;re ready to upgrade to the full platform &mdash; next week or next year &mdash; your price is &pound;197. Not &pound;297.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- The Problem Section -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Why This Exists</h3>
+
+            <div class="space-y-4 text-gray-700 text-lg leading-relaxed">
+                <p>
+                    Most people thinking about registering a CIC spend months going back and forth. Reading Companies House guidance. Asking in Facebook groups. Getting conflicting advice.
+                </p>
+                <p>
+                    Meanwhile, their community project runs without legal protection, without access to grants, and without the structure funders take seriously.
+                </p>
+                <p>
+                    We&rsquo;ve seen brilliant projects stall for a year because the founder couldn&rsquo;t get a straight answer on whether a CIC was right for them.
+                </p>
+                <p class="font-semibold text-gray-800">
+                    This call exists to give you that answer in 30 minutes.
+                </p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">The Numbers</h3>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-orange-500 mb-2">10%</div>
+                    <div class="text-gray-600">of CICs dissolve every year</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-orange-500 mb-2">&pound;3K</div>
+                    <div class="text-gray-600">wasted per failed grant application</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold text-orange-500 mb-2">177</div>
+                    <div class="text-gray-600">opportunities in our database right now</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Who Is Reece -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Who You&rsquo;ll Be Speaking To</h3>
+            <div class="text-center">
+                <div class="text-5xl mb-4">&#128100;</div>
+                <div class="font-bold text-xl text-gray-800 mb-2">Reece Dunn</div>
+                <div class="text-orange-500 font-semibold mb-4">Founder &amp; CEO, InclusiFund CIC</div>
+                <p class="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                    Reece built InclusiFund after watching good organisations burn out on admin. He&rsquo;s worked directly with CIC founders across the UK &mdash; from youth violence prevention to heritage restoration to community food projects. This isn&rsquo;t a sales call. It&rsquo;s a strategy session with someone who understands both the regulatory landscape and the day-to-day reality of running a social enterprise.
+                </p>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="space-y-4 mb-12">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 text-center">Frequently Asked Questions</h3>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">What happens after I pay?</summary>
+                <p class="mt-4 text-gray-600">
+                    You&rsquo;ll be taken directly to Reece&rsquo;s calendar to book your 30-minute strategy call. Pick any available slot that works for you.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">How does the &pound;197 lock-in work?</summary>
+                <p class="mt-4 text-gray-600">
+                    Once you&rsquo;ve booked your Action Takers call, you&rsquo;re permanently tagged in our system at the &pound;197 rate. When you decide to upgrade to the full InclusiFund toolkit &mdash; whether that&rsquo;s next week or next year &mdash; you pay &pound;197 instead of the public price of &pound;297. No expiry.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">What if a CIC isn&rsquo;t right for me?</summary>
+                <p class="mt-4 text-gray-600">
+                    Then Reece will tell you. This isn&rsquo;t a hard sell &mdash; if a charitable incorporated organisation, a co-op, or even staying unincorporated is the better fit, you&rsquo;ll leave the call knowing that. The &pound;35 gets you honest, tailored advice.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">I&rsquo;m already a registered CIC. Is this for me?</summary>
+                <p class="mt-4 text-gray-600">
+                    This call is specifically for people who are <strong>considering</strong> CIC registration. If you&rsquo;re already registered, you can go straight to the full toolkit at &pound;197 lifetime &mdash; no deadline, no pressure. <a href="https://tools.inclusifund.co.uk/upgrade-197" class="text-teal-600 font-semibold hover:underline">Upgrade here</a>.
+                </p>
+            </details>
+
+            <details class="bg-white rounded-lg p-6 shadow">
+                <summary class="font-bold text-lg cursor-pointer">Why &pound;35?</summary>
+                <p class="mt-4 text-gray-600">
+                    Because we want people on this call who are serious about doing something. Not &ldquo;maybe one day.&rdquo; If you&rsquo;re willing to invest &pound;35 and 30 minutes, you&rsquo;re an action taker. That&rsquo;s exactly who we want to work with.
+                </p>
+            </details>
+        </div>
+
+        <!-- Final CTA -->
+        <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl shadow-xl p-12 text-white text-center mb-12">
+            <h2 class="text-4xl font-bold mb-4">Ready to stop guessing?</h2>
+            <p class="text-xl mb-8 opacity-90">
+                30 minutes. &pound;35. Complete clarity on whether a CIC is right for your project.
+            </p>
+            <a href="https://admin.inclusifund.co.uk/payment-link/6868222feba110676b8d5f23"
+                class="inline-block bg-white text-orange-600 hover:bg-gray-100 py-4 px-10 rounded-2xl text-xl font-bold shadow-lg transition-all transform hover:scale-105">
+                Book Your Action Takers Call &rarr;
+            </a>
+            <p class="text-sm mt-4 opacity-75">Secure payment &bull; Calendar booking immediately after &bull; &pound;197 locked for life</p>
+        </div>
+
+        <!-- Back link -->
+        <div class="text-center">
+            <a href="https://tools.inclusifund.co.uk/dashboard"
+                class="text-orange-500 hover:text-orange-600 font-semibold">
+                &larr; Back to free tools
+            </a>
+        </div>
+
+    </div>
+</div>
