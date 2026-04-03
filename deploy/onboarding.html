@@ -243,13 +243,13 @@
             useEffect(() => {
                 const user = window.InclusiFundAuth ? InclusiFundAuth.checkSession() : null;
                 if (!user) {
-                    window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+                    window.location.href = 'login.html';
                     return;
                 }
 
                 if (user.onboardingComplete === true) {
                     console.log("[onboarding] User already onboarded, redirecting to dashboard");
-                    window.location.href = '/dashboard';
+                    window.location.href = 'dashboard.html';
                     return;
                 }
 
@@ -258,7 +258,7 @@
                         user.onboardingComplete = true;
                         if (window.InclusiFundAuth) InclusiFundAuth.setSession(user);
                         console.log("[onboarding] DB says onboarding complete, redirecting to dashboard");
-                        window.location.href = '/dashboard';
+                        window.location.href = 'dashboard.html';
                         return;
                     }
                     setCurrentUser(user);
@@ -302,10 +302,10 @@
                     }
 
                     console.log("Onboarding complete for:", currentUser.email);
-                    window.location.href = '/dashboard';
+                    window.location.href = 'dashboard.html';
                 } catch (err) {
                     console.error("Failed to save onboarding:", err);
-                    window.location.href = '/dashboard';
+                    window.location.href = 'dashboard.html';
                 }
             };
 
@@ -545,6 +545,7 @@
             document.querySelectorAll('.sr').forEach(function(el) { obs.observe(el); });
         })();
     </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
 </body>
 
 </html>

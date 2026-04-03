@@ -842,13 +842,13 @@
             </div>
             <div class="header-actions" id="header-actions">
                 <!-- 1. Settings (always shown when logged in) -->
-                <a href="https://tools.inclusifund.co.uk/settings/user-account" class="btn-header btn-icon-only"
+                <a href="settings.html" class="btn-header btn-icon-only"
                     title="Settings" id="btn-settings" style="display:none;">
                     <span class="icon">&#9881;&#65039;</span>
                 </a>
 
                 <!-- 2. Login or Logout (toggled by JS) -->
-                <a href="https://tools.inclusifund.co.uk/log-in/user-account" class="btn-header" title="Log In"
+                <a href="login.html" class="btn-header" title="Log In"
                     id="btn-login">
                     <span class="icon">&#128273;</span>
                     <span>Log In</span>
@@ -859,14 +859,14 @@
                 </button>
 
                 <!-- 3. Upgrade (hidden for premium) -->
-                <a href="https://tools.inclusifund.co.uk/upgrade" class="btn-header primary btn-ripple" title="Upgrade"
+                <a href="upgrade-landing.html" class="btn-header primary btn-ripple" title="Upgrade"
                     id="btn-upgrade">
                     <span class="icon">&#128142;</span>
                     <span>Upgrade</span>
                 </a>
 
                 <!-- 4. User avatar (shown when logged in) -->
-                <a href="https://tools.inclusifund.co.uk/dashboard/user-account" class="btn-header btn-icon-only"
+                <a href="user-account-dashboard.html" class="btn-header btn-icon-only"
                     title="User Profile" id="btn-user" style="display:none;">
                     <span class="icon" id="user-avatar-icon">&#128100;</span>
                 </a>
@@ -911,7 +911,7 @@
                     </div>
                     <p class="tool-description">Find out if your idea qualifies as a CIC in 60 seconds.</p>
                     <div class="tool-footer">
-                        <a href="https://tools.inclusifund.co.uk/eligibility-checker" class="btn-tool green btn-ripple">
+                        <a href="eligibility-checker.html" class="btn-tool green btn-ripple">
                             Start Check &rarr;
                         </a>
                     </div>
@@ -926,7 +926,7 @@
                     </div>
                     <p class="tool-description">Generate a professional community benefit statement.</p>
                     <div class="tool-footer">
-                        <a href="https://tools.inclusifund.co.uk/benefit-statement" class="btn-tool teal btn-ripple">
+                        <a href="benefit-statement.html" class="btn-tool teal btn-ripple">
                             Create Statement &rarr;
                         </a>
                     </div>
@@ -941,7 +941,7 @@
                     </div>
                     <p class="tool-description">Stress-test your business model with 3 financial scenarios.</p>
                     <div class="tool-footer">
-                        <a href="https://tools.inclusifund.co.uk/business-model" class="btn-tool purple btn-ripple">
+                        <a href="business-model.html" class="btn-tool purple btn-ripple">
                             Test Model &rarr;
                         </a>
                     </div>
@@ -956,7 +956,7 @@
                     </div>
                     <p class="tool-description">Access our curated database of UK grant opportunities.</p>
                     <div class="tool-footer">
-                        <a href="https://tools.inclusifund.co.uk/grants-start" class="btn-tool primary btn-ripple">
+                        <a href="grants-onboarding-new.html" class="btn-tool primary btn-ripple">
                             Find Grants &rarr;
                         </a>
                     </div>
@@ -994,7 +994,7 @@
                     </div>
                     <p class="tool-description">Create comprehensive annual reports with AI-enhanced insights.</p>
                     <div class="tool-footer">
-                        <a href="https://tools.inclusifund.co.uk/app/cic34-generator"
+                        <a href="cic34-generator.html"
                             class="btn-tool primary btn-ripple premium-link">
                             Open Tool &rarr;
                         </a>
@@ -1010,7 +1010,7 @@
                     </div>
                     <p class="tool-description">Automated compliance monitoring and filing reminders.</p>
                     <div class="tool-footer">
-                        <a href="https://tools.inclusifund.co.uk/compliance-calendar"
+                        <a href="compliance-calendar.html"
                             class="btn-tool primary btn-ripple premium-link">
                             Open Tool &rarr;
                         </a>
@@ -1054,7 +1054,7 @@
                     <p>Get CIC34 Generator, Compliance Calendar, and upcoming tools with a premium plan.</p>
                     <span class="urg-badge" style="margin-top:0.75rem;">Limited-time: 40% off annual plans</span>
                 </div>
-                <a href="https://tools.inclusifund.co.uk/upgrade" class="btn-upgrade-banner btn-ripple">
+                <a href="upgrade-landing.html" class="btn-upgrade-banner btn-ripple">
                     Upgrade Now &rarr;
                 </a>
             </div>
@@ -1082,7 +1082,7 @@
         <!-- Footer CTA -->
         <section class="hero sr" style="padding-top: 0; padding-bottom: var(--spacing-2xl);">
             <p class="hero-subtitle">Want to see what tools we have planned?</p>
-            <a href="https://tools.inclusifund.co.uk" class="btn-header btn-ripple"
+            <a href="index.html" class="btn-header btn-ripple"
                 style="border: 1px solid var(--color-text-muted);">
                 Back to Homepage &rarr;
             </a>
@@ -1282,7 +1282,7 @@
                     } else {
                         localStorage.removeItem('inclusifund_user');
                         sessionStorage.clear();
-                        window.location.href = 'https://tools.inclusifund.co.uk/log-in/user-account';
+                        window.location.href = 'login.html';
                     }
                 });
             } else {
@@ -1320,7 +1320,7 @@
                     const link = card.querySelector('.premium-link');
                     if (link) {
                         const upgradeBtn = document.createElement('a');
-                        upgradeBtn.href = 'https://tools.inclusifund.co.uk/upgrade';
+                        upgradeBtn.href = 'upgrade-landing.html';
                         upgradeBtn.className = 'btn-tool upgrade btn-ripple';
                         upgradeBtn.innerHTML = '&#128142; Upgrade to Unlock &rarr;';
                         link.parentNode.replaceChild(upgradeBtn, link);
@@ -1345,6 +1345,7 @@
             }
         }
     </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
 </body>
 
 </html>

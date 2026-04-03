@@ -443,7 +443,7 @@
                         <div className="space-y-3 sr visible">
                             {(results.verdict === 'pass' || results.verdict === 'conditional') && (
                                 <a
-                                    href="/benefit-statement"
+                                    href="benefit-statement-2.0.html"
                                     className="btn-ripple block w-full bg-brand-teal hover:bg-[#006666] text-white py-4 px-6 rounded-xl text-center text-lg font-semibold shadow-lg transition-all font-display"
                                     onClick={addRipple}
                                 >
@@ -482,7 +482,7 @@
                             <p className="text-sm text-brand-teal font-medium mt-1">The Infrastructure Engine for UK CICs</p>
                         </div>
                         <button
-                            onClick={() => window.location.href = 'https://tools.inclusifund.co.uk/dashboard'}
+                            onClick={() => window.location.href = 'dashboard-2.0.html'}
                             className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 py-2 px-4 rounded-lg font-medium transition-all shadow-sm hover:shadow-md text-sm whitespace-nowrap"
                         >
                             Return to Tools Suite
@@ -764,3 +764,4 @@
     const root = ReactDOM.createRoot(container);
     root.render(<CICEligibilityChecker />);
 </script>
+<script src="assets/js/v2-nav-consistency.js"></script>

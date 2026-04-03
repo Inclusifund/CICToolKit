@@ -228,7 +228,7 @@
                 <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                     {/* Upgrade Card - ACTIVE */}
                     <button
-                        onClick={() => window.location.href = 'https://tools.inclusifund.co.uk/grants-custom'}
+                        onClick={() => window.location.href = 'grants-custom.html'}
                         className="bg-brand-card border-2 border-brand-primary rounded-3xl p-8 hover:border-brand-light transition-all duration-300 transform hover:-translate-y-1 text-left group shadow-lg shadow-brand-primary/10 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 bg-brand-primary text-brand-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
@@ -247,7 +247,7 @@
 
                     {/* Full List Card - RECOMMENDED */}
                     <button
-                        onClick={() => window.location.href = 'https://tools.inclusifund.co.uk/grants'}
+                        onClick={() => window.location.href = 'grants-list.html'}
                         className="bg-brand-card border-2 border-brand-gold rounded-3xl p-8 hover:border-brand-gold transition-all duration-300 transform hover:-translate-y-1 text-left group shadow-lg shadow-brand-gold/10 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 bg-brand-gold text-brand-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
@@ -792,6 +792,7 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
 </body>
 
 </html>

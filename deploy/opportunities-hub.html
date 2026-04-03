@@ -688,7 +688,7 @@
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <button
-                                        onClick={() => window.location.href = 'https://tools.inclusifund.co.uk/dashboard'}
+                                        onClick={() => window.location.href = 'dashboard.html'}
                                         className="text-hub-muted hover:text-hub-text transition-colors flex items-center gap-2"
                                         title="Return to Tools Suite"
                                     >
@@ -776,7 +776,7 @@
                                     <span className="text-hub-muted hidden sm:inline">-- Cards show funder accessibility info for d/Deaf, disabled & neurodivergent applicants</span>
                                 </div>
                                 <a
-                                    href="https://tools.inclusifund.co.uk/grants-custom"
+                                    href="grants-custom.html"
                                     className="inline-flex items-center gap-2 bg-hub-grant text-white text-sm font-medium px-4 py-1.5 rounded-full hover:opacity-90 transition-all whitespace-nowrap"
                                 >
                                     Upgrade -- From &pound;497/yr
@@ -973,7 +973,7 @@
                         <div className="mt-12 bg-white border-2 border-hub-grant rounded-2xl p-8 text-center shadow-sm">
                             <h2 className="font-serif text-2xl text-hub-text mb-3">Want us to write these applications for you?</h2>
                             <p className="text-hub-muted mb-6 max-w-2xl mx-auto">From &pound;166 per grant with 3-layer quality control. We also write your access support applications.</p>
-                            <a href="https://tools.inclusifund.co.uk/grants-custom" className="inline-flex items-center gap-2 bg-hub-grant text-white px-8 py-3 rounded-full font-bold hover:opacity-90 transition-all">
+                            <a href="grants-custom.html" className="inline-flex items-center gap-2 bg-hub-grant text-white px-8 py-3 rounded-full font-bold hover:opacity-90 transition-all">
                                 See Premium Tiers
                             </a>
                         </div>
@@ -985,6 +985,7 @@
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
     </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
 </body>
 
 </html>
