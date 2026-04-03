@@ -26,20 +26,20 @@ const InclusiFundNav = (function () {
         const currentPath = window.location.pathname;
 
         const menuItems = [
-            { label: 'Dashboard', icon: '📊', href: 'dashboard.html', match: ['/dashboard', '/dashboard.html'] },
+            { label: 'Dashboard', icon: '📊', href: 'dashboard-2.0.html', match: ['/dashboard'] },
             { type: 'section', label: 'CORE TOOLS' },
-            { label: 'Benefit Statement', icon: '✍️', href: 'benefit-statement.html', match: ['/benefit-statement', '/benefit-statement.html'] },
-            { label: 'Business Model', icon: '📈', href: 'business-model.html', match: ['/business-model', '/business-model.html'] },
-            { label: 'Eligibility', icon: '✅', href: 'eligibility-checker.html', match: ['/eligibility-checker', '/eligibility-checker.html'] },
+            { label: 'Benefit Statement', icon: '✍️', href: 'benefit-statement-2.0.html', match: ['/benefit-statement'] },
+            { label: 'Business Model', icon: '📈', href: 'business-model-2.0.html', match: ['/business-model'] },
+            { label: 'Eligibility', icon: '✅', href: 'eligibility-checker-2.0.html', match: ['/eligibility-checker'] },
             { type: 'section', label: 'COMPLIANCE' },
-            { label: 'Deadlines', icon: '📅', href: 'compliance-calendar.html', match: ['/compliance-calendar', '/compliance-calendar.html'] },
-            { label: 'CIC34 Report', icon: '📄', href: 'cic34-generator.html', match: ['/cic34-generator', '/cic34-generator.html'] },
+            { label: 'Deadlines', icon: '📅', href: 'compliance-calendar-2.0.html', match: ['/compliance-calendar'] },
+            { label: 'CIC34 Report', icon: '📄', href: 'cic34-generator-2.0.html', match: ['/cic34-generator'] },
             { type: 'section', label: 'FUNDING' },
-            { label: 'Find Grants', icon: '🔍', href: 'grants-list.html', match: ['/grants-list', '/grant-filters'] },
+            { label: 'Find Grants', icon: '🔍', href: 'grants-list-2.0.html', match: ['/grants-list', '/grant-filters'] },
             { type: 'spacer' },
-            { label: 'Account Overview', icon: '👤', href: 'user-account-dashboard.html', match: ['/user-account-dashboard', '/user-account-dashboard.html'] },
-            { label: 'Settings', icon: '⚙️', href: 'settings.html', match: ['/settings', '/settings.html'] },
-            { label: 'Support & FAQ', icon: '❓', href: 'support.html', match: ['/support', '/support.html'] },
+            { label: 'Account Overview', icon: '👤', href: 'user-account-dashboard-2.0.html', match: ['/user-account-dashboard'] },
+            { label: 'Settings', icon: '⚙️', href: 'settings-2.0.html', match: ['/settings'] },
+            { label: 'Support & FAQ', icon: '❓', href: 'support-2.0.html', match: ['/support'] },
             { label: 'Logout', icon: '🚪', href: '#', id: 'logout-btn' }
         ];
 
