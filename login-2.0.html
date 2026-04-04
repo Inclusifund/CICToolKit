@@ -510,7 +510,11 @@
                 console.log("Session set for:", user.email, "Tier:", user.tier, "Onboarded:", user.onboardingComplete);
 
                 if (user.onboardingComplete) {
-                    window.location.href = 'dashboard-2.0.html';
+                    if (user.tier === 'premium' || user.tier === 'lifetime') {
+                        window.location.href = 'cic-premium-dashboard-2.0.html';
+                    } else {
+                        window.location.href = 'dashboard-2.0.html';
+                    }
                 } else {
                     window.location.href = 'onboarding-2.0.html';
                 }
