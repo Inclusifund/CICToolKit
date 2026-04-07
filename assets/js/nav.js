@@ -25,8 +25,18 @@ const InclusiFundNav = (function () {
 
         const currentPath = window.location.pathname;
 
+        // Tier-aware dashboard link
+        let dashboardHref = 'dashboard-2.0.html';
+        try {
+            const raw = localStorage.getItem('inclusifund_user');
+            if (raw) {
+                const u = JSON.parse(raw);
+                if (u.tier === 'premium' || u.tier === 'lifetime') dashboardHref = 'cic-premium-dashboard-2.0.html';
+            }
+        } catch (e) {}
+
         const menuItems = [
-            { label: 'Dashboard', icon: '📊', href: 'dashboard-2.0.html', match: ['/dashboard'] },
+            { label: 'Dashboard', icon: '📊', href: dashboardHref, match: ['/dashboard', '/cic-premium-dashboard'] },
             { type: 'section', label: 'CORE TOOLS' },
             { label: 'Benefit Statement', icon: '✍️', href: 'benefit-statement-2.0.html', match: ['/benefit-statement'] },
             { label: 'Business Model', icon: '📈', href: 'business-model-2.0.html', match: ['/business-model'] },
@@ -35,7 +45,7 @@ const InclusiFundNav = (function () {
             { label: 'Deadlines', icon: '📅', href: 'compliance-calendar-2.0.html', match: ['/compliance-calendar'] },
             { label: 'CIC34 Report', icon: '📄', href: 'cic34-generator-2.0.html', match: ['/cic34-generator'] },
             { type: 'section', label: 'FUNDING' },
-            { label: 'Find Grants', icon: '🔍', href: 'grants-list-2.0.html', match: ['/grants-list', '/grant-filters'] },
+            { label: 'Find Grants', icon: '🔍', href: 'opportunities-hub.html', match: ['/grants-list', '/grant-filters', '/opportunities'] },
             { type: 'spacer' },
             { label: 'Account Overview', icon: '👤', href: 'user-account-dashboard-2.0.html', match: ['/user-account-dashboard'] },
             { label: 'Settings', icon: '⚙️', href: 'settings-2.0.html', match: ['/settings'] },

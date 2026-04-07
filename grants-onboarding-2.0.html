@@ -138,19 +138,23 @@
         .progress-track { background: #334155; height: 6px; border-radius: 9999px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 9999px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); background: linear-gradient(90deg, #008080, #d4a853); }
 
-        /* 3D Carousel */
-        .carousel-scene { overflow: hidden; perspective: 35em; mask: linear-gradient(90deg, #0000, red 15% 85%, #0000); height: 320px; }
-        .carousel-3d { display: grid; place-self: center; transform-style: preserve-3d; animation: carousel-rotate 28s linear infinite; height: 100%; place-items: center; }
-        @keyframes carousel-rotate { to { rotate: y 1turn; } }
+        /* 3D Carousel — concave (cards curve toward viewer) */
+        .carousel-scene { overflow: hidden; perspective: 900px; height: 360px; mask: linear-gradient(90deg, #0000, red 10% 90%, #0000); }
+        .carousel-3d { display: grid; place-self: center; transform-style: preserve-3d; animation: carousel-rotate 32s linear infinite; height: 100%; place-items: center; }
+        @keyframes carousel-rotate { to { rotate: y -1turn; } }
         .carousel-card {
-            grid-area: 1/1; width: 220px; aspect-ratio: 7/10;
+            grid-area: 1/1; width: 200px; aspect-ratio: 7/10;
             backface-visibility: hidden; border-radius: 1.25em;
-            transform: rotatey(calc(var(--i) * 1turn / var(--n))) translatez(calc(-1 * (110px + .5em) / tan(.5turn / var(--n))));
+            transform: rotatey(calc(var(--i) * 1turn / var(--n))) translatez(calc((100px + .5em) / tan(.5turn / var(--n))));
             background: #2D3344; border: 1px solid #334155; padding: 1.25rem;
             display: flex; flex-direction: column; justify-content: space-between;
+            transition: border-color 0.2s;
         }
         .carousel-card:hover { border-color: #d4a853; }
         .carousel-scene:hover .carousel-3d { animation-play-state: paused; }
+        /* Scroll pointer */
+        .scroll-pointer { animation: bounce-down 1.5s ease-in-out infinite; }
+        @keyframes bounce-down { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
     </style>
 </head>
 
@@ -432,17 +436,21 @@
         // --- SCREENS ---
 
         const Screen0_Entry = ({ onChoice }) => (
-            <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
-                <div className="text-center mb-12">
-                    <p className="text-brand-gold text-sm font-medium tracking-wider uppercase mb-4">The Infrastructure Engine for UK CICs</p>
-                    <h1 className="font-serif text-4xl md:text-5xl text-brand-white mb-4 leading-tight">
-                        How would you like to<br />explore grants?
-                    </h1>
-                    <p className="text-brand-slate text-xl">
-                        We have 40+ opportunities waiting for you
-                    </p>
+            <div className="max-w-5xl mx-auto px-4 py-8 animate-fade-in">
+                {/* Section 1: Closing Soon + 3D Carousel */}
+                <ClosingSoonCarousel />
+
+                {/* Scroll pointer to cards below */}
+                <div className="text-center my-10">
+                    <p className="text-brand-slate text-sm mb-3">Choose how to explore</p>
+                    <div className="scroll-pointer inline-block">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#d4a853" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M12 5v14M19 12l-7 7-7-7" />
+                        </svg>
+                    </div>
                 </div>
 
+                {/* Section 2: Two action cards */}
                 <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
                     {/* Personalised Board Card */}
                     <button
@@ -479,14 +487,6 @@
                         </div>
                     </button>
                 </div>
-
-                {/* Loss Aversion */}
-                <div className="max-w-3xl mx-auto mt-8">
-                    <LossAversion message="7 grants are closing within the next 14 days. Start filtering now to avoid missing eligible funding." />
-                </div>
-
-                {/* 3D Closing Soon Carousel */}
-                <ClosingSoonCarousel />
             </div>
         );
 

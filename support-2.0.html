@@ -193,13 +193,14 @@
         // --- Shared Sidebar Component ---
         function Sidebar() {
             const [isOpen, setIsOpen] = useState(false);
+            let dashHref = 'dashboard-2.0.html';
+            try { const u = JSON.parse(localStorage.getItem('inclusifund_user') || '{}'); if (u.tier === 'premium' || u.tier === 'lifetime') dashHref = 'cic-premium-dashboard-2.0.html'; } catch(e) {}
             const menuItems = [
-                { icon: LayoutDashboard, label: 'Dashboard', href: 'dashboard.html', active: false },
-                { icon: Search, label: 'Find Grants', href: 'grants-list.html', active: false },
-                { icon: FileText, label: 'CIC34 Report', href: 'cic34-generator.html', active: false },
-                { icon: FileText, label: 'Policy Generator', href: 'policy-generator.html', active: false },
-                { icon: Settings, label: 'Settings', href: 'settings.html', active: false },
-                { icon: HelpCircle, label: 'Support', href: 'support.html', active: true },
+                { icon: LayoutDashboard, label: 'Dashboard', href: dashHref, active: false },
+                { icon: Search, label: 'Find Grants', href: 'opportunities-hub.html', active: false },
+                { icon: FileText, label: 'CIC34 Report', href: 'cic34-generator-2.0.html', active: false },
+                { icon: Settings, label: 'Settings', href: 'settings-2.0.html', active: false },
+                { icon: HelpCircle, label: 'Support', href: 'support-2.0.html', active: true },
             ];
 
             const toggleMenu = () => setIsOpen(!isOpen);
