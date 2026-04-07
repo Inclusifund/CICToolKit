@@ -52,9 +52,34 @@
     }
   }
 
+  // Rewrite ALL hardcoded dashboard links on the page to be tier-aware
+  function rewriteDashboardLinks() {
+    const dashUrl = getDashboardUrl();
+    const freeDash = 'dashboard-2.0.html';
+    const oldDash = 'dashboard.html';
+    if (dashUrl === freeDash) return; // free user, no rewriting needed
+
+    // Rewrite <a href="dashboard-2.0.html"> and <a href="dashboard.html">
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      if (a.href.indexOf(freeDash) !== -1 || a.href.indexOf(oldDash) !== -1) {
+        // Don't rewrite if it's already the premium dashboard
+        if (a.href.indexOf('cic-premium') !== -1) return;
+        a.href = a.href.replace(freeDash, dashUrl).replace(oldDash, dashUrl);
+      }
+    });
+  }
+
+  // Expose getDashboardUrl globally so inline React onClick handlers can use it
+  window.InclusiFundDashUrl = getDashboardUrl;
+
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', function () { init(); rewriteDashboardLinks(); });
   } else {
     init();
+    rewriteDashboardLinks();
   }
+
+  // Also rewrite links added dynamically by React (runs after React renders)
+  setTimeout(rewriteDashboardLinks, 1500);
+  setTimeout(rewriteDashboardLinks, 3000);
 })();

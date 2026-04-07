@@ -139,16 +139,16 @@
         .progress-fill { height: 100%; border-radius: 9999px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); background: linear-gradient(90deg, #008080, #d4a853); }
 
         /* 3D Carousel — concave (cards curve toward viewer) */
-        .carousel-scene { overflow: visible; perspective: 900px; height: 440px; mask: linear-gradient(90deg, #0000, red 10% 90%, #0000); }
-        .carousel-3d { display: grid; place-self: center; transform-style: preserve-3d; animation: carousel-rotate 32s linear infinite; height: 100%; place-items: center; }
+        .carousel-scene { overflow: visible; perspective: 1200px; height: 340px; mask: linear-gradient(90deg, #0000, red 8% 92%, #0000); }
+        .carousel-3d { display: grid; place-self: center; transform-style: preserve-3d; animation: carousel-rotate 36s linear infinite; height: 100%; place-items: center; }
         @keyframes carousel-rotate { to { rotate: y -1turn; } }
         .carousel-card {
-            grid-area: 1/1; width: 200px; aspect-ratio: 7/10;
-            backface-visibility: hidden; border-radius: 1.25em;
-            transform: rotatey(calc(var(--i) * 1turn / var(--n))) translatez(calc((100px + .5em) / tan(.5turn / var(--n))));
-            background: #2D3344; border: 1px solid #334155; padding: 1.25rem;
+            grid-area: 1/1; width: 150px; aspect-ratio: 7/10;
+            backface-visibility: hidden; border-radius: 1em;
+            transform: rotatey(calc(var(--i) * 1turn / var(--n))) translatez(calc((75px + .5em) / tan(.5turn / var(--n))));
+            background: #2D3344; border: 1px solid #334155; padding: 0.875rem;
             display: flex; flex-direction: column; justify-content: space-between;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s; font-size: 0.8rem;
         }
         .carousel-card:hover { border-color: #d4a853; }
         .carousel-scene:hover .carousel-3d { animation-play-state: paused; }

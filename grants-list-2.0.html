@@ -364,7 +364,7 @@
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <button
-                                        onClick={(e) => { addRipple(e); window.location.href = 'dashboard-2.0.html'; }}
+                                        onClick={(e) => { addRipple(e); window.location.href = (window.InclusiFundDashUrl ? window.InclusiFundDashUrl() : 'dashboard-2.0.html'); }}
                                         className="ripple-btn text-brand-slate hover:text-brand-primary transition-colors flex items-center gap-2"
                                         title="Return to Tools Suite"
                                     >

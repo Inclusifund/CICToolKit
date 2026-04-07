@@ -661,13 +661,13 @@
                 const complianceData = await convexClient.query("compliance:getComplianceData", { userId: user.email });
 
                 if (complianceData) {
-                    window.location.href = 'dashboard-2.0.html';
+                    window.location.href = (window.InclusiFundDashUrl ? window.InclusiFundDashUrl() : 'dashboard-2.0.html');
                 } else {
                     window.location.href = 'compliance-onboarding-2.0.html';
                 }
             } catch (error) {
                 console.error('Error checking compliance data:', error);
-                window.location.href = 'dashboard-2.0.html';
+                window.location.href = (window.InclusiFundDashUrl ? window.InclusiFundDashUrl() : 'dashboard-2.0.html');
             }
         }
 

@@ -581,7 +581,7 @@
                                         Continue to Timeline <ChevronRight size={20} />
                                     </Button>
                                     <button
-                                        onClick={() => window.location.href = 'dashboard-2.0.html'}
+                                        onClick={() => window.location.href = (window.InclusiFundDashUrl ? window.InclusiFundDashUrl() : 'dashboard-2.0.html')}
                                         className="w-full text-center text-sm text-slate-500 hover:text-white py-2 transition-colors font-medium"
                                     >
                                         Cancel & Return to Hub
