@@ -1,0 +1,991 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund - Opportunities Hub</title>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Auth & Security -->
+    <script src="assets/js/auth.js"></script>
+    <script>
+        if (!InclusiFundAuth.requireAuth()) {
+            throw new Error("Redirecting to login...");
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Fix for Lucide-React UMD -->
+    <script>
+        window.react = window.React;
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.min.js"></script>
+    <script>
+        window.lucide = window.LucideReact;
+    </script>
+
+    <!-- Convex Client -->
+    <script src="https://unpkg.com/convex@1.16.4/dist/browser.bundle.js"></script>
+    <script>
+        window.Convex = window.convex;
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        hub: {
+                            bg: '#FAFAFA',
+                            card: '#FFFFFF',
+                            text: '#1A1A2E',
+                            muted: '#64748B',
+                            border: '#E2E8F0',
+                            hover: '#F8FAFC',
+                            grant: '#008080',
+                            contract: '#E8804C',
+                            csr: '#9B72CF',
+                            accelerator: '#1E8A9E',
+                            social: '#C556A0',
+                            competition: '#2EB5A0',
+                            procurement: '#B374D6',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ===== GHL Full-Width Override ===== */
+        #__nuxt,
+        #__nuxt > div,
+        .preview-container,
+        .hl_page-preview--content,
+        .fullSection,
+        .c-section,
+        .c-wrapper,
+        .bgCover,
+        .bg-fixed,
+        [id^="section-"] {
+            max-width: 100% !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        .inner,
+        .c-row,
+        .c-column,
+        .c-wrapper > div,
+        .c-section > div {
+            max-width: 100% !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        #root {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            margin-left: calc(-50vw + 50%) !important;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            background-color: #FAFAFA;
+            color: #1A1A2E;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Deadline urgency pulse animation */
+        @keyframes urgentPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .deadline-urgent {
+            animation: urgentPulse 1.5s ease-in-out infinite;
+        }
+
+        /* Bookmark transition */
+        .bookmark-btn {
+            transition: all 0.2s ease;
+        }
+        .bookmark-btn:hover {
+            transform: scale(1.15);
+        }
+        .bookmark-btn.saved {
+            color: #008080;
+        }
+    </style>
+
+    <!-- Access Support Data (removed: access-support.js does not exist) -->
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useCallback } = React;
+        const { Search, Filter, X, ExternalLink, ChevronDown, ArrowLeft, Award, Briefcase, Heart, Rocket, TrendingUp, Trophy, ShoppingCart, LayoutGrid, List, Bookmark, BookmarkCheck, Shield, Clock, Star } = lucide;
+
+        const CONVEX_URL = "https://terrific-bloodhound-927.convex.cloud";
+        const convexClient = new Convex.ConvexHttpClient(CONVEX_URL);
+
+        // Opportunity type config
+        const TYPE_CONFIG = {
+            grant:              { label: 'Grant',              color: '#008080', pillColor: '#006666', icon: Award },
+            accelerator:        { label: 'Accelerator',        color: '#F5B895', pillColor: '#E0A07A', icon: Rocket },
+            competition:        { label: 'Competition',        color: '#D4956B', pillColor: '#B87D55', icon: Trophy },
+            contract:           { label: 'Contract',           color: '#E8804C', pillColor: '#D4693A', icon: Briefcase },
+            csr:                { label: 'CSR',                color: '#B497D6', pillColor: '#9B7EC0', icon: Heart },
+            social_investment:  { label: 'Social Investment',  color: '#6BB6B6', pillColor: '#559A9A', icon: TrendingUp },
+            procurement:        { label: 'Procurement',        color: '#9DCDC8', pillColor: '#7FB8B2', icon: ShoppingCart },
+        };
+
+        // Local fallback opportunities (non-grant types)
+        const LOCAL_OPPORTUNITIES = [
+            {"name": "Aston Programme for Small Business Growth", "opportunityType": "accelerator", "funder": "Aston University", "description": "Free accelerator for small businesses with 5-249 employees in the West Midlands. Part-funded by ERDF. Includes leadership development, peer learning, and specialist workshops.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "West Midlands", "regions": ["West Midlands"], "sectors": ["Business Support", "Education"], "eligibleSectors": ["Business Support", "Education"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 2, "website": "https://www.aston.ac.uk/business/sme-support", "eligibility": "Small businesses with 5-249 employees based in the West Midlands"},
+            {"name": "Bethnal Green Ventures", "opportunityType": "accelerator", "funder": "Bethnal Green Ventures", "description": "Tech for good accelerator. 20K investment plus 3-month programme for startups using technology to solve social and environmental problems. Strong focus on diverse founders.", "amountMin": 20000, "amountMax": 20000, "deadline": "2026-04-15", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Social Enterprise", "Environment"], "eligibleSectors": ["Technology", "Social Enterprise", "Environment"], "status": "Open", "supportsStartup": true, "supportsGrowth": false, "supportsScale": false, "applicationDifficulty": 3, "website": "https://bethnalgreenventures.com/", "eligibility": "Early-stage tech for good startups"},
+            {"name": "Creative Industries Clusters Programme", "opportunityType": "accelerator", "funder": "AHRC / UKRI", "description": "Nine clusters across UK delivering R&D partnerships between creative businesses and researchers. Includes business support, innovation programmes, and growth funding.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Creative Industries", "Arts", "Innovation"], "eligibleSectors": ["Creative Industries", "Arts", "Innovation"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 3, "website": "https://creativeindustriesclusters.com/", "eligibility": "Creative industry businesses and researchers"},
+            {"name": "Creatives On Tour", "opportunityType": "accelerator", "funder": "DCMS / British Council", "description": "Export readiness programme for UK creative businesses seeking international growth. Mentoring, market access, and trade mission support.", "amountMin": 0, "amountMax": 0, "deadline": "2026-05-01", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Creative Industries", "Arts"], "eligibleSectors": ["Creative Industries", "Arts"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 2, "website": "https://www.gov.uk/government/news/new-support-for-uk-creative-industries-to-boost-exports", "eligibility": "UK creative businesses seeking international markets"},
+            {"name": "Goldman Sachs 10,000 Small Businesses UK", "opportunityType": "accelerator", "funder": "Goldman Sachs", "description": "Free business education programme for leaders of high-growth small businesses. Includes 12-week curriculum, business advising, networking, and access to capital.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Business Support"], "eligibleSectors": ["Business Support"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 3, "website": "https://www.goldmansachs.com/citizenship/10000-small-businesses/UK/", "eligibility": "Small business owners/leaders with revenue above GBP75K"},
+            {"name": "Maya Sherpa-Sherpa Foundation Tech Fellowship", "opportunityType": "accelerator", "funder": "Maya Sherpa-Sherpa Foundation", "description": "12-month fellowship for underrepresented tech founders. Includes mentoring, workspace, and up to 25K pre-seed funding.", "amountMin": 0, "amountMax": 25000, "deadline": "2026-06-30", "geographicFocus": "London", "regions": ["London"], "sectors": ["Technology", "Social Enterprise"], "eligibleSectors": ["Technology", "Social Enterprise"], "status": "Open", "supportsStartup": true, "supportsGrowth": false, "supportsScale": false, "applicationDifficulty": 3, "website": "#", "eligibility": "Underrepresented tech founders in London"},
+            {"name": "Natwest Accelerator", "opportunityType": "accelerator", "funder": "NatWest", "description": "Free 6-month programme for entrepreneurs and small businesses. Includes co-working space in NatWest hubs, mentoring, masterclasses, and specialist support. Open to all — not just NatWest customers.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Business Support"], "eligibleSectors": ["Business Support"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 2, "website": "https://www.natwest.com/business/business-services/enterprise.html", "eligibility": "UK entrepreneurs and small business owners"},
+            {"name": "SODA Social Design Academy", "opportunityType": "accelerator", "funder": "Design Council", "description": "Training programme for social designers tackling inequality. Includes project funding, mentoring, and peer network.", "amountMin": 0, "amountMax": 5000, "deadline": "2026-05-15", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Social Enterprise", "Creative Industries"], "eligibleSectors": ["Social Enterprise", "Creative Industries"], "status": "Open", "supportsStartup": true, "supportsGrowth": false, "supportsScale": false, "applicationDifficulty": 2, "website": "https://www.designcouncil.org.uk/our-work/social-design/", "eligibility": "Social designers and community organisations"},
+            {"name": "UnLtd Awards", "opportunityType": "accelerator", "funder": "UnLtd", "description": "Awards and support for social entrepreneurs at different stages. Try It (to test ideas), Do It (to grow), Grow It (to scale). Includes funding, mentoring, and networking.", "amountMin": 500, "amountMax": 15000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Social Enterprise"], "eligibleSectors": ["Social Enterprise"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 2, "website": "https://www.unltd.org.uk/awards", "eligibility": "UK social entrepreneurs at any stage"},
+            {"name": "Wayra UK (Telefonica)", "opportunityType": "accelerator", "funder": "Telefonica / O2", "description": "Corporate-backed accelerator investing in growth-stage startups. Focus on AI, connectivity, cybersecurity, IoT, and digital health. Investment of 50-250K plus Telefonica partnership.", "amountMin": 50000, "amountMax": 250000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Healthcare", "Innovation"], "eligibleSectors": ["Technology", "Healthcare", "Innovation"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 4, "website": "https://www.wayra.uk/", "eligibility": "Growth-stage tech startups"},
+            {"name": "NHS Supply Chain Innovation Partnership", "opportunityType": "contract", "funder": "NHS Supply Chain", "description": "NHS procurement framework for innovative health products and services. CICs and social enterprises can register as suppliers.", "amountMin": 10000, "amountMax": 500000, "deadline": "Rolling", "geographicFocus": "England", "regions": ["England"], "sectors": ["Healthcare", "Innovation"], "eligibleSectors": ["Healthcare", "Innovation"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 4, "website": "https://www.supplychain.nhs.uk/", "eligibility": "Registered suppliers of innovative health products and services"},
+            {"name": "Crown Commercial Service Dynamic Purchasing System", "opportunityType": "contract", "funder": "Crown Commercial Service", "description": "Government procurement framework for social enterprise and VCSE sector services. Includes consultancy, training, and community engagement contracts.", "amountMin": 5000, "amountMax": 1000000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Business Support", "Social Enterprise"], "eligibleSectors": ["Business Support", "Social Enterprise"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 4, "website": "https://www.crowncommercial.gov.uk/", "eligibility": "VCSE organisations registered on the DPS"},
+            {"name": "Social Value Portal Partnerships", "opportunityType": "contract", "funder": "Social Value Portal", "description": "Platform connecting social enterprises with corporate and public sector buyers measuring social value in procurement. Helps CICs win contracts through social value measurement.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Social Enterprise", "Business Support"], "eligibleSectors": ["Social Enterprise", "Business Support"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 3, "website": "https://socialvalueportal.com/", "eligibility": "Social enterprises and CICs"},
+            {"name": "Local Authority Social Value Contracts", "opportunityType": "contract", "funder": "Various Local Authorities", "description": "Local councils increasingly require social value in procurement. CICs well-positioned for community engagement, training, and wellbeing contracts under the Social Value Act 2012.", "amountMin": 5000, "amountMax": 250000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Social Enterprise", "Community", "Wellbeing"], "eligibleSectors": ["Social Enterprise", "Community", "Wellbeing"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 3, "website": "https://www.gov.uk/government/publications/social-value-act-information-and-resources", "eligibility": "CICs and social enterprises with relevant delivery experience"},
+            {"name": "BT Digital Skills Programme", "opportunityType": "csr", "funder": "BT Group", "description": "Corporate programme funding digital inclusion projects. Grants and partnerships for organisations delivering digital skills training in underserved communities.", "amountMin": 5000, "amountMax": 50000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Education", "Technology", "Community"], "eligibleSectors": ["Education", "Technology", "Community"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 2, "website": "https://www.bt.com/about/digital-impact-and-sustainability", "eligibility": "Organisations delivering digital skills training"},
+            {"name": "Google.org Impact Challenge UK", "opportunityType": "csr", "funder": "Google.org", "description": "Funding for UK nonprofits and social enterprises using technology to address social challenges. Focus on economic opportunity, education, and inclusion.", "amountMin": 50000, "amountMax": 500000, "deadline": "2026-06-30", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Education", "Social Enterprise"], "eligibleSectors": ["Technology", "Education", "Social Enterprise"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 3, "website": "https://impactchallenge.withgoogle.com/uk2025", "eligibility": "UK registered nonprofits and social enterprises"},
+            {"name": "LGBTQ+ Community Foundation Grants", "opportunityType": "csr", "funder": "Various (Kite Trust / LGBT Foundation / Stonewall)", "description": "Corporate-backed grants supporting LGBTQ+ community organisations. Various programmes from different funders — check individual websites for current rounds.", "amountMin": 1000, "amountMax": 25000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["LGBTQ+", "Community", "Wellbeing"], "eligibleSectors": ["LGBTQ+", "Community", "Wellbeing"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 2, "website": "https://www.lgbtcf.org.uk/", "eligibility": "LGBTQ+ community organisations and projects"},
+            {"name": "Lloyds Bank Foundation", "opportunityType": "csr", "funder": "Lloyds Banking Group", "description": "Multi-year unrestricted funding for small and local charities tackling disadvantage. Focus on mental health, housing/homelessness, domestic abuse, and learning disability.", "amountMin": 10000, "amountMax": 150000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["England", "Wales"], "sectors": ["Community", "Wellbeing", "Social Enterprise"], "eligibleSectors": ["Community", "Wellbeing", "Social Enterprise"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 3, "website": "https://www.lloydsbankfoundation.org.uk/", "eligibility": "Charities with annual income GBP25K-1M working on complex social issues"},
+            {"name": "Nesta and Omidyar Network Inclusive Economy Partnership", "opportunityType": "csr", "funder": "Nesta / Omidyar Network", "description": "Strategic funding for social innovations building a more inclusive UK economy. Supports scaling of proven approaches in financial inclusion, future of work, and community wealth.", "amountMin": 50000, "amountMax": 500000, "deadline": "2026-09-30", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Innovation", "Social Enterprise", "Community"], "eligibleSectors": ["Innovation", "Social Enterprise", "Community"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 4, "website": "https://www.nesta.org.uk/", "eligibility": "Organisations with proven social innovation models"},
+            {"name": "Salesforce Foundation 1-1-1 Model", "opportunityType": "csr", "funder": "Salesforce", "description": "Technology grants (free Salesforce licences), volunteer time, and funding for nonprofits. Particularly relevant for CICs needing CRM and data management tools.", "amountMin": 0, "amountMax": 50000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Social Enterprise"], "eligibleSectors": ["Technology", "Social Enterprise"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 2, "website": "https://www.salesforce.org/", "eligibility": "Registered nonprofits and social enterprises"},
+            {"name": "Vodafone Foundation Connected Communities", "opportunityType": "csr", "funder": "Vodafone", "description": "Technology and connectivity for underserved communities. Includes SIM cards, devices, and digital skills partnerships. Particularly targets rural and economically deprived areas.", "amountMin": 0, "amountMax": 25000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Education", "Community"], "eligibleSectors": ["Technology", "Education", "Community"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 2, "website": "https://www.vodafone.com/vodafone-foundation", "eligibility": "Community organisations in underserved areas"},
+            {"name": "UKRI Creative Industries Clusters Programme", "opportunityType": "competition", "funder": "UKRI", "description": "27m funding round for regions to bid for creative industries cluster development. Part of 369m UKRI investment in creative industries. Supports innovative creative businesses and regional growth.", "amountMin": 500000, "amountMax": 5000000, "deadline": "2026-06-30", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Arts", "Creative Industries", "Innovation", "Technology"], "eligibleSectors": ["Arts", "Creative Industries", "Innovation", "Technology"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 5, "website": "https://creativeindustriesclusters.com/", "eligibility": "Regional partnerships and creative industry clusters"},
+            {"name": "Innovate UK Smart Grants March 2026", "opportunityType": "competition", "funder": "Innovate UK", "description": "Up to 25m for game-changing, commercially viable R&D projects. Successful applicants can request 100k to 2m in funding. Open to disruptive innovations across all sectors.", "amountMin": 100000, "amountMax": 2000000, "deadline": "2026-04-30", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Creative Industries", "Environment", "Healthcare", "Innovation", "Technology"], "eligibleSectors": ["Creative Industries", "Environment", "Healthcare", "Innovation", "Technology"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 4, "website": "https://apply-for-innovation-funding.service.gov.uk/competition/search", "eligibility": "UK registered businesses with game-changing R&D innovation"},
+            {"name": "Robotics Adoption Hub Central Body", "opportunityType": "competition", "funder": "Innovate UK", "description": "Establishing central convening body for UK Robotics adoption infrastructure.", "amountMin": 1000000, "amountMax": 2000000, "deadline": "2026-04-15", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Innovation"], "eligibleSectors": ["Technology", "Innovation"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 5, "website": "https://www.ukri.org/councils/innovate-uk/", "eligibility": "UK organisations"},
+            {"name": "Clean Maritime Technology Projects", "opportunityType": "competition", "funder": "Innovate UK", "description": "121M fund for maritime clean tech innovation projects.", "amountMin": 100000, "amountMax": 121000000, "deadline": "2026-07-15", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Environment", "Innovation"], "eligibleSectors": ["Technology", "Environment", "Innovation"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 5, "website": "https://www.ukri.org/councils/innovate-uk/", "eligibility": "UK organisations"},
+            {"name": "Advanced Connectivity System Integration", "opportunityType": "competition", "funder": "Innovate UK", "description": "Innovation programme for tech and connectivity system integration projects.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Digital", "Innovation"], "eligibleSectors": ["Technology", "Digital", "Innovation"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 4, "website": "https://www.ukri.org/councils/innovate-uk/", "eligibility": "UK organisations"},
+            {"name": "Non-Animal Drug Testing Methods", "opportunityType": "competition", "funder": "Innovate UK", "description": "Innovation programme for non-animal drug testing methods development.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Healthcare", "Innovation"], "eligibleSectors": ["Healthcare", "Innovation"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 4, "website": "https://www.ukri.org/councils/innovate-uk/", "eligibility": "UK organisations"},
+            {"name": "Hemp Varieties for British Farming", "opportunityType": "competition", "funder": "Innovate UK", "description": "Innovation programme for hemp variety development for British farming.", "amountMin": 0, "amountMax": 0, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Environment", "Innovation"], "eligibleSectors": ["Environment", "Innovation"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 4, "website": "https://www.ukri.org/councils/innovate-uk/", "eligibility": "UK organisations"},
+            {"name": "Cybersecurity Startup Programme", "opportunityType": "accelerator", "funder": "Innovate UK", "description": "10M additional funding for cybersecurity startup programme.", "amountMin": 0, "amountMax": 10000000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Innovation", "Digital"], "eligibleSectors": ["Technology", "Innovation", "Digital"], "status": "Open", "supportsStartup": true, "supportsGrowth": true, "supportsScale": false, "applicationDifficulty": 4, "website": "https://www.ukri.org/councils/innovate-uk/", "eligibility": "UK cybersecurity startups"},
+            {"name": "Whole-System AI Strategy Fund", "opportunityType": "social_investment", "funder": "Innovate UK", "description": "1.6 billion whole-system AI strategy investment programme.", "amountMin": 100000, "amountMax": 1600000000, "deadline": "Rolling", "geographicFocus": "UK-wide", "regions": ["UK-wide"], "sectors": ["Technology", "Innovation", "Digital"], "eligibleSectors": ["Technology", "Innovation", "Digital"], "status": "Open", "supportsStartup": false, "supportsGrowth": true, "supportsScale": true, "applicationDifficulty": 5, "website": "https://www.ukri.org/councils/innovate-uk/", "eligibility": "UK organisations"}
+        ];
+
+        // ----- Utility functions -----
+
+        const formatAmount = (min, max) => {
+            if (!min && !max) return null;
+            if (min === 0 && max === 0) return 'Fully funded';
+            const fmt = (n) => {
+                if (n >= 1000000) return `\u00A3${(n / 1000000).toFixed(n % 1000000 === 0 ? 0 : 1)}M`;
+                if (n >= 1000) return `\u00A3${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}K`;
+                return `\u00A3${n}`;
+            };
+            if (min && max) return `${fmt(min)} - ${fmt(max)}`;
+            if (max) return `Up to ${fmt(max)}`;
+            if (min) return `From ${fmt(min)}`;
+            return null;
+        };
+
+        // Deadline urgency calculator
+        const getDeadlineInfo = (deadline) => {
+            if (!deadline || deadline === 'Rolling' || deadline.toLowerCase() === 'rolling') {
+                return { level: 'rolling', color: '#94A3B8', bgColor: '#F1F5F9', textColor: '#64748B', label: 'Rolling', daysText: null, pulse: false };
+            }
+            const now = new Date();
+            now.setHours(0, 0, 0, 0);
+            const dl = new Date(deadline);
+            dl.setHours(0, 0, 0, 0);
+            const diffMs = dl - now;
+            const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+            if (days < 0) {
+                return { level: 'overdue', color: '#DC2626', bgColor: '#FEF2F2', textColor: '#DC2626', label: deadline, daysText: 'Overdue', pulse: true };
+            }
+            if (days <= 7) {
+                return { level: 'urgent', color: '#DC2626', bgColor: '#FEF2F2', textColor: '#DC2626', label: deadline, daysText: `${days}d left`, pulse: true };
+            }
+            if (days <= 14) {
+                return { level: 'warning', color: '#D97706', bgColor: '#FFFBEB', textColor: '#D97706', label: deadline, daysText: `${days}d left`, pulse: false };
+            }
+            if (days <= 30) {
+                return { level: 'attention', color: '#CA8A04', bgColor: '#FEFCE8', textColor: '#CA8A04', label: deadline, daysText: `${days}d left`, pulse: false };
+            }
+            return { level: 'comfortable', color: '#16A34A', bgColor: '#F0FDF4', textColor: '#16A34A', label: deadline, daysText: `${days}d left`, pulse: false };
+        };
+
+        // Saved opportunities (localStorage)
+        const SAVED_KEY = 'inclusifund_saved_opportunities';
+        const loadSaved = () => {
+            try {
+                return JSON.parse(localStorage.getItem(SAVED_KEY) || '[]');
+            } catch { return []; }
+        };
+        const saveSaved = (ids) => {
+            localStorage.setItem(SAVED_KEY, JSON.stringify(ids));
+        };
+
+        // ----- Components -----
+
+        const DeadlineBadge = ({ deadline }) => {
+            const info = getDeadlineInfo(deadline);
+            return (
+                <div className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md font-medium ${info.pulse ? 'deadline-urgent' : ''}`}
+                     style={{ backgroundColor: info.bgColor, color: info.textColor }}>
+                    <Clock size={12} />
+                    <span>{info.label}</span>
+                    {info.daysText && (
+                        <span className="font-bold">{info.daysText}</span>
+                    )}
+                </div>
+            );
+        };
+
+        const AccessSupportBadge = ({ funder, opportunityType }) => {
+            if (!window.AccessSupport) return null;
+            // Show for all types, but with different messaging
+            const isGrant = opportunityType === 'grant';
+            if (window.AccessSupport.hasConfirmedSupport(funder)) {
+                return (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[#008080] text-white">
+                        <Shield size={12} />
+                        Access Support Confirmed
+                    </span>
+                );
+            }
+            if (isGrant) {
+                return (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-hub-muted">
+                        <Shield size={12} />
+                        Check with Funder
+                    </span>
+                );
+            }
+            return null;
+        };
+
+        const TypePill = ({ type, active, count, onClick }) => {
+            const config = TYPE_CONFIG[type];
+            if (!config) return null;
+            const Icon = config.icon;
+            return (
+                <button
+                    onClick={onClick}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
+                        active
+                            ? 'text-white shadow-md'
+                            : 'bg-white text-hub-muted border-hub-border hover:border-hub-muted'
+                    }`}
+                    style={active ? { backgroundColor: config.pillColor, borderColor: config.pillColor } : {}}
+                >
+                    <Icon size={15} />
+                    {config.label}
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${active ? 'bg-white/25' : 'bg-gray-100'}`}>
+                        {count}
+                    </span>
+                </button>
+            );
+        };
+
+        const SavedPill = ({ active, count, onClick }) => {
+            return (
+                <button
+                    onClick={onClick}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all border whitespace-nowrap ${
+                        active
+                            ? 'text-white shadow-md bg-[#008080] border-[#008080]'
+                            : 'bg-white text-hub-muted border-hub-border hover:border-hub-muted'
+                    }`}
+                >
+                    <Bookmark size={15} />
+                    Saved
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full ${active ? 'bg-white/25' : 'bg-gray-100'}`}>
+                        {count}
+                    </span>
+                </button>
+            );
+        };
+
+        const BookmarkButton = ({ saved, onClick }) => {
+            return (
+                <button
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick(); }}
+                    className={`bookmark-btn p-1.5 rounded-full transition-colors ${saved ? 'text-[#008080] bg-[#008080]/10' : 'text-gray-300 hover:text-[#008080] hover:bg-gray-50'}`}
+                    title={saved ? 'Remove from saved' : 'Save opportunity'}
+                >
+                    {saved ? <BookmarkCheck size={18} /> : <Bookmark size={18} />}
+                </button>
+            );
+        };
+
+        const OpportunityCard = ({ opp, saved, onToggleSave }) => {
+            const config = TYPE_CONFIG[opp.opportunityType] || TYPE_CONFIG.grant;
+            const Icon = config.icon;
+            const amount = formatAmount(opp.amountMin || opp.minAmount, opp.amountMax || opp.maxAmount);
+            const statusNorm = (opp.status === 'Open Now' || opp.status === 'Open') ? 'Open' : opp.status;
+            const oppId = opp._id || opp.name;
+
+            return (
+                <div
+                    className="bg-white rounded-xl border border-hub-border hover:border-hub-grant/50 hover:shadow-lg transition-all group flex flex-col"
+                    style={{ borderLeftWidth: '4px', borderLeftColor: config.color }}
+                >
+                    <div className="p-5 flex flex-col flex-1">
+                        {/* Top row: type badge + bookmark + status */}
+                        <div className="flex items-center justify-between mb-3">
+                            <span
+                                className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full text-white"
+                                style={{ backgroundColor: config.color }}
+                            >
+                                <Icon size={12} />
+                                {config.label}
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <BookmarkButton saved={saved} onClick={() => onToggleSave(oppId)} />
+                                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                                    statusNorm === 'Open'
+                                        ? 'bg-green-50 text-green-700'
+                                        : statusNorm === 'Closed'
+                                            ? 'bg-red-50 text-red-700'
+                                            : 'bg-amber-50 text-amber-700'
+                                }`}>
+                                    {statusNorm}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Funder */}
+                        <p className="text-xs text-hub-muted uppercase tracking-wider mb-1.5 font-medium">
+                            {opp.funder}
+                        </p>
+
+                        {/* Name */}
+                        <h3 className="font-serif text-lg text-hub-text mb-2 group-hover:text-hub-grant transition-colors leading-snug">
+                            {opp.name}
+                        </h3>
+
+                        {/* Amount + Deadline row */}
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {amount && (
+                                <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-gray-50 text-hub-grant">
+                                    {amount}
+                                </span>
+                            )}
+                            <DeadlineBadge deadline={opp.deadline} />
+                        </div>
+
+                        {/* Description */}
+                        <p className="text-sm text-hub-muted mb-3 flex-1 line-clamp-2 leading-relaxed">
+                            {opp.description}
+                        </p>
+
+                        {/* Eligibility (if available) */}
+                        {opp.eligibility && (
+                            <p className="text-xs text-hub-muted mb-3 italic line-clamp-2">
+                                Eligibility: {opp.eligibility}
+                            </p>
+                        )}
+
+                        {/* Sectors */}
+                        <div className="flex flex-wrap gap-1.5 mb-3">
+                            {(opp.sectors || opp.eligibleSectors || []).slice(0, 3).map(sector => (
+                                <span
+                                    key={sector}
+                                    className="text-xs px-2 py-0.5 rounded-md font-medium"
+                                    style={{ backgroundColor: config.color + '20', color: config.color }}
+                                >
+                                    {sector}
+                                </span>
+                            ))}
+                            {(opp.sectors || []).length > 3 && (
+                                <span className="text-xs text-hub-muted px-2 py-0.5">
+                                    +{opp.sectors.length - 3}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Stage tags */}
+                        <div className="flex gap-2 mb-3">
+                            {opp.supportsStartup && <span className="text-[10px] uppercase tracking-wider font-semibold text-hub-muted bg-gray-100 px-2 py-0.5 rounded">Startup</span>}
+                            {opp.supportsGrowth && <span className="text-[10px] uppercase tracking-wider font-semibold text-hub-muted bg-gray-100 px-2 py-0.5 rounded">Growth</span>}
+                            {opp.supportsScale && <span className="text-[10px] uppercase tracking-wider font-semibold text-hub-muted bg-gray-100 px-2 py-0.5 rounded">Scale</span>}
+                        </div>
+
+                        {/* Access Support badge */}
+                        <div className="mb-4">
+                            <AccessSupportBadge funder={opp.funder} opportunityType={opp.opportunityType} />
+                        </div>
+
+                        {/* CTA */}
+                        {opp.website && opp.website !== '#' ? (
+                            <a
+                                href={opp.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all hover:opacity-90 text-white mt-auto"
+                                style={{ backgroundColor: config.color }}
+                            >
+                                View Details
+                                <ExternalLink size={14} />
+                            </a>
+                        ) : (
+                            <div
+                                className="flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium mt-auto text-white opacity-60"
+                                style={{ backgroundColor: config.color }}
+                            >
+                                Details Coming Soon
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [grants, setGrants] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [selectedTypes, setSelectedTypes] = useState([]);
+            const [selectedSectors, setSelectedSectors] = useState([]);
+            const [selectedRegions, setSelectedRegions] = useState([]);
+            const [sortBy, setSortBy] = useState('deadline');
+            const [showFilters, setShowFilters] = useState(false);
+            const [viewMode, setViewMode] = useState('grid');
+            const [savedIds, setSavedIds] = useState(loadSaved);
+            const [showSavedOnly, setShowSavedOnly] = useState(false);
+
+            // Fetch from Convex + merge local opportunities
+            useEffect(() => {
+                const fetchAll = async () => {
+                    try {
+                        const result = await convexClient.query("grants:getAllGrants");
+                        const convexGrants = result.map(g => ({
+                            ...g,
+                            name: g.grantName || g.name || 'Unnamed Grant',
+                            // Use opportunityType from Convex if present, default to 'grant'
+                            opportunityType: g.opportunityType || 'grant',
+                            amountMin: g.amountMin || 0,
+                            amountMax: g.amountMax || 0,
+                            sectors: g.eligibleSectors || [],
+                            regions: g.regions || [g.geographicFocus || 'UK-wide'],
+                            status: g.status === 'Open Now' ? 'Open' : g.status,
+                            eligibility: g.eligibility || null,
+                        }));
+
+                        // Merge: add local opportunities that aren't already in Convex (by name)
+                        const convexNames = new Set(convexGrants.map(g => g.name));
+                        const uniqueLocal = LOCAL_OPPORTUNITIES.filter(o => !convexNames.has(o.name));
+
+                        setGrants([...convexGrants, ...uniqueLocal]);
+                    } catch (error) {
+                        console.error("Error fetching grants:", error);
+                        setGrants(LOCAL_OPPORTUNITIES);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+                fetchAll();
+            }, []);
+
+            // Persist saved to localStorage
+            useEffect(() => {
+                saveSaved(savedIds);
+            }, [savedIds]);
+
+            const toggleSave = useCallback((id) => {
+                setSavedIds(prev => {
+                    if (prev.includes(id)) return prev.filter(x => x !== id);
+                    return [...prev, id];
+                });
+            }, []);
+
+            // Dynamic type counts from actual data
+            const typeCounts = useMemo(() => {
+                const counts = {};
+                grants.forEach(o => {
+                    const t = o.opportunityType || 'grant';
+                    counts[t] = (counts[t] || 0) + 1;
+                });
+                return counts;
+            }, [grants]);
+
+            // Only show type pills that have data
+            const activeTypes = useMemo(() => {
+                return Object.keys(TYPE_CONFIG).filter(t => (typeCounts[t] || 0) > 0);
+            }, [typeCounts]);
+
+            // Unique sectors and regions
+            const allSectors = useMemo(() => [...new Set(grants.flatMap(g => g.sectors || []))].sort(), [grants]);
+            const allRegions = useMemo(() => [...new Set(grants.flatMap(g => g.regions || []))].sort(), [grants]);
+
+            // Saved count
+            const savedCount = useMemo(() => {
+                return grants.filter(o => savedIds.includes(o._id || o.name)).length;
+            }, [grants, savedIds]);
+
+            // Filtered list
+            const filtered = useMemo(() => {
+                let result = grants;
+
+                // Saved filter
+                if (showSavedOnly) {
+                    result = result.filter(o => savedIds.includes(o._id || o.name));
+                }
+
+                if (selectedTypes.length > 0) {
+                    result = result.filter(o => selectedTypes.includes(o.opportunityType || 'grant'));
+                }
+
+                if (searchTerm) {
+                    const term = searchTerm.toLowerCase();
+                    result = result.filter(o =>
+                        (o.name || '').toLowerCase().includes(term) ||
+                        (o.funder || '').toLowerCase().includes(term) ||
+                        (o.description || '').toLowerCase().includes(term) ||
+                        (o.eligibility || '').toLowerCase().includes(term)
+                    );
+                }
+
+                if (selectedSectors.length > 0) {
+                    result = result.filter(o =>
+                        (o.sectors || []).some(s => selectedSectors.includes(s))
+                    );
+                }
+
+                if (selectedRegions.length > 0) {
+                    result = result.filter(o =>
+                        (o.regions || []).includes('UK-wide') ||
+                        (o.regions || []).some(r => selectedRegions.includes(r))
+                    );
+                }
+
+                result = [...result].sort((a, b) => {
+                    if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '');
+                    if (sortBy === 'maxAmount') return (b.amountMax || 0) - (a.amountMax || 0);
+                    if (sortBy === 'type') return (a.opportunityType || '').localeCompare(b.opportunityType || '');
+                    if (sortBy === 'difficulty') return (a.applicationDifficulty || 3) - (b.applicationDifficulty || 3);
+                    if (sortBy === 'deadline') {
+                        const aDate = a.deadline && a.deadline !== 'Rolling' ? new Date(a.deadline) : new Date('2099-12-31');
+                        const bDate = b.deadline && b.deadline !== 'Rolling' ? new Date(b.deadline) : new Date('2099-12-31');
+                        return aDate - bDate;
+                    }
+                    return 0;
+                });
+
+                return result;
+            }, [grants, selectedTypes, searchTerm, selectedSectors, selectedRegions, sortBy, showSavedOnly, savedIds]);
+
+            const toggleType = (type) => {
+                setSelectedTypes(prev =>
+                    prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+                );
+            };
+
+            const toggleSector = (sector) => {
+                setSelectedSectors(prev =>
+                    prev.includes(sector) ? prev.filter(s => s !== sector) : [...prev, sector]
+                );
+            };
+
+            const toggleRegion = (region) => {
+                setSelectedRegions(prev =>
+                    prev.includes(region) ? prev.filter(r => r !== region) : [...prev, region]
+                );
+            };
+
+            const clearFilters = () => {
+                setSearchTerm('');
+                setSelectedTypes([]);
+                setSelectedSectors([]);
+                setSelectedRegions([]);
+                setSortBy('deadline');
+                setShowSavedOnly(false);
+            };
+
+            const activeFilterCount = selectedTypes.length + selectedSectors.length + selectedRegions.length + (searchTerm ? 1 : 0) + (showSavedOnly ? 1 : 0);
+
+            if (loading) {
+                return (
+                    <div className="min-h-screen bg-hub-bg flex items-center justify-center">
+                        <div className="text-center">
+                            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-hub-grant mb-4"></div>
+                            <p className="text-hub-muted text-lg">Loading opportunities...</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen bg-hub-bg font-sans">
+                    {/* Header */}
+                    <header className="bg-white border-b border-hub-border sticky top-0 z-50">
+                        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={() => window.location.href = 'dashboard.html'}
+                                        className="text-hub-muted hover:text-hub-text transition-colors flex items-center gap-2"
+                                        title="Return to Tools Suite"
+                                    >
+                                        <ArrowLeft size={22} />
+                                        <span className="hidden md:inline text-sm font-medium">Tools Suite</span>
+                                    </button>
+                                    <div>
+                                        <h1 className="font-serif text-2xl md:text-3xl text-hub-text font-semibold">
+                                            Opportunities Hub
+                                        </h1>
+                                        <p className="text-xs text-hub-muted mt-0.5 hidden sm:block">
+                                            {grants.length} opportunities across {Object.keys(typeCounts).length} categories
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    {/* View toggle */}
+                                    <div className="hidden md:flex bg-gray-100 rounded-lg p-0.5">
+                                        <button
+                                            onClick={() => setViewMode('grid')}
+                                            className={`p-2 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-white shadow-sm text-hub-text' : 'text-hub-muted'}`}
+                                        >
+                                            <LayoutGrid size={16} />
+                                        </button>
+                                        <button
+                                            onClick={() => setViewMode('list')}
+                                            className={`p-2 rounded-md transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm text-hub-text' : 'text-hub-muted'}`}
+                                        >
+                                            <List size={16} />
+                                        </button>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        className="md:hidden bg-gray-100 text-hub-text px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium"
+                                    >
+                                        <Filter size={16} />
+                                        Filters
+                                        {activeFilterCount > 0 && (
+                                            <span className="bg-hub-grant text-white text-xs px-1.5 py-0.5 rounded-full">{activeFilterCount}</span>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Type pills bar */}
+                    <div className="bg-white border-b border-hub-border">
+                        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                            <div className="flex gap-2 overflow-x-auto pb-1 custom-scrollbar">
+                                {activeTypes.map(type => (
+                                    <TypePill
+                                        key={type}
+                                        type={type}
+                                        active={selectedTypes.includes(type)}
+                                        count={typeCounts[type] || 0}
+                                        onClick={() => toggleType(type)}
+                                    />
+                                ))}
+                                <SavedPill
+                                    active={showSavedOnly}
+                                    count={savedCount}
+                                    onClick={() => setShowSavedOnly(!showSavedOnly)}
+                                />
+                                {activeFilterCount > 0 && (
+                                    <button
+                                        onClick={clearFilters}
+                                        className="flex items-center gap-1.5 px-3 py-2 rounded-full text-sm text-red-400 hover:bg-red-500/10 transition-colors whitespace-nowrap"
+                                    >
+                                        <X size={14} />
+                                        Clear all
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Access Support + Upgrade Topline */}
+                    <div className="bg-hub-grant/5 border-b border-hub-border">
+                        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3">
+                            <div className="flex items-center justify-between gap-4 flex-wrap">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Shield size={18} className="text-hub-grant" />
+                                    <span className="text-hub-text font-medium">Access Support</span>
+                                    <span className="text-hub-muted hidden sm:inline">-- Cards show funder accessibility info for d/Deaf, disabled & neurodivergent applicants</span>
+                                </div>
+                                <a
+                                    href="grants-custom.html"
+                                    className="inline-flex items-center gap-2 bg-hub-grant text-white text-sm font-medium px-4 py-1.5 rounded-full hover:opacity-90 transition-all whitespace-nowrap"
+                                >
+                                    Upgrade -- From &pound;497/yr
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div className="flex flex-col md:flex-row gap-6">
+                            {/* Sidebar */}
+                            <aside className={`md:w-72 shrink-0 ${showFilters ? 'block' : 'hidden md:block'}`}>
+                                <div className="bg-white border border-hub-border rounded-xl p-5 sticky top-32">
+                                    <div className="flex items-center justify-between mb-5">
+                                        <h2 className="font-semibold text-hub-text">Filters</h2>
+                                        {activeFilterCount > 0 && (
+                                            <button onClick={clearFilters} className="text-hub-muted hover:text-red-500 text-xs transition-colors">
+                                                Clear all
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Search */}
+                                    <div className="mb-5">
+                                        <label className="block text-hub-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Search</label>
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-hub-muted" size={16} />
+                                            <input
+                                                type="text"
+                                                value={searchTerm}
+                                                onChange={(e) => setSearchTerm(e.target.value)}
+                                                placeholder="Name, funder, or eligibility..."
+                                                className="w-full border border-hub-border bg-white rounded-lg pl-9 pr-3 py-2 text-sm text-hub-text placeholder-hub-muted focus:outline-none focus:border-hub-grant focus:ring-1 focus:ring-hub-grant/30"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Sort */}
+                                    <div className="mb-5">
+                                        <label className="block text-hub-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Sort By</label>
+                                        <select
+                                            value={sortBy}
+                                            onChange={(e) => setSortBy(e.target.value)}
+                                            className="w-full border border-hub-border bg-white rounded-lg px-3 py-2 text-sm text-hub-text focus:outline-none focus:border-hub-grant"
+                                        >
+                                            <option value="deadline">Deadline (Soonest)</option>
+                                            <option value="name">Name (A-Z)</option>
+                                            <option value="maxAmount">Highest Amount</option>
+                                            <option value="type">Type</option>
+                                            <option value="difficulty">Easiest First</option>
+                                        </select>
+                                    </div>
+
+                                    {/* Sectors */}
+                                    <div className="mb-5">
+                                        <label className="block text-hub-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Sectors</label>
+                                        <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
+                                            {allSectors.map(sector => (
+                                                <label key={sector} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded text-sm">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedSectors.includes(sector)}
+                                                        onChange={() => toggleSector(sector)}
+                                                        className="w-3.5 h-3.5 accent-hub-grant rounded"
+                                                    />
+                                                    <span className="text-hub-text">{sector}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Regions */}
+                                    <div>
+                                        <label className="block text-hub-muted text-xs font-medium mb-1.5 uppercase tracking-wider">Regions</label>
+                                        <div className="space-y-1 max-h-40 overflow-y-auto custom-scrollbar">
+                                            {allRegions.map(region => (
+                                                <label key={region} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1.5 rounded text-sm">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedRegions.includes(region)}
+                                                        onChange={() => toggleRegion(region)}
+                                                        className="w-3.5 h-3.5 accent-hub-grant rounded"
+                                                    />
+                                                    <span className="text-hub-text">{region}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </aside>
+
+                            {/* Main */}
+                            <main className="flex-1 min-w-0">
+                                {/* Results header */}
+                                <div className="flex items-center justify-between mb-5">
+                                    <h2 className="text-lg font-semibold text-hub-text">
+                                        {filtered.length} {filtered.length === 1 ? 'Opportunity' : 'Opportunities'}
+                                        {showSavedOnly && ' (Saved)'}
+                                    </h2>
+                                    {/* Active filter pills */}
+                                    {(selectedSectors.length > 0 || selectedRegions.length > 0) && (
+                                        <div className="flex flex-wrap gap-1.5">
+                                            {selectedSectors.map(s => (
+                                                <span key={s} className="bg-hub-grant/20 text-hub-grant text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
+                                                    {s}
+                                                    <button onClick={() => toggleSector(s)}><X size={12} /></button>
+                                                </span>
+                                            ))}
+                                            {selectedRegions.map(r => (
+                                                <span key={r} className="bg-gray-100 text-hub-muted text-xs px-2.5 py-1 rounded-full flex items-center gap-1">
+                                                    {r}
+                                                    <button onClick={() => toggleRegion(r)}><X size={12} /></button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {filtered.length === 0 ? (
+                                    <div className="text-center py-20 bg-white rounded-xl border border-hub-border">
+                                        <p className="text-hub-muted text-lg mb-4">
+                                            {showSavedOnly ? 'No saved opportunities yet' : 'No opportunities match your criteria'}
+                                        </p>
+                                        <button
+                                            onClick={clearFilters}
+                                            className="bg-hub-grant text-white px-6 py-2.5 rounded-lg font-medium hover:opacity-90 transition-colors text-sm"
+                                        >
+                                            {showSavedOnly ? 'Show All Opportunities' : 'Clear Filters'}
+                                        </button>
+                                    </div>
+                                ) : viewMode === 'grid' ? (
+                                    <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                                        {filtered.map((opp, i) => (
+                                            <OpportunityCard
+                                                key={opp._id || `opp-${i}`}
+                                                opp={opp}
+                                                saved={savedIds.includes(opp._id || opp.name)}
+                                                onToggleSave={toggleSave}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {filtered.map((opp, i) => {
+                                            const config = TYPE_CONFIG[opp.opportunityType] || TYPE_CONFIG.grant;
+                                            const Icon = config.icon;
+                                            const amount = formatAmount(opp.amountMin || opp.minAmount, opp.amountMax || opp.maxAmount);
+                                            const oppId = opp._id || opp.name;
+                                            const isSaved = savedIds.includes(oppId);
+                                            const deadlineInfo = getDeadlineInfo(opp.deadline);
+                                            return (
+                                                <div
+                                                    key={opp._id || `opp-${i}`}
+                                                    className="bg-white rounded-lg border border-hub-border hover:border-hub-grant/50 hover:shadow-md transition-all flex items-center gap-4 p-4"
+                                                    style={{ borderLeftWidth: '4px', borderLeftColor: config.color }}
+                                                >
+                                                    <div className="shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-white" style={{ backgroundColor: config.color }}>
+                                                        <Icon size={18} />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-0.5">
+                                                            <h3 className="font-medium text-hub-text truncate">{opp.name}</h3>
+                                                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full text-white shrink-0" style={{ backgroundColor: config.color }}>
+                                                                {config.label}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-xs text-hub-muted">{opp.funder}</p>
+                                                    </div>
+                                                    <div className="hidden sm:flex items-center gap-4 shrink-0 text-sm">
+                                                        {amount && <span className="font-medium text-hub-text">{amount}</span>}
+                                                        <DeadlineBadge deadline={opp.deadline} />
+                                                    </div>
+                                                    <BookmarkButton saved={isSaved} onClick={() => toggleSave(oppId)} />
+                                                    {opp.website && opp.website !== '#' && (
+                                                        <a
+                                                            href={opp.website}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
+                                                            style={{ color: config.color }}
+                                                        >
+                                                            <ExternalLink size={16} />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </main>
+                        </div>
+
+                        {/* Upgrade CTA */}
+                        <div className="mt-12 bg-white border-2 border-hub-grant rounded-2xl p-8 text-center shadow-sm">
+                            <h2 className="font-serif text-2xl text-hub-text mb-3">Want us to write these applications for you?</h2>
+                            <p className="text-hub-muted mb-6 max-w-2xl mx-auto">From &pound;166 per grant with 3-layer quality control. We also write your access support applications.</p>
+                            <a href="grants-custom.html" className="inline-flex items-center gap-2 bg-hub-grant text-white px-8 py-3 rounded-full font-bold hover:opacity-90 transition-all">
+                                See Premium Tiers
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
+</body>
+
+</html>

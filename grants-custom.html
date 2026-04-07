@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund - Grants Premium</title>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Fix for Lucide-React UMD -->
+    <script>
+        window.react = window.React;
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.min.js"></script>
+    <script>
+        window.lucide = window.LucideReact;
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#1F2232',
+                            primary: '#6BB6B6',
+                            secondary: '#008080',
+                            accent: '#005461',
+                            light: '#D5ECEC',
+                            white: '#FFFFFF',
+                            slate: '#94A3B8',
+                            border: '#334155',
+                            card: '#2D3344',
+                            gold: '#F59E0B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ===== GHL Full-Width Override ===== */
+        /* GHL wraps custom code in: #__nuxt > .preview-container > .fullSection >
+           .c-section > .c-wrapper > .inner > .c-row > .c-column > [your code]
+           The .inner div is the main culprit — it caps at ~1170px with margin:auto */
+
+        /* Layer 1: Reset all GHL structural containers */
+        #__nuxt,
+        #__nuxt > div,
+        .preview-container,
+        .hl_page-preview--content,
+        .fullSection,
+        .c-section,
+        .c-wrapper,
+        .bgCover,
+        .bg-fixed,
+        [id^="section-"] {
+            max-width: 100% !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Layer 2: THE KEY FIX — .inner is what caps width at ~1170px */
+        .inner,
+        .c-row,
+        .c-column,
+        .c-wrapper > div,
+        .c-section > div {
+            max-width: 100% !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Layer 3: Failsafe — break out of ANY parent container */
+        #root {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            margin-left: calc(-50vw + 50%) !important;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1F2232;
+            color: #F4F4F4;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1F2232;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        const { ArrowLeft, Check, Minus, ChevronDown, ChevronUp, Sparkles, Users, ShieldCheck, Star, Mail, Phone, Zap, Award, BarChart3, Calendar, FileCheck, Building2, Heart } = lucide;
+
+        /* =========================================================
+           FAQ Accordion Item
+           ========================================================= */
+        const FAQItem = ({ question, answer }) => {
+            const [open, setOpen] = useState(false);
+            return (
+                <div className="border border-brand-border rounded-lg overflow-hidden">
+                    <button
+                        onClick={() => setOpen(!open)}
+                        className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-brand-card/60 transition-colors"
+                    >
+                        <span className="font-medium text-white pr-4">{question}</span>
+                        {open ? <ChevronUp size={20} className="text-brand-primary flex-shrink-0" /> : <ChevronDown size={20} className="text-brand-slate flex-shrink-0" />}
+                    </button>
+                    {open && (
+                        <div className="px-6 pb-5 text-brand-slate leading-relaxed text-sm">
+                            {answer}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        /* =========================================================
+           Pricing Card
+           ========================================================= */
+        const PricingCard = ({ tier, name, price, priceSuffix, features, cta, ctaLink, highlighted, badge }) => {
+            return (
+                <div className={`rounded-xl p-6 flex flex-col h-full transition-all duration-300 hover:-translate-y-1 ${highlighted ? 'border-2 border-brand-gold bg-brand-card ring-1 ring-brand-gold/30' : 'border border-brand-border bg-brand-card'}`}>
+                    {badge && (
+                        <div className="flex justify-center -mt-9 mb-3">
+                            <span className="bg-brand-gold text-brand-dark text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide">{badge}</span>
+                        </div>
+                    )}
+                    <div className="text-brand-slate text-sm font-medium uppercase tracking-wider mb-1">{tier}</div>
+                    <h3 className="text-xl font-semibold text-white mb-2">{name}</h3>
+                    <div className="mb-4">
+                        <span className="text-3xl font-bold text-brand-primary">{price}</span>
+                        {priceSuffix && <span className="text-brand-slate text-sm ml-1">{priceSuffix}</span>}
+                    </div>
+                    <ul className="space-y-2 mb-6 flex-1">
+                        {features.map((f, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                <Check size={16} className="text-brand-primary flex-shrink-0 mt-0.5" />
+                                <span>{f}</span>
+                            </li>
+                        ))}
+                    </ul>
+                    <a
+                        href={ctaLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`block text-center py-3 px-4 rounded-lg font-medium transition-all duration-200 ${highlighted ? 'bg-brand-gold text-brand-dark hover:bg-yellow-400' : 'bg-brand-primary text-brand-dark hover:bg-brand-light'}`}
+                    >
+                        {cta}
+                    </a>
+                </div>
+            );
+        };
+
+        /* =========================================================
+           Comparison Table
+           ========================================================= */
+        const ComparisonTable = () => {
+            const tiers = ['Free', 'T1', 'T2', 'T3', 'T4', 'T5', 'Enterprise'];
+            const prices = ['£0', '£197', '£497/yr', '£797/yr', '£1,297/yr', '£1,997/yr', '£2,500+'];
+
+            const features = [
+                { name: 'Browse all grants', values: ['✓','✓','✓','✓','✓','✓','✓'] },
+                { name: 'Access Support badges', values: ['✓','✓','✓','✓','✓','✓','✓'] },
+                { name: 'Personalised 5Q matcher', values: ['—','✓','✓','✓','✓','✓','✓'] },
+                { name: 'CSV export', values: ['—','✓','✓','✓','✓','✓','✓'] },
+                { name: 'CIC Tools Suite (20 tools)', values: ['—','✓','✓','✓','✓','✓','✓'] },
+                { name: 'Grants written per year', values: ['—','—','3','6','12','24','Unlimited'] },
+                { name: '3-layer QC', values: ['—','—','✓','✓','✓','✓','✓'] },
+                { name: 'Access support app writing', values: ['—','—','✓','✓','✓','✓','✓'] },
+                { name: 'Impact reports', values: ['—','—','—','Bi-annual','Quarterly','Monthly','✓'] },
+                { name: 'Strategy sessions', values: ['—','—','—','—','Quarterly','Monthly','Quarterly 12mo'] },
+                { name: 'Business model stress test', values: ['—','—','—','—','✓','✓','✓'] },
+                { name: 'Partnerships & contracts matcher', values: ['—','—','—','—','✓','✓','✓'] },
+                { name: 'Relationship mapping + email templates', values: ['—','—','—','—','✓','✓','✓'] },
+                { name: 'Compliance audit', values: ['—','—','—','—','Annual','Quarterly','Full'] },
+                { name: 'Programme readiness', values: ['—','—','—','—','—','—','✓'] },
+                { name: 'Priority support', values: ['—','—','—','—','✓','✓','✓'] },
+            ];
+
+            return (
+                <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b border-brand-border">
+                                <th className="text-left py-3 px-4 text-brand-slate font-medium min-w-[180px]">Feature</th>
+                                {tiers.map((t, i) => (
+                                    <th key={i} className={`text-center py-3 px-3 font-medium min-w-[90px] ${t === 'T3' ? 'text-brand-gold' : 'text-white'}`}>{t}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {features.map((f, i) => (
+                                <tr key={i} className="border-b border-brand-border/50 hover:bg-brand-card/40 transition-colors">
+                                    <td className="py-3 px-4 text-gray-300">{f.name}</td>
+                                    {f.values.map((v, j) => (
+                                        <td key={j} className={`text-center py-3 px-3 ${v === '✓' ? 'text-brand-primary' : v === '—' ? 'text-brand-slate/40' : 'text-gray-300 text-xs'}`}>
+                                            {v}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))}
+                            <tr className="border-t-2 border-brand-border">
+                                <td className="py-4 px-4 text-white font-semibold">Price</td>
+                                {prices.map((p, i) => (
+                                    <td key={i} className={`text-center py-4 px-3 font-semibold ${i === 3 ? 'text-brand-gold' : 'text-brand-primary'}`}>{p}</td>
+                                ))}
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            );
+        };
+
+        /* =========================================================
+           Main App
+           ========================================================= */
+        const App = () => {
+
+            return (
+                <div className="min-h-screen bg-brand-dark font-sans text-gray-100">
+
+                    {/* ── Header ── */}
+                    <header className="border-b border-brand-border/50 bg-brand-dark/80 backdrop-blur-sm sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+                            <span className="font-serif text-2xl text-brand-primary font-bold">InclusiFund</span>
+                            <a href="grants-list.html" className="flex items-center gap-2 text-brand-slate hover:text-brand-primary transition-colors text-sm">
+                                <ArrowLeft size={16} />
+                                Back to Grants
+                            </a>
+                        </div>
+                    </header>
+
+                    {/* ── Hero ── */}
+                    <section className="relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-secondary via-brand-primary to-brand-gold"></div>
+                        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-20 md:py-28 text-center">
+                            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                                Grant Writing That Pays For Itself
+                            </h1>
+                            <p className="text-lg md:text-xl text-brand-slate max-w-2xl mx-auto leading-relaxed">
+                                From £166 per grant — vs £800–£2,000 for a freelance grant writer. Every application goes through our 3-layer quality control.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* ── Access Support Callout ── */}
+                    <section className="max-w-4xl mx-auto px-4 sm:px-6 pb-16">
+                        <div className="border-2 border-brand-primary/60 rounded-xl p-6 md:p-8 bg-brand-card/50">
+                            <div className="flex items-start gap-4">
+                                <Heart size={28} className="text-brand-primary flex-shrink-0 mt-1" />
+                                <div>
+                                    <h2 className="text-xl font-semibold text-white mb-2">Every grant includes Access Support information</h2>
+                                    <p className="text-brand-slate leading-relaxed mb-4">
+                                        We're the only UK grants platform that shows you exactly what access support each funder offers — because it's your legal right under the Equality Act 2010. d/Deaf, disabled, and neurodivergent applicants shouldn't face extra barriers.
+                                    </p>
+                                    <span className="inline-block text-xs bg-brand-primary/15 text-brand-primary border border-brand-primary/30 rounded-full px-3 py-1 font-medium">
+                                        Powered by Equality Act 2010
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── Pricing Section ── */}
+                    <section id="pricing" className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+                        {/* Free tier note */}
+                        <p className="text-center text-brand-slate mb-6 text-sm">
+                            Already browsing for free? Here's what upgrading gets you.
+                        </p>
+
+                        {/* T1 Banner */}
+                        <div className="bg-brand-card border border-brand-border rounded-lg p-4 md:p-5 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <Zap size={20} className="text-brand-primary" />
+                                <div>
+                                    <span className="text-white font-semibold">T1: Personalised Board</span>
+                                    <span className="text-brand-slate text-sm ml-2">— 5-question matcher, CSV export, CIC Tools Suite (20 tools)</span>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="text-brand-primary font-bold text-lg">£197 <span className="text-brand-slate text-sm font-normal">lifetime</span></span>
+                                <a href="https://admin.inclusifund.co.uk/payment-link/69a01b502ecba827379bd022" target="_blank" rel="noopener noreferrer" className="bg-brand-primary text-brand-dark px-5 py-2 rounded-lg font-medium hover:bg-brand-light transition-colors text-sm whitespace-nowrap">
+                                    Get Lifetime Access — £197
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Main 3-column pricing grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                            <PricingCard
+                                tier="T2"
+                                name="Grant Writing"
+                                price="£497"
+                                priceSuffix="/year"
+                                features={[
+                                    'Everything in T1',
+                                    '3 grant applications written per year',
+                                    '3-layer quality control on every application',
+                                    'Access support applications written',
+                                ]}
+                                cta="Get Started — £497/yr"
+                                ctaLink="https://admin.inclusifund.co.uk/payment-link/69baa491c1b7344f595a59e7"
+                            />
+                            <div className="pt-3">
+                                <PricingCard
+                                    tier="T3"
+                                    name="Growth"
+                                    price="£797"
+                                    priceSuffix="/year"
+                                    features={[
+                                        'Everything in T2',
+                                        '6 grant applications written per year',
+                                        '3-layer quality control on every application',
+                                        'Bi-annual impact reports',
+                                        'Access support applications written',
+                                    ]}
+                                    cta="Get Started — £797/yr"
+                                    ctaLink="https://admin.inclusifund.co.uk/payment-link/69baa469c1b7344f595a59e5"
+                                    highlighted={true}
+                                    badge="Most Popular"
+                                />
+                            </div>
+                            <PricingCard
+                                tier="T4"
+                                name="Scale"
+                                price="£1,297"
+                                priceSuffix="/year"
+                                features={[
+                                    'Everything in T3',
+                                    '12 grant applications written per year',
+                                    'Business model stress test',
+                                    'Partnerships & contracts matcher',
+                                    'Relationship mapping + email templates',
+                                    'Quarterly strategy sessions',
+                                    'Annual compliance audit',
+                                    'Priority support',
+                                ]}
+                                cta="Get Started — £1,297/yr"
+                                ctaLink="https://admin.inclusifund.co.uk/payment-link/69baa419c1b7344f595a59e4"
+                            />
+                        </div>
+
+                        {/* T5 Agency — wide card */}
+                        <div className="bg-brand-card border border-brand-border rounded-xl p-6 md:p-8 mb-8">
+                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                                <div className="flex-1">
+                                    <div className="text-brand-slate text-sm font-medium uppercase tracking-wider mb-1">T5</div>
+                                    <h3 className="text-2xl font-semibold text-white mb-2">Agency</h3>
+                                    <div className="mb-4">
+                                        <span className="text-3xl font-bold text-brand-primary">£1,997</span>
+                                        <span className="text-brand-slate text-sm ml-1">/year</span>
+                                    </div>
+                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        {['24 grants written per year', 'Business model stress test', 'Partnerships & contracts matcher', 'Relationship mapping + paste-ready email templates', 'Monthly impact reports', 'Monthly strategy sessions', 'Quarterly compliance audits', 'Priority support', '3-layer QC on every application'].map((f, i) => (
+                                            <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                                <Check size={16} className="text-brand-primary flex-shrink-0 mt-0.5" />
+                                                <span>{f}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <a href="https://admin.inclusifund.co.uk/payment-link/69baa33ec1b7344f595a59e2" target="_blank" rel="noopener noreferrer" className="bg-brand-primary text-brand-dark px-8 py-3 rounded-lg font-medium hover:bg-brand-light transition-colors whitespace-nowrap">
+                                    Get Started — £1,997/yr
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Enterprise */}
+                        <div className="bg-gradient-to-br from-brand-accent/30 to-brand-card border border-brand-primary/40 rounded-xl p-6 md:p-8">
+                            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <Building2 size={18} className="text-brand-gold" />
+                                        <span className="text-brand-gold text-sm font-medium uppercase tracking-wider">Enterprise</span>
+                                    </div>
+                                    <h3 className="text-2xl font-semibold text-white mb-2">Programme Readiness</h3>
+                                    <div className="mb-4">
+                                        <span className="text-3xl font-bold text-brand-gold">£2,500–£5,000</span>
+                                    </div>
+                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        {['Full compliance audit & remediation', 'Business model stress test', 'Partnerships & contracts matcher', 'Relationship mapping + paste-ready email templates', 'Programme eligibility mapping', 'Board pack preparation', 'Unlimited grant pipelines', 'Quarterly strategy for 12 months'].map((f, i) => (
+                                            <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+                                                <Check size={16} className="text-brand-gold flex-shrink-0 mt-0.5" />
+                                                <span>{f}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                                <a href="https://admin.inclusifund.co.uk/payment-link/6868222feba110676b8d5f23" target="_blank" rel="noopener noreferrer" className="bg-brand-gold text-brand-dark px-8 py-3 rounded-lg font-medium hover:bg-yellow-400 transition-colors whitespace-nowrap">
+                                    Book a Call With Reece — £35
+                                </a>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── 3-Layer QC Process ── */}
+                    <section className="bg-brand-card/30 border-y border-brand-border/50 py-16 md:py-20">
+                        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white text-center mb-4">3-Layer Quality Control</h2>
+                            <p className="text-brand-slate text-center mb-12 max-w-2xl mx-auto">Every grant application passes through three checks before submission. No exceptions.</p>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="bg-brand-card border border-brand-border rounded-xl p-6 text-center">
+                                    <div className="w-12 h-12 bg-brand-primary/15 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Sparkles size={24} className="text-brand-primary" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-white mb-2">AI-Powered Draft</h3>
+                                    <p className="text-brand-slate text-sm leading-relaxed">Our grant pipeline analyses the funder's criteria, your CIC profile, and sector intelligence to produce a targeted first draft.</p>
+                                </div>
+                                <div className="bg-brand-card border border-brand-border rounded-xl p-6 text-center">
+                                    <div className="w-12 h-12 bg-brand-primary/15 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Users size={24} className="text-brand-primary" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-white mb-2">Human Review</h3>
+                                    <p className="text-brand-slate text-sm leading-relaxed">Every application is reviewed by a human who checks accuracy, tone, and strategic positioning.</p>
+                                </div>
+                                <div className="bg-brand-card border border-brand-border rounded-xl p-6 text-center">
+                                    <div className="w-12 h-12 bg-brand-primary/15 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <ShieldCheck size={24} className="text-brand-primary" />
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-white mb-2">Final Quality Gate</h3>
+                                    <p className="text-brand-slate text-sm leading-relaxed">Before submission, we verify eligibility, check compliance, and ensure the application meets the funder's specific requirements.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── Access Support Deep Dive ── */}
+                    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+                        <h2 className="font-serif text-3xl md:text-4xl font-bold text-white text-center mb-4">Access Support: Your Legal Right</h2>
+                        <p className="text-brand-slate text-center mb-4 max-w-3xl mx-auto leading-relaxed">
+                            Under the Equality Act 2010, public funders must provide reasonable adjustments for d/Deaf, disabled, and neurodivergent applicants. This means BSL interpreters, scribing support, alternative formats, and more — funded by the funder, not you.
+                        </p>
+                        <p className="text-brand-slate text-center mb-12 max-w-3xl mx-auto leading-relaxed">
+                            Most applicants don't know this exists. We surface it on every grant card so you can claim what you're entitled to.
+                        </p>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+                            {[
+                                { funder: 'Arts Council England', support: '£600–£1,200 for BSL, scribing, form navigation' },
+                                { funder: 'Creative Scotland', support: 'Centralised freelancer model since 2025' },
+                                { funder: 'Arts Council Wales', support: '£37.50/hr, multi-channel requests' },
+                                { funder: 'National Lottery Heritage Fund', support: 'Included in project budget' },
+                            ].map((item, i) => (
+                                <div key={i} className="bg-brand-card border border-brand-border rounded-xl p-5">
+                                    <h4 className="text-white font-semibold text-sm mb-2">{item.funder}</h4>
+                                    <p className="text-brand-primary text-sm">{item.support}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <p className="text-brand-slate text-center text-sm max-w-2xl mx-auto">
+                            We show this information on every grant card — for free. Premium tiers include us writing the access support applications for you.
+                        </p>
+                    </section>
+
+                    {/* ── Comparison Table ── */}
+                    <section className="bg-brand-card/30 border-y border-brand-border/50 py-16 md:py-20">
+                        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white text-center mb-10">Full Comparison</h2>
+                            <div className="bg-brand-card border border-brand-border rounded-xl p-4 md:p-6">
+                                <ComparisonTable />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── Industry Positioning ── */}
+                    <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20">
+                        <h2 className="font-serif text-3xl md:text-4xl font-bold text-white text-center mb-12">We Handle the Admin. You Handle the People.</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+                            <div>
+                                <p className="text-brand-slate leading-relaxed text-lg">
+                                    The admin tax is real. Frontline workers — nurses, youth workers, safeguarding leads — spend hours on grant applications instead of doing what they're trained to do. AI handles the paperwork so humans can do human work.
+                                </p>
+                            </div>
+                            <div className="bg-brand-card border border-brand-border rounded-xl p-6">
+                                <h3 className="text-white font-semibold mb-4">Value comparison</h3>
+                                <div className="space-y-3">
+                                    {[
+                                        { label: 'InclusiFund', value: 'from £83/grant', highlight: true },
+                                        { label: 'Freelance grant writer', value: '£800–£2,000/grant', highlight: false },
+                                        { label: 'In-house fundraiser salary', value: '£35,000–£50,000/year', highlight: false },
+                                        { label: 'Your time (opportunity cost)', value: 'Priceless', highlight: false },
+                                    ].map((item, i) => (
+                                        <div key={i} className={`flex items-center justify-between py-2 px-3 rounded-lg ${item.highlight ? 'bg-brand-primary/10 border border-brand-primary/30' : ''}`}>
+                                            <span className={`text-sm ${item.highlight ? 'text-brand-primary font-medium' : 'text-gray-300'}`}>{item.label}</span>
+                                            <span className={`text-sm font-semibold ${item.highlight ? 'text-brand-primary' : 'text-white'}`}>{item.value}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── FAQ ── */}
+                    <section className="bg-brand-card/30 border-y border-brand-border/50 py-16 md:py-20">
+                        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+                            <h2 className="font-serif text-3xl md:text-4xl font-bold text-white text-center mb-10">Frequently Asked Questions</h2>
+                            <div className="space-y-3">
+                                <FAQItem
+                                    question="What does '3-layer QC' actually mean?"
+                                    answer="AI draft, human review, final quality gate. No application goes out without all three checks."
+                                />
+                                <FAQItem
+                                    question="Do you replace grant writers?"
+                                    answer="No. We reduce the admin tax so frontline workers can focus on people. For organisations that already have grant writers, we complement their work with automation and intelligence."
+                                />
+                                <FAQItem
+                                    question="What's Access Support?"
+                                    answer="A legal right under the Equality Act 2010. Public funders must provide reasonable adjustments for d/Deaf, disabled, and neurodivergent applicants. We surface this info on every grant and write the access support applications for premium clients."
+                                />
+                                <FAQItem
+                                    question="Can I upgrade or downgrade later?"
+                                    answer="Yes. Your tier can change at any renewal. Lifetime T1 access is permanent."
+                                />
+                                <FAQItem
+                                    question="What if I need more than 24 grants per year?"
+                                    answer="That's our Enterprise tier. Talk to Reece about a Programme Readiness package."
+                                />
+                                <FAQItem
+                                    question="How quickly do you write applications?"
+                                    answer="Our pipeline takes approximately 1 day per 3 grant applications. Turnaround depends on funder deadlines — we prioritise accordingly."
+                                />
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ── Final CTA ── */}
+                    <section className="max-w-4xl mx-auto px-4 sm:px-6 py-20 md:py-28 text-center">
+                        <h2 className="font-serif text-3xl md:text-4xl font-bold text-white mb-6">Ready to stop losing grants to admin?</h2>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+                            <a href="#pricing" className="bg-brand-primary text-brand-dark px-8 py-3 rounded-lg font-medium hover:bg-brand-light transition-colors">
+                                See Pricing
+                            </a>
+                            <a href="https://admin.inclusifund.co.uk/payment-link/6868222feba110676b8d5f23" target="_blank" rel="noopener noreferrer" className="border border-brand-primary text-brand-primary px-8 py-3 rounded-lg font-medium hover:bg-brand-primary/10 transition-colors">
+                                Book an Action Takers Call — £35
+                            </a>
+                        </div>
+                        <p className="text-brand-slate text-sm">Already on the free tier? Your Access Support badges are live right now.</p>
+                    </section>
+
+                    {/* ── Footer ── */}
+                    <footer className="border-t border-brand-border/50 py-8">
+                        <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+                            <span className="font-serif text-brand-primary font-bold">InclusiFund</span>
+                            <span className="text-brand-slate text-sm ml-2">— Grant intelligence for community organisations</span>
+                        </div>
+                    </footer>
+
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
+</body>
+
+</html>

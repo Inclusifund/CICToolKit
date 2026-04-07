@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund - Find Your Grants</title>
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Auth & Security -->
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // Enforce authentication
+        if (!InclusiFundAuth.requireAuth()) {
+            throw new Error("Redirecting to login...");
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+        rel="stylesheet">
+
+    <!-- Fix for Lucide-React UMD: It expects 'window.react' (lowercase), but CDN gives 'window.React' -->
+    <script>
+        window.react = window.React;
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.min.js"></script>
+    <script>
+        // Map LucideReact to window.lucide so our code works seamlessly
+        window.lucide = window.LucideReact;
+    </script>
+
+    <!-- Convex Client -->
+    <script src="https://unpkg.com/convex@1.16.4/dist/browser.bundle.js"></script>
+    <script>
+        // Fix global variable name (Convex bundle exports as lowercase 'convex')
+        window.Convex = window.convex;
+    </script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#1F2232',       // Shadow Grey
+                            primary: '#6BB6B6',    // Tropical Teal
+                            secondary: '#008080',  // Teal
+                            accent: '#005461',     // Dark Teal
+                            light: '#D5ECEC',      // Light Cyan
+                            white: '#FFFFFF',
+                            slate: '#94A3B8',
+                            border: '#334155',
+                            card: '#2D3344',       // Slightly lighter than bg
+                            gold: '#F59E0B'        // Amber for emphasis
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Lora', 'serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out forwards',
+                        'slide-up': 'slideUp 0.6s ease-out forwards',
+                        'scale-in': 'scaleIn 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        scaleIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #1F2232;
+            color: #F4F4F4;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1F2232;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        const { ArrowRight, Check, Search, Download, RefreshCw, X, ChevronDown, ChevronRight, Star, Heart } = lucide;
+
+        // --- CONVEX CLIENT ---
+        const CONVEX_URL = "https://terrific-bloodhound-927.convex.cloud";
+        const convexClient = new Convex.ConvexHttpClient(CONVEX_URL);
+
+        // --- COMPONENTS ---
+
+        const Button = ({ children, onClick, variant = 'primary', className = '', ...props }) => {
+            const baseStyles = "py-3 px-6 rounded-full font-bold text-sm md:text-base transition-all duration-300 transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 relative overflow-hidden shadow-lg";
+            const variants = {
+                primary: "bg-gradient-to-r from-brand-primary to-brand-secondary text-brand-dark hover:shadow-brand-primary/20",
+                secondary: "bg-transparent border-2 border-brand-primary text-brand-primary hover:bg-brand-primary/10",
+                ghost: "bg-transparent text-brand-slate hover:text-brand-light",
+                amber: "bg-brand-gold text-brand-dark hover:shadow-brand-gold/20"
+            };
+
+            return (
+                <button
+                    onClick={onClick}
+                    className={`${baseStyles} ${variants[variant]} ${className}`}
+                    {...props}
+                >
+                    {children}
+                </button>
+            );
+        };
+
+        const ProgressBar = ({ current, total }) => {
+            return (
+                <div className="flex gap-2 justify-center mb-8">
+                    {[...Array(total)].map((_, i) => (
+                        <div
+                            key={i}
+                            className={`h-2 rounded-full transition-all duration-500 ${i < current
+                                ? 'w-8 bg-brand-primary'
+                                : 'w-2 bg-brand-border'
+                                }`}
+                        />
+                    ))}
+                </div>
+            );
+        };
+
+        const OptionCard = ({ icon, title, subtitle, selected, onClick, multi = false, className = '', color = 'tropical-teal' }) => {
+            // Mapping selection colors to ensure visual variety, matching onboarding-dark
+            const borderColors = {
+                'tropical-teal': 'border-brand-primary',
+                'teal': 'border-brand-secondary',
+                'dark-teal': 'border-brand-accent',
+                'brown': 'border-[#A0522D]', // Custom brown
+                'beige': 'border-[#D2B48C]', // Custom beige
+                'gold': 'border-brand-gold'
+            };
+
+            const activeBorder = borderColors[color] || 'border-brand-primary';
+            const activeText = selected ? 'text-brand-primary' : 'text-brand-light';
+
+            return (
+                <button
+                    onClick={onClick}
+                    className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 group relative overflow-hidden ${selected
+                        ? `bg-brand-primary/10 ${activeBorder} shadow-[0_0_15px_rgba(107,182,182,0.15)]`
+                        : 'bg-brand-card border-brand-border hover:border-brand-slate/50 hover:bg-brand-card/80'
+                        } ${className}`}
+                >
+                    <div className="flex items-start gap-4 z-10 relative">
+                        <div className={`mt-1 text-2xl transition-transform duration-300 ${selected ? 'scale-110' : 'group-hover:scale-110'}`}>
+                            {icon}
+                        </div>
+                        <div className="flex-1">
+                            <h3 className={`font-serif text-lg font-medium mb-1 transition-colors ${selected ? 'text-brand-primary' : 'text-brand-white'}`}>
+                                {title}
+                            </h3>
+                            {subtitle && (
+                                <p className="text-brand-slate text-sm leading-relaxed font-sans">
+                                    {subtitle}
+                                </p>
+                            )}
+                        </div>
+                        {selected && (
+                            <div className="w-6 h-6 rounded-full bg-brand-primary text-brand-dark flex items-center justify-center">
+                                <Check size={14} strokeWidth={3} />
+                            </div>
+                        )}
+                    </div>
+                </button>
+            );
+        };
+
+        // --- SCREENS ---
+
+        const Screen0_Entry = ({ onChoice }) => (
+            <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
+                <div className="text-center mb-12">
+                    <h1 className="font-serif text-4xl md:text-5xl text-brand-white mb-4 leading-tight">
+                        How would you like to<br />explore grants?
+                    </h1>
+                    <p className="text-brand-slate text-xl">
+                        We have 40+ opportunities waiting for you
+                    </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+                    {/* Upgrade Card - ACTIVE */}
+                    <button
+                        onClick={() => window.location.href = 'grants-custom.html'}
+                        className="bg-brand-card border-2 border-brand-primary rounded-3xl p-8 hover:border-brand-light transition-all duration-300 transform hover:-translate-y-1 text-left group shadow-lg shadow-brand-primary/10 relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 bg-brand-primary text-brand-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
+                            UPGRADE NOW
+                        </div>
+                        <div className="text-4xl mb-6">🎯</div>
+                        <h3 className="font-serif text-2xl text-brand-white mb-2 group-hover:text-brand-primary transition-colors">Personalised Board</h3>
+                        <p className="text-brand-slate mb-6 h-12">Answer 5 quick questions and we'll show you only relevant grants.</p>
+                        <div className="flex items-center justify-between mt-auto">
+                            <span className="text-sm text-brand-slate flex items-center gap-1">⏱️ 2 minutes</span>
+                            <span className="text-brand-primary font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                From £197 <ArrowRight size={18} />
+                            </span>
+                        </div>
+                    </button>
+
+                    {/* Full List Card - RECOMMENDED */}
+                    <button
+                        onClick={() => window.location.href = 'grants-list.html'}
+                        className="bg-brand-card border-2 border-brand-gold rounded-3xl p-8 hover:border-brand-gold transition-all duration-300 transform hover:-translate-y-1 text-left group shadow-lg shadow-brand-gold/10 relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 bg-brand-gold text-brand-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
+                            RECOMMENDED
+                        </div>
+                        <div className="text-4xl mb-6">📋</div>
+                        <h3 className="font-serif text-2xl text-brand-white mb-2 group-hover:text-brand-gold transition-colors">See Full List</h3>
+                        <p className="text-brand-slate mb-6 h-12">Browse all 40+ grants with standard filters and search.</p>
+                        <div className="flex items-center justify-between mt-auto">
+                            <span className="text-sm text-brand-slate">You can filter later</span>
+                            <span className="text-brand-gold font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                Show All <ArrowRight size={18} />
+                            </span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        );
+
+        const Screen1_Sectors = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'Arts & Culture', icon: '🎨', title: 'Arts & Culture' },
+                { id: 'Community Development', icon: '💪🏽', title: 'Community Development' }, // Action oriented
+                { id: 'Education & Training', icon: '🎓', title: 'Education & Training' },
+                { id: 'Employment & Skills', icon: '🤝🏽', title: 'Employment & Skills' }, // Partnership/Support
+                { id: 'Environment & Sustainability', icon: '🌱', title: 'Environment & Sustainability' },
+                { id: 'Health & Wellbeing', icon: '❤️', title: 'Health & Wellbeing' },
+                { id: 'Housing', icon: '🏠', title: 'Housing' },
+                { id: 'Sport & Recreation', icon: '⚽', title: 'Sport & Recreation' },
+                { id: 'Youth Services', icon: '👶', title: 'Youth Services' },
+                { id: 'Food & Agriculture', icon: '🍎', title: 'Food & Agriculture' },
+                { id: 'Digital & Technology', icon: '💻', title: 'Digital & Technology' },
+                { id: 'Other', icon: '🌟', title: 'Other' },
+            ];
+
+            const toggle = (id) => {
+                const current = data.sectors || [];
+                const updated = current.includes(id)
+                    ? current.filter(s => s !== id)
+                    : [...current, id];
+                setData({ ...data, sectors: updated });
+            };
+
+            return (
+                <div className="max-w-2xl mx-auto animate-slide-up">
+                    <ProgressBar current={1} total={5} />
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-white mb-3 text-center">Which sectors does your CIC work in?</h2>
+                    <p className="text-brand-slate text-center mb-8">Select all that apply</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        {options.map((opt) => (
+                            <OptionCard
+                                key={opt.id}
+                                {...opt}
+                                selected={data.sectors?.includes(opt.id)}
+                                onClick={() => toggle(opt.id)}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button
+                            onClick={onNext}
+                            disabled={!data.sectors?.length}
+                            className={!data.sectors?.length ? 'opacity-50 cursor-not-allowed' : 'bg-brand-gold text-brand-dark'}
+                        >
+                            Continue <ArrowRight size={20} />
+                        </Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen2_Region = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'UK-wide', icon: '🇬🇧', title: 'UK-wide (All regions)' },
+                { id: 'England', icon: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', title: 'England' },
+                { id: 'Scotland', icon: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', title: 'Scotland' },
+                { id: 'Wales', icon: '🏴󠁧󠁢󠁷󠁬󠁳󠁿', title: 'Wales' },
+                { id: 'Northern Ireland', icon: '🇮🇪', title: 'Northern Ireland' },
+            ];
+
+            const handleSelect = (id) => {
+                setData({ ...data, regions: [id] });
+                // Auto advance could happen here, but sticky selection is nice
+            };
+
+            return (
+                <div className="max-w-xl mx-auto animate-slide-up">
+                    <ProgressBar current={2} total={5} />
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-white mb-3 text-center">Where does your CIC operate?</h2>
+                    <p className="text-brand-slate text-center mb-8">We'll prioritize grants near you</p>
+
+                    <div className="space-y-4 mb-8">
+                        {options.map((opt) => (
+                            <OptionCard
+                                key={opt.id}
+                                {...opt}
+                                selected={data.regions?.includes(opt.id)}
+                                onClick={() => handleSelect(opt.id)}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button
+                            onClick={onNext}
+                            disabled={!data.regions?.length}
+                            className="bg-brand-gold text-brand-dark"
+                        >
+                            Continue <ArrowRight size={20} />
+                        </Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen3_Amount = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'micro', min: 0, max: 1000, icon: '💰', title: 'Micro', subtitle: 'Up to £1,000 (Quick wins)' },
+                { id: 'small', min: 1000, max: 5000, icon: '💵', title: 'Small', subtitle: '£1,000 - £5,000 (Projects)' },
+                { id: 'medium', min: 5000, max: 25000, icon: '💷', title: 'Medium', subtitle: '£5,000 - £25,000 (Core/Project)' },
+                { id: 'large', min: 25000, max: 100000, icon: '💸', title: 'Large', subtitle: '£25,000 - £100,000 (Salaries/Growth)' },
+                { id: 'major', min: 100000, max: 10000000, icon: '🏆', title: 'Major', subtitle: '£100,000+ (Capital/Scale)' },
+            ];
+
+            const handleSelect = (opt) => {
+                setData({ ...data, amountMin: opt.min, amountMax: opt.max, amountLabel: opt.id });
+            };
+
+            return (
+                <div className="max-w-xl mx-auto animate-slide-up">
+                    <ProgressBar current={3} total={5} />
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-white mb-3 text-center">How much funding helps?</h2>
+                    <p className="text-brand-slate text-center mb-8">Select your target range</p>
+
+                    <div className="space-y-4 mb-8">
+                        {options.map((opt) => (
+                            <OptionCard
+                                key={opt.id}
+                                {...opt}
+                                selected={data.amountLabel === opt.id}
+                                onClick={() => handleSelect(opt)}
+                                color="teal"
+                            />
+                        ))}
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button
+                            onClick={onNext}
+                            disabled={!data.amountLabel}
+                            className="bg-brand-gold text-brand-dark"
+                        >
+                            Continue <ArrowRight size={20} />
+                        </Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen4_Stage = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'Pre-launch', icon: '🌱', title: 'Pre-launch', subtitle: 'Planning & incorporation stage' },
+                { id: 'Startup', icon: '🚀', title: 'Less than 1 year', subtitle: 'Early stage & testing' },
+                { id: 'Operating', icon: '📈', title: '1-2 years operating', subtitle: 'Growth & sustainability' },
+                { id: 'Established', icon: '💪🏽', title: '3-5 years established', subtitle: 'Scaling & expansion' },
+                { id: 'Mature', icon: '🏆', title: '5+ years mature', subtitle: 'Innovation & partnership' },
+            ];
+
+            const handleSelect = (id) => {
+                setData({ ...data, cicStage: id });
+            };
+
+            return (
+                <div className="max-w-xl mx-auto animate-slide-up">
+                    <ProgressBar current={4} total={5} />
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-white mb-3 text-center">What stage is your CIC?</h2>
+                    <p className="text-brand-slate text-center mb-8">Some grants prefer specific maturity levels</p>
+
+                    <div className="space-y-4 mb-8">
+                        {options.map((opt) => (
+                            <OptionCard
+                                key={opt.id}
+                                {...opt}
+                                selected={data.cicStage === opt.id}
+                                onClick={() => handleSelect(opt.id)}
+                                color="dark-teal"
+                            />
+                        ))}
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button
+                            onClick={onNext}
+                            disabled={!data.cicStage}
+                            className="bg-brand-gold text-brand-dark"
+                        >
+                            Continue <ArrowRight size={20} />
+                        </Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Screen5_Priority = ({ data, setData, onNext }) => {
+            const options = [
+                { id: 'urgent', icon: '⚡', title: 'Urgent', subtitle: 'Deadlines closing next 30 days' },
+                { id: 'strategic', icon: '🎯', title: 'Strategic Match', subtitle: 'Best overall fit for my profile' },
+                { id: 'maximum', icon: '💰', title: 'Maximum Amount', subtitle: 'Show largest grants first' },
+                { id: 'easy', icon: '✅', title: 'Easy to Apply', subtitle: 'Simpler forms, higher success rates' },
+                { id: 'new', icon: '🆕', title: 'New Opportunities', subtitle: 'Recently added grants' },
+            ];
+
+            const handleSelect = (id) => {
+                setData({ ...data, priority: id });
+            };
+
+            return (
+                <div className="max-w-xl mx-auto animate-slide-up">
+                    <ProgressBar current={5} total={5} />
+                    <h2 className="font-serif text-3xl md:text-4xl text-brand-white mb-3 text-center">What's most important?</h2>
+                    <p className="text-brand-slate text-center mb-8">This helps us rank your results</p>
+
+                    <div className="space-y-4 mb-8">
+                        {options.map((opt) => (
+                            <OptionCard
+                                key={opt.id}
+                                {...opt}
+                                selected={data.priority === opt.id}
+                                onClick={() => handleSelect(opt.id)}
+                                color="brown"
+                            />
+                        ))}
+                    </div>
+
+                    <div className="flex justify-end">
+                        <Button
+                            onClick={onNext}
+                            disabled={!data.priority}
+                            className="bg-brand-gold text-brand-dark w-full md:w-auto"
+                        >
+                            Show My Matches <ArrowRight size={20} />
+                        </Button>
+                    </div>
+                </div>
+            );
+        };
+
+        const Results_Screen = ({ data, onRetry, grants = [] }) => {
+            const [matchedGrants, setMatchedGrants] = useState([]);
+
+            useEffect(() => {
+                if (!grants.length) return;
+
+                // Sector Mapping Logic to bridge Questionnaire IDs with Database Tags
+                const SECTOR_MAP = {
+                    'Arts & Culture': ['Arts', 'Arts & Culture', 'Creative Sector', 'Culture', 'Performing Arts', 'Visual Arts', 'Heritage'],
+                    'Community Development': ['Community', 'Community Development', 'Local support', 'Community Support', 'Social Cohesion', 'Place-based', 'Community Transformation', 'Grassroots Initiatives', 'Infrastructure'],
+                    'Environment & Sustainability': ['Climate Action', 'Sustainability', 'Environment', 'Nature conservation', 'Green energy', 'Circular Economy', 'Sustainable Development'],
+                    'Health & Wellbeing': ['Health', 'Mental Health', 'Wellbeing', 'Health & Wellbeing', 'Public Health', 'Disability Support'],
+                    'Education & Training': ['Education', 'Training', 'Education & Training', 'Schools', 'Literacy', 'Skills'],
+                    'Employment & Skills': ['Employability', 'Green Skills', 'Training', 'Vocational', 'Apprenticeships', 'Jobs'],
+                    'Youth Services': ['Young People', 'Youth', 'Youth Services', 'Youth Development', 'Children'],
+                    'Housing': ['Housing', 'Homelessness', 'Social Housing', 'Accommodation'],
+                    'Sport & Recreation': ['Sport', 'Recreation', 'Physical Activity', 'Sporting'],
+                    'Food & Agriculture': ['Food', 'Agriculture', 'Food Security', 'Farming']
+                };
+
+                // Logic to filter and sort grants
+                let filtered = grants.filter(grant => {
+                    // Region logic: Support "UK-wide" wildcard and exact matches
+                    const userRegion = data.regions?.[0] || 'UK-wide';
+                    const regionMatch = grant.regions.includes('UK-wide') ||
+                        grant.regions.includes('UK') ||
+                        (data.regions && grant.regions.some(r => data.regions.includes(r)));
+
+                    // Amount logic: Overlap check, handle maxAmount === 0 as "Unspecified/Rolling"
+                    // If user hasn't selected an amount, don't filter by it
+                    const userMin = data.amountMin !== undefined ? data.amountMin : 0;
+                    const userMax = data.amountMax !== undefined ? data.amountMax : 10000000;
+
+                    const amountMatch = (grant.minAmount <= userMax) &&
+                        (grant.maxAmount >= userMin || grant.maxAmount === 0);
+
+                    // Sector Logic: Use Mapping Layer to find commonality
+                    let sectorMatch = true;
+                    if (data.sectors && data.sectors.length > 0) {
+                        sectorMatch = grant.sectors.some(s =>
+                            data.sectors.some(u => (SECTOR_MAP[u] && SECTOR_MAP[u].includes(s)) || s === u)
+                        );
+                    }
+
+                    // Stage Match: Simplified (Assume compatibility unless specifically excluded)
+                    const stageMatch = true;
+
+                    return regionMatch && amountMatch && sectorMatch && stageMatch;
+                });
+
+                // Scoring Module
+                filtered = filtered.map(grant => {
+                    let score = 70; // Base score
+
+                    // Sector matches increase score
+                    const commonSectors = grant.sectors.filter(s =>
+                        data.sectors.some(u => (SECTOR_MAP[u] && SECTOR_MAP[u].includes(s)) || s === u)
+                    );
+                    score += commonSectors.length * 5;
+
+                    // Exact region bonus
+                    if (data.regions && grant.regions.includes(data.regions[0])) score += 10;
+
+                    // Priority Sorting
+                    if (data.priority === 'urgent' && grant.deadline) {
+                        // Logic for deadline check not fully inclusive in mock, assume some bonus
+                        score += 5;
+                    }
+                    if (data.priority === 'easy' && grant.applicationDifficulty <= 2) score += 15;
+                    if (data.priority === 'maximum' && grant.maxAmount > 50000) score += 10;
+
+                    return { ...grant, matchScore: Math.min(score, 99) }; // Cap at 99
+                });
+
+                // Sort
+                if (data.priority === 'maximum') {
+                    filtered.sort((a, b) => b.maxAmount - a.maxAmount);
+                } else if (data.priority === 'easy') {
+                    filtered.sort((a, b) => a.applicationDifficulty - b.applicationDifficulty);
+                } else {
+                    // Default to Score
+                    filtered.sort((a, b) => b.matchScore - a.matchScore);
+                }
+
+                setMatchedGrants(filtered);
+            }, [data, grants]);
+
+            const downloadCSV = () => {
+                const headers = ["Grant Name", "Funder", "Min Amount", "Max Amount", "Deadline", "Match Score", "Website"];
+                const rows = matchedGrants.map(g => [
+                    `"${g.name}"`, `"${g.funder}"`, g.minAmount, g.maxAmount, g.deadline || "Rolling", `${g.matchScore}%`, g.website
+                ]);
+
+                const csvContent = "data:text/csv;charset=utf-8,"
+                    + headers.join(",") + "\n"
+                    + rows.map(e => e.join(",")).join("\n");
+
+                const encodedUri = encodeURI(csvContent);
+                const link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "inclusifund_matches.csv");
+                document.body.appendChild(link);
+                link.click();
+            };
+
+            return (
+                <div className="max-w-6xl mx-auto px-4 py-8 animate-fade-in pb-24">
+                    {/* Celebration Header */}
+                    <div className="bg-brand-card border border-brand-primary/30 rounded-3xl p-8 mb-8 text-center relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-brand-primary to-brand-gold"></div>
+                        <div className="text-5xl mb-4">🎉</div>
+                        <h1 className="font-serif text-4xl text-brand-white mb-2">
+                            Found {matchedGrants.length} grants for your CIC
+                        </h1>
+                        <p className="text-brand-slate text-lg mb-8">
+                            Filtered from our database based on your profile
+                        </p>
+
+                        <div className="flex flex-col md:flex-row gap-4 justify-center">
+                            <Button variant="amber" onClick={downloadCSV} className="w-full md:w-auto px-8">
+                                <Download size={20} /> Download Matches (CSV)
+                            </Button>
+                            <Button variant="secondary" onClick={() => { }} className="w-full md:w-auto">
+                                ✉️ Email me this list
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Filter Summary (simplified) */}
+                    <div className="flex flex-wrap gap-2 mb-8 items-center">
+                        <span className="text-brand-slate text-sm mr-2">Filters:</span>
+                        {data.sectors.slice(0, 3).map(s => (
+                            <span key={s} className="bg-brand-dark border border-brand-border px-3 py-1 rounded-full text-xs text-brand-light flex items-center gap-1">
+                                {s}
+                            </span>
+                        ))}
+                        {data.regions.map(r => (
+                            <span key={r} className="bg-brand-dark border border-brand-border px-3 py-1 rounded-full text-xs text-brand-light flex items-center gap-1">
+                                {r}
+                            </span>
+                        ))}
+                        <button onClick={onRetry} className="text-xs text-brand-primary underline ml-2 hover:text-brand-light">
+                            Adjust Filters
+                        </button>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {matchedGrants.map((grant) => (
+                            <div key={grant.id} className="bg-brand-card border border-brand-border rounded-xl p-6 flex flex-col hover:border-brand-primary/50 transition-all group relative">
+                                {grant.matchScore > 90 && (
+                                    <div className="absolute top-4 right-4 bg-brand-primary/20 text-brand-primary text-xs font-bold px-2 py-1 rounded">
+                                        {grant.matchScore}% Match
+                                    </div>
+                                )}
+                                <div className="text-xs text-brand-slate uppercase tracking-wider mb-2">{grant.funder}</div>
+                                <h3 className="font-serif text-xl text-brand-white mb-2 group-hover:text-brand-primary transition-colors">
+                                    {grant.name}
+                                </h3>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    <span className="text-xs bg-brand-dark px-2 py-1 rounded text-brand-slate">
+                                        £{grant.minAmount.toLocaleString()} - £{grant.maxAmount.toLocaleString()}
+                                    </span>
+                                    <span className="text-xs bg-brand-dark px-2 py-1 rounded text-brand-slate">
+                                        {grant.deadline || "Rolling"}
+                                    </span>
+                                </div>
+                                <p className="text-brand-slate text-sm mb-6 flex-1">
+                                    {grant.description}
+                                </p>
+                                <div className="flex gap-2 mt-auto">
+                                    <a href={grant.website} target="_blank" className="flex-1 bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-primary text-center py-2 rounded-lg text-sm font-medium transition-colors">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        ))}
+                        {/* Show More / Empty State */}
+                        <div className="md:col-span-2 lg:col-span-3 text-center py-8">
+                            <p className="text-brand-slate mb-4">Didn't find what you need?</p>
+                            <button onClick={() => window.location.reload()} className="text-brand-light hover:text-brand-primary font-medium transition-colors">
+                                Show all 40+ grants &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+
+        // --- MAIN APP ---
+
+        const App = () => {
+            const [step, setStep] = useState(0);
+            const [grants, setGrants] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [data, setData] = useState({
+                sectors: [],
+                regions: [],
+                amountMin: 0,
+                amountMax: 1000000,
+                cicStage: '',
+                priority: ''
+            });
+
+            // Fetch grants from Convex on mount
+            useEffect(() => {
+                const fetchGrants = async () => {
+                    try {
+                        const result = await convexClient.query("grants:getAllGrants");
+                        // Transform data to match UI expectations
+                        const transformed = result.map(g => ({
+                            ...g,
+                            name: g.grantName || 'Unnamed Grant',
+                            minAmount: g.amountMin || 0,
+                            maxAmount: g.amountMax || 0,
+                            sectors: g.eligibleSectors || [],
+                            regions: [g.geographicFocus || 'UK-wide'],
+                            status: g.status === 'Open Now' ? 'Open' : g.status,
+                            website: g.website || '#',
+                            description: g.description || 'No description available.',
+                            funder: g.funder || 'Various'
+                        }));
+                        setGrants(transformed);
+                    } catch (error) {
+                        console.error("Error fetching grants:", error);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+                fetchGrants();
+            }, []);
+
+            // Handlers
+            const next = () => setStep(s => s + 1);
+            const back = () => setStep(s => s - 1);
+            const handleChoice = (choice) => {
+                if (choice === 'customize') {
+                    next();
+                } else {
+                    // Logic to jump to full list (Step 6/Results immediately with no filters?)
+                    // For now, let's just complete it with empty filters or show mock results
+                    setStep(6);
+                }
+            };
+            const reset = () => {
+                setStep(0);
+                setData({ sectors: [], regions: [], amountMin: 0, amountMax: 1000000, cicStage: '', priority: '' });
+            };
+
+
+            return (
+                <div className="min-h-screen bg-brand-dark text-brand-light font-sans selection:bg-brand-primary/30">
+                    {/* Header */}
+                    <div className="p-6 flex justify-between items-center max-w-6xl mx-auto">
+                        <div className="font-serif text-2xl text-brand-primary font-bold tracking-tighter">InclusiFund</div>
+                        {step > 0 && step < 6 && (
+                            <button onClick={back} className="text-brand-slate hover:text-brand-white transition-colors">
+                                Back
+                            </button>
+                        )}
+                        {step === 6 && (
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-brand-card flex items-center justify-center border border-brand-border">
+                                    👤
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Content Area */}
+                    <main className="container mx-auto px-4 py-4 md:py-8">
+                        {step === 0 && <Screen0_Entry onChoice={handleChoice} />}
+                        {step === 1 && <Screen1_Sectors data={data} setData={setData} onNext={next} />}
+                        {step === 2 && <Screen2_Region data={data} setData={setData} onNext={next} />}
+                        {step === 3 && <Screen3_Amount data={data} setData={setData} onNext={next} />}
+                        {step === 4 && <Screen4_Stage data={data} setData={setData} onNext={next} />}
+                        {step === 5 && <Screen5_Priority data={data} setData={setData} onNext={next} />}
+                        {step === 6 && (
+                            loading ? (
+                                <div className="text-center py-20">
+                                    <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
+                                    <p className="text-brand-slate mt-4">Loading grants...</p>
+                                </div>
+                            ) : (
+                                <Results_Screen data={data} onRetry={() => setStep(1)} grants={grants} />
+                            )
+                        )}
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
+</body>
+
+</html>
