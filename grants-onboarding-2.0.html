@@ -137,6 +137,20 @@
         /* Endowed Progress */
         .progress-track { background: #334155; height: 6px; border-radius: 9999px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 9999px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); background: linear-gradient(90deg, #008080, #d4a853); }
+
+        /* 3D Carousel */
+        .carousel-scene { overflow: hidden; perspective: 35em; mask: linear-gradient(90deg, #0000, red 15% 85%, #0000); height: 320px; }
+        .carousel-3d { display: grid; place-self: center; transform-style: preserve-3d; animation: carousel-rotate 28s linear infinite; height: 100%; place-items: center; }
+        @keyframes carousel-rotate { to { rotate: y 1turn; } }
+        .carousel-card {
+            grid-area: 1/1; width: 220px; aspect-ratio: 7/10;
+            backface-visibility: hidden; border-radius: 1.25em;
+            transform: rotatey(calc(var(--i) * 1turn / var(--n))) translatez(calc(-1 * (110px + .5em) / tan(.5turn / var(--n))));
+            background: #2D3344; border: 1px solid #334155; padding: 1.25rem;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .carousel-card:hover { border-color: #d4a853; }
+        .carousel-scene:hover .carousel-3d { animation-play-state: paused; }
     </style>
 </head>
 
@@ -327,6 +341,94 @@
             );
         };
 
+        // --- CLOSING SOON CAROUSEL ---
+        const ClosingSoonCarousel = () => {
+            const [grants, setGrants] = useState([]);
+
+            useEffect(() => {
+                async function fetchClosingSoon() {
+                    try {
+                        const allGrants = await convexClient.query("grants:listGrants", {});
+                        const now = new Date();
+                        const in30Days = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+                        const closing = (allGrants || [])
+                            .filter(g => g.status === 'Open' && g.deadline)
+                            .filter(g => {
+                                const d = new Date(g.deadline);
+                                return d >= now && d <= in30Days;
+                            })
+                            .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+                            .slice(0, 12);
+                        setGrants(closing.length > 0 ? closing : (allGrants || []).filter(g => g.status === 'Open').slice(0, 10));
+                    } catch (err) {
+                        console.error('Failed to fetch grants for carousel:', err);
+                    }
+                }
+                fetchClosingSoon();
+            }, []);
+
+            if (grants.length === 0) return null;
+
+            const daysUntil = (deadline) => {
+                if (!deadline) return null;
+                const diff = Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                return diff;
+            };
+
+            const urgencyColor = (days) => {
+                if (days === null) return '#94A3B8';
+                if (days <= 7) return '#ef4444';
+                if (days <= 14) return '#f59e0b';
+                return '#22c55e';
+            };
+
+            const formatAmount = (min, max) => {
+                const fmt = (n) => n >= 1000000 ? `£${(n/1000000).toFixed(1)}M` : n >= 1000 ? `£${(n/1000).toFixed(0)}K` : `£${n}`;
+                if (min && max && min !== max) return `${fmt(min)} - ${fmt(max)}`;
+                if (max) return `Up to ${fmt(max)}`;
+                if (min) return `From ${fmt(min)}`;
+                return '';
+            };
+
+            return (
+                <div className="max-w-5xl mx-auto mt-12 mb-4">
+                    <div className="text-center mb-6">
+                        <h2 className="font-serif text-2xl text-brand-white mb-1">Closing Soon</h2>
+                        <p className="text-brand-slate text-sm">These grants are closing within 30 days</p>
+                    </div>
+                    <div className="carousel-scene">
+                        <div className="carousel-3d" style={{'--n': grants.length}}>
+                            {grants.map((g, i) => {
+                                const days = daysUntil(g.deadline);
+                                return (
+                                    <div key={g._id || i} className="carousel-card" style={{'--i': i}}>
+                                        <div>
+                                            <div className="flex items-center justify-between mb-3">
+                                                <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{background: urgencyColor(days) + '22', color: urgencyColor(days)}}>
+                                                    {days !== null ? (days <= 0 ? 'Closing today' : `${days}d left`) : 'Rolling'}
+                                                </span>
+                                                <span className="text-xs text-brand-slate">{g.opportunityType || 'Grant'}</span>
+                                            </div>
+                                            <h4 className="text-brand-white font-semibold text-sm leading-tight mb-2" style={{display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden'}}>{g.name}</h4>
+                                            <p className="text-brand-slate text-xs mb-2">{g.funder}</p>
+                                        </div>
+                                        <div>
+                                            <div className="text-brand-gold font-semibold text-sm mb-2">{formatAmount(g.minAmount, g.maxAmount)}</div>
+                                            <div className="flex flex-wrap gap-1">
+                                                {(g.sectors || []).slice(0, 2).map((s, j) => (
+                                                    <span key={j} className="text-[10px] bg-brand-border/50 text-brand-slate px-1.5 py-0.5 rounded">{s}</span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- SCREENS ---
 
         const Screen0_Entry = ({ onChoice }) => (
@@ -342,27 +444,25 @@
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-                    {/* Customize Card - DISABLED */}
-                    <div
-                        className="bg-brand-card border border-brand-border rounded-3xl p-8 opacity-60 grayscale cursor-not-allowed text-left relative overflow-hidden group shadow-sm"
+                    {/* Personalised Board Card */}
+                    <button
+                        onClick={() => window.location.href = 'grants-custom.html'}
+                        className="ripple-btn bg-brand-card border border-brand-border rounded-3xl p-8 hover:border-brand-primary transition-all duration-300 transform hover:-translate-y-1 text-left relative overflow-hidden group shadow-sm"
                     >
-                        <div className="absolute top-0 right-0 bg-brand-slate/50 text-brand-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
-                            COMING SOON
-                        </div>
                         <div className="text-4xl mb-6">&#127919;</div>
-                        <h3 className="font-serif text-2xl text-brand-white mb-2 transition-colors">Personalised Board</h3>
-                        <p className="text-brand-slate mb-6 h-12">Answer 5 quick questions and we'll show you only relevant grants.</p>
+                        <h3 className="font-serif text-2xl text-brand-white mb-2 group-hover:text-brand-primary transition-colors">Personalised Board</h3>
+                        <p className="text-brand-slate mb-6 h-12">Get a tailored grant board matched to your CIC's sector, size and goals.</p>
                         <div className="flex items-center justify-between mt-auto">
                             <span className="text-sm text-brand-slate flex items-center gap-1">&#9201; 2 minutes</span>
-                            <span className="text-brand-slate font-bold flex items-center gap-1">
-                                Coming Soon
+                            <span className="text-brand-primary font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                Get Started <ArrowRight size={18} />
                             </span>
                         </div>
-                    </div>
+                    </button>
 
                     {/* Full List Card - RECOMMENDED */}
                     <button
-                        onClick={() => window.location.href = 'grants-list-2.0.html'}
+                        onClick={() => window.location.href = 'opportunities-hub.html'}
                         className="ripple-btn bg-brand-card border-2 border-brand-gold rounded-3xl p-8 hover:border-brand-gold transition-all duration-300 transform hover:-translate-y-1 text-left group shadow-lg shadow-brand-gold/10 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 bg-brand-gold text-brand-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
@@ -384,6 +484,9 @@
                 <div className="max-w-3xl mx-auto mt-8">
                     <LossAversion message="7 grants are closing within the next 14 days. Start filtering now to avoid missing eligible funding." />
                 </div>
+
+                {/* 3D Closing Soon Carousel */}
+                <ClosingSoonCarousel />
             </div>
         );
 
