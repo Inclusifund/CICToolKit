@@ -260,9 +260,9 @@
 
         <!-- Back link -->
         <div class="text-center">
-            <a href="dashboard.html"
+            <a href="#" onclick="event.preventDefault(); var h='dashboard-2.0.html'; try{var u=JSON.parse(localStorage.getItem('inclusifund_user')||'{}');if(u.tier==='premium'||u.tier==='lifetime')h='cic-premium-dashboard-2.0.html';}catch(e){} window.location.href=h;"
                 class="text-orange-500 hover:text-orange-600 font-semibold">
-                &larr; Back to free tools
+                &larr; Back to Tools Suite
             </a>
         </div>
 

@@ -688,7 +688,7 @@
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                     <button
-                                        onClick={() => window.location.href = 'dashboard.html'}
+                                        onClick={() => { let h = 'dashboard-2.0.html'; try { const u = JSON.parse(localStorage.getItem('inclusifund_user') || '{}'); if (u.tier === 'premium' || u.tier === 'lifetime') h = 'cic-premium-dashboard-2.0.html'; } catch(e) {} window.location.href = h; }}
                                         className="text-hub-muted hover:text-hub-text transition-colors flex items-center gap-2"
                                         title="Return to Tools Suite"
                                     >
