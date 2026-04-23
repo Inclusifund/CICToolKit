@@ -210,15 +210,6 @@
     <div class="bg-glow"></div>
     <div id="root"></div>
 
-    <!-- Social Proof Toast -->
-    <div class="social-toast" id="socialToast">
-        <div class="st-avatar" id="stA">TH</div>
-        <div>
-            <div class="st-text" id="stT"><strong>Tanya H.</strong> from Nottingham just completed onboarding</div>
-            <div class="st-time" id="stTm">2 minutes ago</div>
-        </div>
-    </div>
-
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
@@ -361,7 +352,7 @@
                 </p>
 
                 <p className="text-sm text-brand-tropical-teal/70 mb-12 opacity-0 animate-slide-up" style={{ animationDelay: '350ms' }}>
-                    Join 847+ CIC directors already using InclusiFund
+                    Regulator-aligned tools for CIC directors — free to start
                 </p>
 
                 <div className="opacity-0 animate-slide-up" style={{ animationDelay: '400ms' }}>
@@ -588,14 +579,14 @@
             <div className="flex flex-col items-center text-center justify-center animate-fade-in">
                 <div className="mb-6 text-5xl animate-pulse-slow">🤎</div>
 
-                <h2 className="font-serif text-4xl md:text-5xl text-brand-text-primary mb-4">Good choice.</h2>
-                <p className="text-xl text-brand-text-secondary mb-12">You're in excellent company</p>
+                <h2 className="font-serif text-4xl md:text-5xl text-brand-text-primary mb-4">Built for the public good.</h2>
+                <p className="text-xl text-brand-text-secondary mb-12">Regulator-aligned tools, made for grassroots CICs</p>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-12">
                     {[
-                        { num: '847+', label: 'CICs supported' },
-                        { num: '£50K+', label: 'Penalties prevented' },
-                        { num: '10k+', label: 'Hours saved' },
+                        { num: '✓', label: 'Regulator-aligned' },
+                        { num: '✓', label: 'Free core tools' },
+                        { num: '✓', label: 'CIC34-ready' },
                     ].map((stat, i) => (
                         <div key={i} className="glass-panel p-6 rounded-2xl animate-scale-in" style={{ animationDelay: `${i * 150}ms` }}>
                             <div className="text-3xl font-bold text-brand-tropical-teal mb-1 font-serif">{stat.num}</div>
@@ -607,11 +598,11 @@
                 <div className="max-w-lg glass-panel p-6 rounded-2xl mb-12 animate-slide-up relative" style={{ animationDelay: '600ms' }}>
                     <div className="absolute -top-3 -left-3 text-4xl text-brand-tropical-teal opacity-30">"</div>
                     <p className="text-lg text-brand-text-secondary/80 italic mb-4 font-serif">
-                        Set up in 5 minutes. Caught a deadline I'd completely forgotten. Worth every penny.
+                        Set up in 5 minutes. A compliance calendar that catches deadlines before they become penalties. Built for CIC directors who'd rather focus on community impact than admin.
                     </p>
                     <div className="flex items-center justify-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-brand-tropical-teal/20 text-brand-tropical-teal flex items-center justify-center font-bold text-xs">TH</div>
-                        <div className="text-sm text-brand-text-secondary/50">Tanya H., Nottingham CIC Director</div>
+                        <div className="w-8 h-8 rounded-full bg-brand-tropical-teal/20 text-brand-tropical-teal flex items-center justify-center font-bold text-xs">IF</div>
+                        <div className="text-sm text-brand-text-secondary/50">The InclusiFund team</div>
                     </div>
                 </div>
 
@@ -952,37 +943,8 @@
         root.render(<App />);
     </script>
 
-    <!-- Social Proof Toast & Button Ripple -->
+    <!-- Button Ripple -->
     <script>
-        // Social Proof Toast rotation
-        (function() {
-            var toasts = [
-                { initials: 'TH', name: 'Tanya H.', city: 'Nottingham', action: 'completed onboarding', time: '2 minutes ago' },
-                { initials: 'NP', name: 'Nadia P.', city: 'Sheffield', action: 'started her CIC toolkit', time: '5 minutes ago' },
-                { initials: 'DW', name: 'Daniel W.', city: 'Coventry', action: 'set up compliance calendar', time: '8 minutes ago' },
-                { initials: 'PK', name: 'Priya K.', city: 'Bristol', action: 'ran her eligibility check', time: '12 minutes ago' },
-                { initials: 'MT', name: 'Marcus T.', city: 'Liverpool', action: 'completed compliance onboarding', time: '15 minutes ago' },
-            ];
-            var el = document.getElementById('socialToast');
-            var avatar = document.getElementById('stA');
-            var text = document.getElementById('stT');
-            var time = document.getElementById('stTm');
-            var idx = 0;
-
-            function showToast() {
-                var t = toasts[idx % toasts.length];
-                avatar.textContent = t.initials;
-                text.innerHTML = '<strong>' + t.name + '</strong> from ' + t.city + ' just ' + t.action;
-                time.textContent = t.time;
-                el.classList.add('show');
-                setTimeout(function() { el.classList.remove('show'); }, 4000);
-                idx++;
-            }
-
-            setTimeout(showToast, 5000);
-            setInterval(showToast, 15000);
-        })();
-
         // Button Ripple
         document.addEventListener('click', function(e) {
             var btn = e.target.closest('.btn-ripple');

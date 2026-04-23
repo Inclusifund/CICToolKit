@@ -223,17 +223,6 @@
 
 <body>
 
-    <!-- Social Proof Toast -->
-    <div class="social-toast" id="socialToast">
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="social-toast-avatar" id="toastAvatar">NP</div>
-            <div>
-                <p style="font-size: 0.8rem; font-weight: 600; color: #1F2232; margin: 0;" id="toastName">Nadia Patel from Leeds</p>
-                <p style="font-size: 0.7rem; color: #6b7280; margin: 0;" id="toastAction">just logged in 2 minutes ago</p>
-            </div>
-        </div>
-    </div>
-
     <div class="auth-container reveal" id="authContainer">
         <!-- Decoration Left -->
         <div class="auth-visual">
@@ -253,15 +242,14 @@
 
                 <div
                     style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.2);">
-                    <p style="color: white; font-style: italic; margin-bottom: 1rem;">"The compliance calendar alone
-                        saved us from a late filing penalty in our first month."</p>
+                    <p style="color: white; font-style: italic; margin-bottom: 1rem;">The compliance calendar catches late filing deadlines before they become penalties — built for CIC directors who'd rather focus on community impact than admin.</p>
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         <div
                             style="width: 2.5rem; height: 2.5rem; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--color-brand-teal); font-weight: 700;">
-                            TH</div>
+                            ✓</div>
                         <div>
-                            <div style="font-weight: 600; font-size: 0.875rem;">Tanya H.</div>
-                            <div style="font-size: 0.75rem; opacity: 0.7;">Director, Nottingham CIC</div>
+                            <div style="font-weight: 600; font-size: 0.875rem;">Regulator-aligned</div>
+                            <div style="font-size: 0.75rem; opacity: 0.7;">Built for UK CICs</div>
                         </div>
                     </div>
                 </div>
@@ -412,31 +400,6 @@
             btn.appendChild(ripple);
             setTimeout(() => ripple.remove(), 600);
         }
-
-        // --- BEHAVIORAL SCIENCE: Social Proof Toast ---
-        const toastProofs = [
-            { name: "Nadia Patel", initials: "NP", location: "Leeds", action: "just logged in 2 minutes ago" },
-            { name: "Daniel Wright", initials: "DW", location: "Bristol", action: "accessed their compliance dashboard" },
-            { name: "Amira Osei", initials: "AO", location: "London", action: "completed onboarding just now" },
-            { name: "Marcus Thompson", initials: "MT", location: "Birmingham", action: "logged in moments ago" },
-            { name: "Priya Kumar", initials: "PK", location: "Leicester", action: "checked their grant matches" },
-        ];
-
-        function showSocialToast() {
-            const toast = document.getElementById('socialToast');
-            const data = toastProofs[Math.floor(Math.random() * toastProofs.length)];
-            document.getElementById('toastAvatar').textContent = data.initials;
-            document.getElementById('toastName').textContent = data.name + ' from ' + data.location;
-            document.getElementById('toastAction').textContent = data.action;
-            toast.classList.add('show');
-            toast.classList.remove('hide');
-            setTimeout(() => {
-                toast.classList.remove('show');
-                toast.classList.add('hide');
-            }, 4000);
-        }
-        setTimeout(showSocialToast, 5000);
-        setInterval(showSocialToast, 20000);
 
         // --- AUTH LOGIC (preserved from original) ---
         function toggleAuth() {

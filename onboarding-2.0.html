@@ -187,15 +187,6 @@
 
     <div id="root"></div>
 
-    <!-- Social Proof Toast -->
-    <div class="social-toast-onboard" id="onboardToast">
-        <div class="toast-avatar-ob" id="obToastAvatar">NP</div>
-        <div>
-            <div class="toast-text-ob" id="obToastText"><strong>Nadia Patel</strong> from Birmingham just completed onboarding</div>
-            <div class="toast-time-ob" id="obToastTime">3 minutes ago</div>
-        </div>
-    </div>
-
     <script type="text/babel">
         const { useState, useEffect } = React;
         const { motion, AnimatePresence } = window.Motion;
@@ -335,7 +326,7 @@
                                         Let's personalize your toolkit. It takes less than 2 minutes to get organized.
                                     </p>
                                     <p className="text-sm text-secondary text-center max-w-sm mb-12" style={{opacity: 0.7}}>
-                                        Join 847+ CIC directors who built their infrastructure here.
+                                        Build your CIC infrastructure on regulator-aligned foundations.
                                     </p>
                                     <button className="btn btn-primary px-12 py-4 text-lg" onClick={next}>Get Started</button>
                                 </ScreenWrapper>
@@ -397,12 +388,12 @@
                             {step === 4 && (
                                 <ScreenWrapper keyName="proof">
                                     <div className="text-6xl mb-8" style={{animation: 'bounce 1s ease-in-out infinite'}}>&#x1F91D;</div>
-                                    <h2 className="text-4xl font-bold mb-6 text-center">You're in good company.</h2>
+                                    <h2 className="text-4xl font-bold mb-6 text-center">Built for CIC directors.</h2>
                                     <p className="text-xl text-secondary text-center max-w-md mb-6">
-                                        Over 500 CIC directors use InclusiFund to save 10+ hours of admin every single month.
+                                        InclusiFund turns messy admin into a proper system — built to help CIC directors save hours and stay compliance-ready.
                                     </p>
 
-                                    {/* Testimonial card */}
+                                    {/* Value Card */}
                                     <div style={{
                                         background: 'rgba(255,255,255,0.06)',
                                         border: '1px solid rgba(255,255,255,0.1)',
@@ -412,7 +403,7 @@
                                         marginBottom: '2rem'
                                     }}>
                                         <p className="text-secondary" style={{fontStyle: 'italic', fontSize: '0.95rem', marginBottom: '1rem'}}>
-                                            "InclusiFund turned our messy admin into a proper system. We passed our compliance review without a single query."
+                                            Regulator-aligned templates. Compliance calendar. Board pack builder. Benefit statement writer. All in one place — built by CIC directors, for CIC directors.
                                         </p>
                                         <div style={{display: 'flex', alignItems: 'center', gap: '0.75rem'}}>
                                             <div style={{
@@ -420,10 +411,10 @@
                                                 background: 'linear-gradient(135deg, #008080, #6BB6B6)',
                                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                 color: 'white', fontWeight: 700, fontSize: '0.75rem'
-                                            }}>MT</div>
+                                            }}>IF</div>
                                             <div>
-                                                <div style={{fontWeight: 600, fontSize: '0.85rem'}}>Marcus Thompson</div>
-                                                <div className="text-secondary" style={{fontSize: '0.75rem'}}>Director, Reconnect CIC</div>
+                                                <div style={{fontWeight: 600, fontSize: '0.85rem'}}>The InclusiFund team</div>
+                                                <div className="text-secondary" style={{fontSize: '0.75rem'}}>Built for UK CICs</div>
                                             </div>
                                         </div>
                                     </div>
@@ -486,37 +477,6 @@
 
     <!-- Non-React BehSci Scripts -->
     <script>
-        // Social proof toast for onboarding
-        (function() {
-            var toasts = [
-                { initials: 'NP', name: 'Nadia Patel', city: 'Birmingham', action: 'just completed onboarding', time: '3 minutes ago' },
-                { initials: 'TH', name: 'Tanya H.', city: 'Manchester', action: 'set up her compliance tools', time: '7 minutes ago' },
-                { initials: 'DW', name: 'Daniel Wright', city: 'Bristol', action: 'personalised his dashboard', time: '12 minutes ago' },
-                { initials: 'PK', name: 'Priya Kumar', city: 'Leeds', action: 'started her CIC toolkit', time: '18 minutes ago' },
-                { initials: 'MT', name: 'Marcus Thompson', city: 'London', action: 'completed onboarding in 90 seconds', time: '22 minutes ago' },
-            ];
-            var el = document.getElementById('onboardToast');
-            var avatar = document.getElementById('obToastAvatar');
-            var text = document.getElementById('obToastText');
-            var time = document.getElementById('obToastTime');
-            var idx = 0;
-
-            function showToast() {
-                var t = toasts[idx % toasts.length];
-                avatar.textContent = t.initials;
-                text.innerHTML = '<strong>' + t.name + '</strong> from ' + t.city + ' ' + t.action;
-                time.textContent = t.time;
-                el.classList.add('show');
-                setTimeout(function() { el.classList.remove('show'); }, 5000);
-                idx++;
-            }
-
-            setTimeout(function() {
-                showToast();
-                setInterval(showToast, 30000);
-            }, 10000);
-        })();
-
         // Button ripple effect
         document.addEventListener('click', function(e) {
             var btn = e.target.closest('.btn');

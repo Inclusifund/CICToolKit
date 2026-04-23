@@ -216,44 +216,8 @@
             }
         };
 
-        const SocialProofToast = () => {
-            const [visible, setVisible] = useState(false);
-            const [toastData, setToastData] = useState({});
-            const toasts = [
-                { name: "Nadia Patel", location: "Bradford", action: "just matched with 6 grants" },
-                { name: "Daniel Wright", location: "Manchester", action: "exported their shortlist" },
-                { name: "Priya Kumar", location: "Leicester", action: "saved 12 grants to their board" },
-                { name: "Marcus Thompson", location: "Birmingham", action: "found a 94% match grant" },
-            ];
-
-            useEffect(() => {
-                const showToast = () => {
-                    const t = toasts[Math.floor(Math.random() * toasts.length)];
-                    setToastData(t);
-                    setVisible(true);
-                    setTimeout(() => setVisible(false), 4000);
-                };
-                const timer = setTimeout(showToast, 6000);
-                const interval = setInterval(showToast, 22000);
-                return () => { clearTimeout(timer); clearInterval(interval); };
-            }, []);
-
-            if (!visible) return null;
-
-            return (
-                <div className={`fixed bottom-6 left-6 z-50 bg-brand-card border border-brand-border rounded-xl p-4 shadow-2xl max-w-xs ${visible ? 'toast-enter' : 'toast-exit'}`}>
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-brand-primary/20 flex items-center justify-center text-brand-accent font-bold text-sm">
-                            {toastData.name?.split(' ').map(n => n[0]).join('')}
-                        </div>
-                        <div>
-                            <p className="text-brand-white text-sm font-medium">{toastData.name} from {toastData.location}</p>
-                            <p className="text-brand-slate text-xs">{toastData.action}</p>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+        // Social Proof Toast (removed — fabricated user activity)
+        const SocialProofToast = () => null;
 
         const LossAversion = ({ message }) => (
             <div className="loss-block rounded-lg p-4 my-4 flex items-start gap-3">
