@@ -427,19 +427,19 @@
                     console.error("Convex fetch failed, falling back to local/default:", err);
                 }
 
-                // Always ensure the Convex record exists — don't gate on `name`,
-                // because the Sign In form (vs Sign Up) doesn't collect one.
-                // Without this, existing users whose Convex record was wiped/drifted
-                // get silently downgraded to free + bounced to onboarding forever.
-                if (!convexUser) {
+                // Only run the create-path when we KNOW this is a brand-new user
+                // (i.e. sign-up flow, which passes `name`). Never fire
+                // `updateUserTier({ tier: "free" })` on sign-in, because if the
+                // getUser query misses for any reason (bug, case drift, transient
+                // failure), running the mutation risks downgrading an existing
+                // premium record to free.
+                if (!convexUser && name) {
                     try {
                         await convexClient.mutation("users:updateUserTier", {
-                            email: email,
-                            name: name || email.split('@')[0],
-                            tier: "free"
+                            email: email, name: name, tier: "free"
                         });
                         convexUser = await convexClient.query("users:getUser", { email: email });
-                        console.log("Created/refreshed Convex user for:", email);
+                        console.log("Created new Convex user for:", email);
                     } catch (err) {
                         console.error("Failed to create Convex user:", err);
                     }
@@ -534,9 +534,7 @@
                 return;
             }
 
-            // Pass email-prefix as name fallback so existing users whose Convex
-            // record is missing still get one created on sign-in.
-            await handleAuthSuccess(email, email.split('@')[0]);
+            await handleAuthSuccess(email);
         });
 
         document.getElementById('signupForm').addEventListener('submit', async function (e) {
