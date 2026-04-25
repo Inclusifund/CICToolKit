@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>InclusiFund — May Cohort · Private 2-week cold-start (intake closes Wed 30 April)</title>
+<meta name="description" content="A private, throttled May intake for CIC founders who treat revenue as engineering. Two tiers, one office line, no funnel. Intake closes Wed 30 April 23:59 BST.">
+<meta name="robots" content="noindex,nofollow">
+<meta property="og:title" content="InclusiFund — May Cohort">
+<meta property="og:description" content="Private 2-week cold-start. Intake closes Wed 30 April 23:59 BST.">
+<meta property="og:type" content="website">
+<style>
+  :root {
+    --teal: #0ea5a4;
+    --teal-dark: #0d7a78;
+    --teal-ink: #0a4f4e;
+    --warm: #fbfaf5;
+    --warm-alt: #f3f1e8;
+    --ink: #1b2322;
+    --ink-soft: #44524f;
+    --ember: #c14552;
+    --ember-soft: #f1dbde;
+    --gold: #d4a227;
+    --go: #2f9e62;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", "Helvetica Neue", system-ui, -apple-system, sans-serif;
+    background: var(--warm);
+    color: var(--ink);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+  /* --- Hero --- */
+  header.hero {
+    background: linear-gradient(160deg, var(--teal-ink) 0%, var(--teal) 92%);
+    color: var(--warm);
+    padding: 96px 0 84px;
+    position: relative;
+    overflow: hidden;
+  }
+  header.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 85% 18%, rgba(255,255,255,0.12), transparent 38%);
+    pointer-events: none;
+  }
+  header.hero .kicker {
+    font-size: 12px;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    margin: 0 0 22px;
+    opacity: 0.85;
+  }
+  header.hero h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(40px, 6.6vw, 80px);
+    line-height: 1.02;
+    margin: 0 0 14px;
+    letter-spacing: -0.02em;
+    max-width: 800px;
+  }
+  header.hero h2.sub {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(20px, 2.4vw, 30px);
+    font-weight: 400;
+    margin: 0 0 28px;
+    opacity: 0.92;
+    letter-spacing: -0.01em;
+    max-width: 720px;
+  }
+  header.hero p.lead {
+    font-size: clamp(17px, 1.6vw, 19px);
+    max-width: 660px;
+    margin: 0 0 32px;
+    opacity: 0.95;
+  }
+  .deadline-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.28);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0 0 26px;
+  }
+  .deadline-pill .dot {
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(212,162,39,0.18);
+  }
+  .cta-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  a.btn {
+    display: inline-block;
+    padding: 14px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: transform 0.08s ease;
+  }
+  a.btn:hover { transform: translateY(-1px); }
+  a.btn.primary { background: var(--warm); color: var(--teal-ink); }
+  a.btn.ghost { background: transparent; color: var(--warm); border: 1px solid rgba(255,255,255,0.35); }
+
+  /* --- Sections --- */
+  section { padding: 72px 0; }
+  section.alt { background: var(--warm-alt); }
+  section h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(28px, 3.2vw, 40px);
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  section h2 + p.section-lead {
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 680px;
+    margin: 0 0 36px;
+  }
+
+  /* --- Different --- */
+  .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+  .diff {
+    background: white;
+    border-radius: 14px;
+    padding: 28px 26px;
+    border-top: 4px solid var(--teal);
+    box-shadow: 0 2px 6px rgba(10,79,78,0.08);
+  }
+  .diff h3 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+  .diff p { color: var(--ink-soft); font-size: 15px; margin: 0; }
+
+  /* --- Tiers --- */
+  .two-tiers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 22px;
+  }
+  .tier {
+    background: white;
+    border-radius: 16px;
+    padding: 32px 30px 30px;
+    border-top: 6px solid var(--teal);
+    box-shadow: 0 3px 12px rgba(10,79,78,0.08);
+    display: flex;
+    flex-direction: column;
+  }
+  .tier.t4 { border-top-color: var(--gold); }
+  .tier .tier-tag {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--teal-dark);
+    font-weight: 700;
+    margin: 0 0 6px;
+  }
+  .tier.t4 .tier-tag { color: #8a6a1a; }
+  .tier h3 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .tier .price {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 38px;
+    margin: 14px 0 4px;
+    letter-spacing: -0.02em;
+  }
+  .tier .price-note {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+  }
+  .tier ul {
+    margin: 0 0 26px;
+    padding-left: 18px;
+    font-size: 15px;
+    color: var(--ink-soft);
+    flex: 1;
+  }
+  .tier ul li { margin-bottom: 8px; }
+  .tier .pay-btn {
+    display: block;
+    text-align: center;
+    padding: 14px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    background: var(--teal);
+    color: white;
+    transition: transform 0.08s ease;
+  }
+  .tier.t4 .pay-btn { background: var(--gold); color: #2a1d05; }
+  .tier .pay-btn:hover { transform: translateY(-1px); }
+
+  .deposit-line {
+    margin-top: 22px;
+    padding: 16px 22px;
+    background: white;
+    border-left: 3px solid var(--ember);
+    border-radius: 6px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .deposit-line strong { color: var(--ink); }
+
+  /* --- Protocol box --- */
+  .protocol {
+    background: white;
+    border-radius: 14px;
+    padding: 32px 36px;
+    box-shadow: 0 1px 4px rgba(10,79,78,0.06);
+  }
+  .protocol h3 {
+    margin: 0 0 16px;
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal-dark);
+  }
+  .protocol .points {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 22px;
+  }
+  .protocol .points h4 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 18px;
+    margin: 0 0 6px;
+  }
+  .protocol .points p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  /* --- Phone CTA --- */
+  .phone-box {
+    background: var(--teal-ink);
+    color: var(--warm);
+    border-radius: 16px;
+    padding: 36px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(10,79,78,0.14);
+  }
+  .phone-box h3 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 28px;
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+  .phone-box p { margin: 0 0 18px; opacity: 0.9; font-size: 15px; }
+  .phone-box .number {
+    display: inline-block;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 36px;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    text-decoration: none;
+    margin: 6px 0 4px;
+  }
+  .phone-box .hours { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.7; }
+
+  /* --- Tool nudge --- */
+  .tool-nudge {
+    background: var(--warm);
+    border-radius: 14px;
+    padding: 28px 32px;
+    border: 1px dashed rgba(10,79,78,0.2);
+  }
+  .tool-nudge h3 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px;
+    margin: 0 0 8px;
+  }
+  .tool-nudge p { margin: 0 0 16px; color: var(--ink-soft); font-size: 15px; }
+  .tool-nudge a {
+    color: var(--teal-dark);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid var(--teal);
+    padding-bottom: 1px;
+  }
+
+  /* --- Footer --- */
+  footer {
+    padding: 48px 0 72px;
+    background: var(--teal-ink);
+    color: var(--warm);
+    font-size: 13px;
+    opacity: 0.92;
+  }
+  footer a { color: var(--warm); text-decoration: underline; text-underline-offset: 3px; }
+  footer .legal { opacity: 0.65; margin-top: 12px; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="deadline-pill"><span class="dot"></span>May intake closes Wed 30 April 23:59 BST</div>
+    <p class="kicker">InclusiFund · May Cohort</p>
+    <h1>For founders who treat revenue as engineering, not hustle.</h1>
+    <h2 class="sub">A private, throttled 2-week cold-start with our funding team. No FB group. No WhatsApp. Just signal.</h2>
+    <p class="lead">We're not grant writers. We're revenue architects. Each May cohort member gets 3 or 6 revenue-generating opportunities surfaced and applied for — strategic grants, CSR pots, local-authority contracts, partnership revenue. Multi-year, core-cost, project-based.</p>
+    <div class="cta-row">
+      <a class="btn primary" href="#tiers">See the two tiers</a>
+      <a class="btn ghost" href="#protocol">How the cold-start works</a>
+    </div>
+  </div>
+</header>
+
+<section id="different">
+  <div class="wrap">
+    <h2>What makes this different</h2>
+    <p class="section-lead">Most "funding support" sells you a grant application and disappears. We allocate onboarding bandwidth — small, by design — and run revenue infrastructure for you, not paperwork at you.</p>
+
+    <div class="diff-grid">
+      <div class="diff">
+        <h3>Revenue, fast</h3>
+        <p>Two strategic grants guaranteed in cohort. The rest comes from CSR, local-authority commissioning, and partnership pipelines we already run.</p>
+      </div>
+      <div class="diff">
+        <h3>Throttled intake</h3>
+        <p>We load-balance a small number of CICs per intake so each cohort member gets a protected 2-week cold-start. Capacity is the constraint — not demand.</p>
+      </div>
+      <div class="diff">
+        <h3>One office line</h3>
+        <p>0330 054 5828 reaches a real human on the funding team. No chatbot, no portal, no ticket queue. Phone is how we work.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="tiers">
+  <div class="wrap">
+    <h2>Two tiers · one cohort</h2>
+    <p class="section-lead">Pick on revenue ambition, not on what you can afford. Both include the 2-week private cold-start. T3 is right for most CICs in their first revenue year. T4 is right when you already have momentum and want compounding shots.</p>
+
+    <div class="two-tiers">
+      <div class="tier t3">
+        <p class="tier-tag">Tier 3 · Standard intake</p>
+        <h3>Cold-start</h3>
+        <div class="price">£797</div>
+        <p class="price-note">One-off · cohort runs Mon 5 May → late June</p>
+        <ul>
+          <li><strong>3</strong> revenue-generating opportunities surfaced + applied for</li>
+          <li>2 strategic grants guaranteed in scope</li>
+          <li>2-week private cold-start with the funding team</li>
+          <li>10-question intake calendar mapped to your constraints</li>
+          <li>Office-line access throughout cohort window</li>
+        </ul>
+        <a class="pay-btn" href="https://admin.inclusifund.co.uk/payment-link/69baa469c1b7344f595a59e5">Reserve T3 · £797</a>
+      </div>
+
+      <div class="tier t4">
+        <p class="tier-tag">Tier 4 · Compounding intake</p>
+        <h3>Cold-start +</h3>
+        <div class="price">£1,297</div>
+        <p class="price-note">One-off · cohort runs Mon 5 May → late June</p>
+        <ul>
+          <li><strong>6</strong> revenue-generating opportunities surfaced + applied for</li>
+          <li>2 strategic grants guaranteed + 4 CSR / contract / partnership shots</li>
+          <li>2-week private cold-start with the funding team</li>
+          <li>Priority routing into our partnership + commissioning pipelines</li>
+          <li>Office-line access + direct line to your assigned strategist</li>
+        </ul>
+        <a class="pay-btn" href="https://admin.inclusifund.co.uk/payment-link/69baa419c1b7344f595a59e4">Reserve T4 · £1,297</a>
+      </div>
+    </div>
+
+    <div class="deposit-line">
+      <strong>Need a deposit?</strong> A £97 deposit is available <em>on request</em> — reply to the email or call the office line and we'll send a private payment link. Balance due before cohort start (Mon 5 May).
+    </div>
+  </div>
+</section>
+
+<section id="protocol">
+  <div class="wrap">
+    <h2>The 2-week private cold-start</h2>
+    <p class="section-lead">Why "private"? Because the first two weeks of any onboarding are the deepest-work weeks. We protect that window. After 14 days, members opt in (or not) to public amplification via CIC Verified — separate decision, separate moment.</p>
+
+    <div class="protocol">
+      <h3>Onboarding bandwidth · what's included</h3>
+      <div class="points">
+        <div>
+          <h4>Week 1 · Constraint mapping</h4>
+          <p>10-question intake. We map your revenue model, calendar, capacity ceiling, and the 3 grant verticals you've already half-tried. No discovery call rituals.</p>
+        </div>
+        <div>
+          <h4>Week 2 · Strategic allocation</h4>
+          <p>We assign you 3 or 6 revenue opportunities (depending on tier). You see the full pipeline, not just the apps. Multi-year and core-cost favoured over project-based.</p>
+        </div>
+        <div>
+          <h4>No FB group, no WhatsApp</h4>
+          <p>Deliberate. The absence of a network signal is the signal — we're not running a funnel. Cohort communication is email + the office line.</p>
+        </div>
+        <div>
+          <h4>Waitlist rollover</h4>
+          <p>If May intake closes before you decide, you roll to June. No re-payment, no re-application. Just a new cold-start window.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="tool">
+  <div class="wrap">
+    <div class="tool-nudge">
+      <h3>Want to see how we think before you decide?</h3>
+      <p>Our grants-custom tool walks you through the same constraint-mapping logic we use in week 1. Free to use — no email gate. If it lines up, the cohort will too.</p>
+      <p><a href="https://tools.inclusifund.co.uk/grants-custom.html">Open the grants-custom tool →</a></p>
+    </div>
+  </div>
+</section>
+
+<section id="phone">
+  <div class="wrap">
+    <div class="phone-box">
+      <h3>Talk to the funding team</h3>
+      <p>If you'd rather speak to a human before you reserve, call the office. We'll answer specifics about your CIC, your verticals, and whether T3 or T4 is the right fit.</p>
+      <a class="number" href="tel:+443300545828">0330 054 5828</a>
+      <div class="hours">Mon–Fri · 09:00–18:00 BST</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    InclusiFund · InclusiGroup Ltd · UK Community Interest revenue architects.<br>
+    Office: <a href="tel:+443300545828">0330 054 5828</a> · Email: <a href="mailto:reece.dunn@inclusifund.co.uk">reece.dunn@inclusifund.co.uk</a>
+    <div class="legal">
+      May intake closes Wed 30 April 23:59 BST. Cohort kick-off Mon 5 May. Waitlist rolls to June.
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
