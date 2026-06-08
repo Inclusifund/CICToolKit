@@ -16,10 +16,8 @@
     <!-- Auth & Security -->
     <script src="assets/js/auth.js"></script>
     <script>
-        // Enforce authentication
-        if (!InclusiFundAuth.requireAuth()) {
-            throw new Error("Redirecting to login...");
-        }
+        // PUBLIC (free tier) — no login wall. auth.js stays loaded so logged-in users keep
+        // personalised UI; anonymous visitors pass straight through. No redirect.
     </script>
 
     <!-- Google Fonts -->
