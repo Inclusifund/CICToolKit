@@ -186,6 +186,7 @@
             100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
         }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body class="min-h-screen flex flex-col relative overflow-x-hidden">
@@ -471,7 +472,7 @@
                 setLoading(true);
                 try {
                     if (window.convex && window.InclusiFundAuth) {
-                        const convex = new window.convex.ConvexClient("https://terrific-bloodhound-927.convex.cloud");
+                        const convex = new window.convex.ConvexClient((window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud"));
                         const user = InclusiFundAuth.checkSession();
 
                         if (user) {

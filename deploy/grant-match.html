@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InclusiFund - Find Funders Who Back Work Like Yours</title>
+    <meta name="description" content="Free grant matching for UK CICs and charities: funders who have actually funded organisations like yours, near you, at your size.">
+
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // PUBLIC (free tier) — no login wall. auth.js stays loaded so logged-in users keep
+        // personalised UI; anonymous visitors pass straight through. No redirect.
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#1F2232', primary: '#008080', accent: '#6BB6B6', secondary: '#005461',
+                            light: '#D5ECEC', white: '#FFFFFF', slate: '#94A3B8', border: '#334155',
+                            card: '#2D3344', gold: '#d4a853', text: '#4B5563'
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'], serif: ['Lora', 'serif'] }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Lucide-React UMD expects a lowercase `react` global and exposes LucideReact (same shim as grants-list) -->
+    <script>window.react = window.React;</script>
+    <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.min.js"></script>
+    <script>window.lucide = window.LucideReact;</script>
+    <script src="assets/config.js"></script>
+    <!-- assets/ is cached immutable by nginx: bump ?v= whenever grantmatch.js changes -->
+    <script src="assets/js/grantmatch.js?v=20261014"></script>
+    <style>
+        body { background-color: #1F2232; color: #F4F4F4; font-family: Inter, sans-serif; }
+        .chip { border: 1px solid #334155; border-radius: 9999px; padding: 0.45rem 0.9rem; font-size: 0.875rem; cursor: pointer; transition: background-color .15s, border-color .15s; }
+        .chip:hover { border-color: #6BB6B6; }
+        .chip[aria-pressed="true"] { background: #008080; border-color: #008080; color: #fff; }
+        .chip:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid #d4a853; outline-offset: 2px; }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { MapPin, Search, ExternalLink, AlertTriangle, Info } = lucide;
+        const DATA_VERSION = "20261014";
+
+        const THEMES = [
+            ["youth", "Children & young people"], ["mental_health_wellbeing", "Mental health & wellbeing"],
+            ["health_disability", "Health, disability & carers"], ["sport_physical_activity", "Sport & physical activity"],
+            ["arts_culture_media", "Arts, culture & media"], ["heritage", "Heritage"],
+            ["environment_climate", "Environment & food growing"], ["poverty_food_money", "Poverty, food & money"],
+            ["housing_homelessness", "Housing & homelessness"], ["education_skills_employment", "Education, skills & jobs"],
+            ["older_people", "Older people"], ["community_cohesion_faith", "Community & faith"],
+            ["refugees_migrants", "Refugees & migrants"], ["justice_violence_safety", "Justice, violence & safety"],
+        ];
+        const SIZES = [["Under £2k", 500, 2000], ["£2k–£10k", 2000, 10000], ["£10k–£50k", 10000, 50000], ["£50k+", 50000, 250000]];
+        const FOCUS = [["young_people", "Young people"], ["ethnic_minority", "Ethnic-minority-led or serving"],
+                       ["disability_neuro", "Disabled or neurodivergent people"], ["women_girls", "Women & girls"]];
+        const strength = (s) => s >= 0.7 ? ["Strong match", "text-emerald-300"] : s >= 0.5 ? ["Good match", "text-brand-accent"] : ["Possible", "text-brand-slate"];
+        const gbp = (n) => "£" + Math.round(n).toLocaleString("en-GB");
+
+        const Chip = ({ on, onClick, children }) => (
+            <button type="button" className="chip" aria-pressed={on} onClick={onClick}>{children}</button>
+        );
+
+        const App = () => {
+            const [data, setData] = useState(null);
+            const [loadError, setLoadError] = useState(null);
+            const [postcode, setPostcode] = useState("");
+            const [type, setType] = useState("cic");
+            const [themes, setThemes] = useState([]);
+            const [size, setSize] = useState(1);
+            const [focus, setFocus] = useState([]);
+            const [results, setResults] = useState(null);
+            const [place, setPlace] = useState(null);
+            const [error, setError] = useState(null);
+            const [busy, setBusy] = useState(false);
+            const [shown, setShown] = useState(10);
+
+            useEffect(() => {
+                fetch(`data/grantmatch.json?v=${DATA_VERSION}`)
+                    .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
+                    .then(setData)
+                    .catch(() => setLoadError("We couldn't load the funder data. Please refresh the page."));
+            }, []);
+
+            const toggle = (list, set, v, max) =>
+                set(list.includes(v) ? list.filter((x) => x !== v) : list.length < max ? [...list, v] : list);
+
+            const run = async (e) => {
+                e.preventDefault();
+                setError(null);
+                if (!themes.length) return setError("Pick at least one theme.");
+                setBusy(true);
+                try {
+                    // postcodes.io: free ONS lookup; the postcode is used only to find your local authority
+                    const r = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode.trim())}`);
+                    const j = await r.json();
+                    const la = j.result?.codes?.admin_district;
+                    if (!r.ok || !la) throw new Error("That postcode wasn't recognised. Check it and try again.");
+                    const [, lo, hi] = SIZES[size];
+                    const laName = j.result.admin_district;
+                    // local evidence is the most persuasive: fetch this area's examples, show them first
+                    const local = await fetch(`data/ex/${la}.json?v=${DATA_VERSION}`).then((x) => x.ok ? x.json() : {}).catch(() => ({}));
+                    const ranked = GrantMatch.match(data, { la, themes, type, lo, hi, flags: focus }).map((f) => {
+                        const near = (local[f.id] || []).filter((e) => themes.includes(e[4]))
+                            .map(([title, recipient, amount, date]) => ({ title, recipient, amount, date, place: laName }));
+                        const seen = new Set(near.map((e) => e.title + e.date));
+                        return { ...f, examples: [...near, ...f.examples.filter((e) => !seen.has(e.title + e.date))].slice(0, 2) };
+                    });
+                    setPlace(laName);
+                    setResults(ranked);
+                    setShown(10);
+                } catch (err) {
+                    setError(err.message || "Something went wrong looking up that postcode.");
+                } finally {
+                    setBusy(false);
+                }
+            };
+
+            return (
+                <div className="max-w-5xl mx-auto px-4 py-10">
+                    <a href="index.html" className="text-brand-accent text-sm hover:underline">← InclusiFund Tools</a>
+                    <h1 className="font-serif text-3xl md:text-4xl font-semibold mt-4">Find funders who back work like yours</h1>
+                    <p className="text-brand-slate mt-3 max-w-3xl">
+                        Matched from real grants: who has actually funded organisations like yours since 2023, near you, at your size.
+                        Free, and no login needed.
+                    </p>
+
+                    <form onSubmit={run} className="bg-brand-card border border-brand-border rounded-xl p-6 mt-8 space-y-6">
+                        <div>
+                            <label htmlFor="pc" className="block font-semibold mb-2">Your postcode</label>
+                            <div className="flex items-center gap-2 max-w-xs">
+                                <MapPin size={18} className="text-brand-accent" aria-hidden="true" />
+                                <input id="pc" required value={postcode} onChange={(e) => setPostcode(e.target.value)}
+                                    placeholder="e.g. LE2 0UG" autoComplete="postal-code"
+                                    className="w-full bg-brand-dark border border-brand-border rounded-lg px-3 py-2 uppercase" />
+                            </div>
+                            <p className="text-xs text-brand-slate mt-1">Only used to find your local authority. We don't store it.</p>
+                        </div>
+
+                        <fieldset>
+                            <legend className="font-semibold mb-2">You are a…</legend>
+                            <div className="flex flex-wrap gap-2">
+                                <Chip on={type === "cic"} onClick={() => setType("cic")}>CIC</Chip>
+                                <Chip on={type === "charity"} onClick={() => setType("charity")}>Registered charity</Chip>
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend className="font-semibold mb-2">What you do <span className="text-brand-slate font-normal text-sm">(up to 3)</span></legend>
+                            <div className="flex flex-wrap gap-2">
+                                {THEMES.map(([k, label]) => (
+                                    <Chip key={k} on={themes.includes(k)} onClick={() => toggle(themes, setThemes, k, 3)}>{label}</Chip>
+                                ))}
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend className="font-semibold mb-2">Grant size you're looking for</legend>
+                            <div className="flex flex-wrap gap-2">
+                                {SIZES.map(([label], i) => <Chip key={label} on={size === i} onClick={() => setSize(i)}>{label}</Chip>)}
+                            </div>
+                        </fieldset>
+
+                        <fieldset>
+                            <legend className="font-semibold mb-2">Who you mainly serve <span className="text-brand-slate font-normal text-sm">(optional)</span></legend>
+                            <div className="flex flex-wrap gap-2">
+                                {FOCUS.map(([k, label]) => <Chip key={k} on={focus.includes(k)} onClick={() => toggle(focus, setFocus, k, 4)}>{label}</Chip>)}
+                            </div>
+                        </fieldset>
+
+                        {error && <p role="alert" className="text-red-300 text-sm flex items-center gap-2"><AlertTriangle size={16} />{error}</p>}
+                        {loadError && <p role="alert" className="text-red-300 text-sm">{loadError}</p>}
+                        <button disabled={!data || busy} className="bg-brand-primary hover:bg-brand-secondary disabled:opacity-50 text-white font-semibold rounded-lg px-6 py-3 flex items-center gap-2">
+                            <Search size={18} aria-hidden="true" />{busy ? "Matching…" : data ? "Find my funders" : "Loading funder data…"}
+                        </button>
+                    </form>
+
+                    {results && (
+                        <section className="mt-10" aria-live="polite">
+                            <h2 className="font-serif text-2xl font-semibold">{results.length} funders for a {type === "cic" ? "CIC" : "charity"} in {place}</h2>
+                            <div className="bg-brand-dark border border-brand-gold/40 rounded-lg p-4 mt-4 text-sm text-brand-light flex gap-3">
+                                <Info size={18} className="text-brand-gold flex-shrink-0 mt-0.5" aria-hidden="true" />
+                                <p>This shows who has <strong>funded work like yours</strong>, not which programmes are open right now.
+                                    Before applying, check the funder's website for open rounds, deadlines and eligibility
+                                    (some need a year of accounts or a minimum trading history).</p>
+                            </div>
+                            <ol className="mt-6 space-y-4">
+                                {results.slice(0, shown).map((f, i) => {
+                                    const [label, cls] = strength(f.score);
+                                    return (
+                                        <li key={f.id} className="bg-brand-card border border-brand-border rounded-xl p-5">
+                                            <div className="flex flex-wrap items-baseline justify-between gap-2">
+                                                <h3 className="text-lg font-semibold">{i + 1}. {f.name}</h3>
+                                                <span className={`text-sm font-semibold ${cls}`}>{label}</span>
+                                            </div>
+                                            <ul className="mt-2 text-sm text-brand-light space-y-1 list-disc pl-5">
+                                                {f.why.map((w) => <li key={w}>{w}</li>)}
+                                                <li>Last grant awarded {f.last}</li>
+                                            </ul>
+                                            {f.examples.length > 0 && (
+                                                <div className="mt-3 text-sm">
+                                                    <p className="text-brand-slate">Recent grants like yours:</p>
+                                                    <ul className="mt-1 space-y-1">
+                                                        {f.examples.map((e) => (
+                                                            <li key={e.title + e.date}>
+                                                                <span className="text-brand-gold">{gbp(e.amount)}</span> to {e.recipient}
+                                                                {e.place && <span className="text-brand-slate"> ({e.place})</span>}: {e.title}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                            <a className="inline-flex items-center gap-1 text-brand-accent text-sm mt-3 hover:underline"
+                                                href={`https://grantnav.threesixtygiving.org/org/${encodeURIComponent(f.id)}`} target="_blank" rel="noopener">
+                                                See all their grants on GrantNav <ExternalLink size={14} aria-hidden="true" />
+                                            </a>
+                                        </li>
+                                    );
+                                })}
+                            </ol>
+                            {shown < results.length && (
+                                <button onClick={() => setShown(shown + 10)} className="mt-6 border border-brand-border hover:border-brand-accent rounded-lg px-5 py-2">
+                                    Show more funders
+                                </button>
+                            )}
+                        </section>
+                    )}
+
+                    <footer className="mt-12 text-xs text-brand-slate border-t border-brand-border pt-4">
+                        {data ? data.attribution : ""} Data updated {data ? data.generated : "…"}. Funder pages link to each
+                        publisher's own data on GrantNav.
+                    </footer>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    </script>
+    <script src="assets/js/v2-nav-consistency.js"></script>
+</body>
+
+</html>

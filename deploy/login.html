@@ -219,6 +219,7 @@
             .auth-form-container { padding: 2.5rem; }
         }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body>
@@ -377,7 +378,7 @@
     <script src="assets/js/auth.js"></script>
     <script>
         // Initialize Convex Client
-        const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+        const convexClient = new convex.ConvexHttpClient((window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud"));
 
         // --- BEHAVIORAL SCIENCE: Scroll Reveal ---
         const revealObserver = new IntersectionObserver((entries) => {

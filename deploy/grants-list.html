@@ -142,6 +142,7 @@
             background: rgba(239, 68, 68, 0.08);
         }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body>
@@ -152,7 +153,7 @@
         const { Search, Filter, X, ExternalLink, ChevronDown, ArrowLeft, AlertTriangle } = lucide;
 
         // Convex Client
-        const CONVEX_URL = "https://terrific-bloodhound-927.convex.cloud";
+        const CONVEX_URL = (window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud");
         const convexClient = new Convex.ConvexHttpClient(CONVEX_URL);
 
         // --- BEHAVIORAL SCIENCE UTILITIES ---
@@ -212,7 +213,8 @@
             const [searchTerm, setSearchTerm] = useState('');
             const [selectedSectors, setSelectedSectors] = useState([]);
             const [selectedRegions, setSelectedRegions] = useState([]);
-            const [selectedStatus, setSelectedStatus] = useState('Open');
+            // 'Available' = Open + Check (couldn't confirm; shown with a label). Closed never shows (Oct 2026 clean-up).
+            const [selectedStatus, setSelectedStatus] = useState('Available');
             const [sortBy, setSortBy] = useState('name');
             const [showFilters, setShowFilters] = useState(false);
             const containerRef = useScrollReveal();
@@ -247,9 +249,11 @@
 
             // Apply filters
             useEffect(() => {
-                let filtered = grants;
+                let filtered = grants.filter(g => g.status !== 'Closed');
 
-                if (selectedStatus) {
+                if (selectedStatus === 'Available') {
+                    filtered = filtered.filter(g => g.status === 'Open' || g.status === 'Check');
+                } else if (selectedStatus) {
                     filtered = filtered.filter(g => g.status === selectedStatus);
                 }
                 if (searchTerm) {
@@ -298,7 +302,7 @@
                 setSearchTerm('');
                 setSelectedSectors([]);
                 setSelectedRegions([]);
-                setSelectedStatus('Open');
+                setSelectedStatus('Available');
                 setSortBy('name');
             };
 
@@ -387,10 +391,11 @@
                                             onChange={(e) => setSelectedStatus(e.target.value)}
                                             className="w-full bg-brand-dark border border-brand-border rounded-lg px-4 py-2 text-brand-white focus:outline-none focus:border-brand-primary"
                                         >
+                                            <option value="Available">Open or check funder site</option>
+                                            <option value="Open">Open (confirmed)</option>
+                                            <option value="Check">Check funder site</option>
+                                            <option value="Paused">Opens later</option>
                                             <option value="">All</option>
-                                            <option value="Open">Open</option>
-                                            <option value="Closed">Closed</option>
-                                            <option value="Paused">Paused</option>
                                         </select>
                                     </div>
 
@@ -500,11 +505,11 @@
                                                 <div className="flex items-start justify-between mb-3">
                                                     <span className={`text-xs px-2 py-1 rounded ${grant.status === 'Open'
                                                         ? 'bg-green-500/20 text-green-400'
-                                                        : grant.status === 'Closed'
-                                                            ? 'bg-red-500/20 text-red-400'
-                                                            : 'bg-yellow-500/20 text-yellow-400'
+                                                        : grant.status === 'Check'
+                                                            ? 'bg-amber-500/20 text-amber-300'
+                                                            : 'bg-slate-500/20 text-slate-300'
                                                         }`}>
-                                                        {grant.status}
+                                                        {{ Check: 'Check funder site', Paused: 'Opens later' }[grant.status] || grant.status}
                                                     </span>
                                                     <span className="text-xs bg-brand-dark px-2 py-1 rounded text-brand-slate">
                                                         Difficulty: {grant.applicationDifficulty}/5

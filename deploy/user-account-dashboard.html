@@ -208,6 +208,7 @@
             color: #334155;
         }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body class="antialiased opacity-0 transition-opacity duration-500"
@@ -457,7 +458,7 @@
         });
 
         // Initialize Convex client
-        const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+        const convexClient = new convex.ConvexHttpClient((window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud"));
 
         // Populate User Data from localStorage immediately
         const user = JSON.parse(localStorage.getItem('inclusifund_user'));

@@ -136,6 +136,7 @@
         .progress-track { background: #334155; height: 6px; border-radius: 9999px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 9999px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); background: linear-gradient(90deg, #008080, #d4a853); }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body>
@@ -146,7 +147,7 @@
         const { ArrowRight, Check, Search, Download, RefreshCw, X, ChevronDown, ChevronRight, Star, Heart, AlertTriangle } = lucide;
 
         // --- CONVEX CLIENT ---
-        const CONVEX_URL = "https://terrific-bloodhound-927.convex.cloud";
+        const CONVEX_URL = (window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud");
         const convexClient = new Convex.ConvexHttpClient(CONVEX_URL);
 
         // --- BEHAVIORAL SCIENCE UTILITIES ---
@@ -714,7 +715,9 @@
             useEffect(() => {
                 const fetchGrants = async () => {
                     try {
-                        const result = await convexClient.query("grants:listGrants");
+                        // getAllGrants + client filter (not listGrants, which returns only "Open"): keeps entries
+                        // labelled "Check" (couldn't confirm open) visible; Closed never shows. No backend deploy needed.
+                        const result = (await convexClient.query("grants:getAllGrants")).filter(g => g.status !== 'Closed');
                         const transformed = result.map(g => ({
                             ...g,
                             name: g.grantName || 'Unnamed Grant',

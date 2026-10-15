@@ -113,6 +113,7 @@
             background: #475569;
         }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body>
@@ -123,7 +124,7 @@
         const { ArrowRight, Check, Search, Download, RefreshCw, X, ChevronDown, ChevronRight, Star, Heart } = lucide;
 
         // --- CONVEX CLIENT ---
-        const CONVEX_URL = "https://terrific-bloodhound-927.convex.cloud";
+        const CONVEX_URL = (window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud");
         const convexClient = new Convex.ConvexHttpClient(CONVEX_URL);
 
         // --- COMPONENTS ---
@@ -517,6 +518,7 @@
 
                 // Logic to filter and sort grants
                 let filtered = grants.filter(grant => {
+                    if (grant.status === 'Closed') return false; // Oct 2026 clean-up: closed entries never match
                     // Region logic: Support "UK-wide" wildcard and exact matches
                     const userRegion = data.regions?.[0] || 'UK-wide';
                     const regionMatch = grant.regions.includes('UK-wide') ||

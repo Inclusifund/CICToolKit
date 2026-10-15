@@ -7,7 +7,7 @@
  */
 
 window.ComplianceGuard = (function () {
-    const CONVEX_URL = "https://terrific-bloodhound-927.convex.cloud";
+    const CONVEX_URL = (window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud");
     let client = null;
 
     function getClient() {

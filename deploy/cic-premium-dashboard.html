@@ -825,6 +825,7 @@
             }
         }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body>
@@ -1222,7 +1223,7 @@
          */
         async function verifyTierWithConvex(user) {
             try {
-                const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+                const convexClient = new convex.ConvexHttpClient((window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud"));
                 const convexUser = await convexClient.query("users:getUser", { email: user.email });
 
                 if (convexUser && (convexUser.tier === 'premium' || convexUser.tier === 'lifetime')) {

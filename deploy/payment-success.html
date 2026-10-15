@@ -571,6 +571,7 @@
             }
         }
     </style>
+    <script src="assets/config.js"></script>
 </head>
 
 <body>
@@ -641,20 +642,20 @@
             </div>
         </div>
 
-        <!-- Testimonial -->
+        <!-- Why It Matters -->
         <div class="testimonial-card reveal">
-            <p class="testimonial-quote">Within two weeks of signing up, we caught a Companies House deadline we'd completely missed. The compliance calendar alone paid for itself ten times over.</p>
+            <p class="testimonial-quote">The compliance calendar catches Companies House deadlines before they become late-filing penalties — one catch can save you more than the lifetime price of the tool.</p>
             <div class="testimonial-author">
-                <div class="testimonial-avatar">DF</div>
+                <div class="testimonial-avatar">✓</div>
                 <div>
-                    <div class="testimonial-name">Danielle Fletcher</div>
-                    <div class="testimonial-role">Director, Brighter Paths CIC &mdash; Birmingham</div>
+                    <div class="testimonial-name">Compliance Calendar</div>
+                    <div class="testimonial-role">CIC34 + deadline tracking</div>
                 </div>
             </div>
         </div>
 
         <!-- CTA -->
-        <button class="cta-btn reveal" id="ctaBtn" onclick="window.location.href='onboarding.html'">
+        <button class="cta-btn reveal" id="ctaBtn" onclick="window.location.href='onboarding-2.0.html'">
             Complete Your Setup
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                 stroke-linejoin="round">
@@ -791,7 +792,7 @@
         }, 600);
 
         // ─── Convex + Auth ───
-        const convexClient = new convex.ConvexHttpClient("https://terrific-bloodhound-927.convex.cloud");
+        const convexClient = new convex.ConvexHttpClient((window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud"));
 
         // Get URL parameters (from GHL/Stripe redirect)
         const urlParams = new URLSearchParams(window.location.search);
@@ -799,28 +800,33 @@
         const emailParam = urlParams.get('email');
         const nameParam = urlParams.get('name');
 
-        // Handle email/name params — create/update user in Convex as premium
-        if (emailParam) {
+        // Phase B: server-verified upgrade via Stripe session only. URL
+        // params (email/name) are attacker-controlled and must NOT decide
+        // tier — the Convex action re-reads the real session from Stripe.
+        if (sessionId) {
+            (async () => {
+                try {
+                    const result = await convexClient.action(
+                        "subscriptions:upgradeTierByStripeSession",
+                        { sessionId }
+                    );
+                    const currentUser = InclusiFundAuth.checkSession() || {};
+                    currentUser.email = result.email;
+                    if (nameParam) currentUser.name = nameParam;
+                    currentUser.tier = result.tier;
+                    currentUser.loginTime = Date.now();
+                    InclusiFundAuth.setSession(currentUser);
+                    console.log("Tier upgraded (Stripe-verified):", result);
+                } catch (err) {
+                    console.error("Failed to verify/upgrade tier:", err);
+                }
+            })();
+        } else if (emailParam) {
             const currentUser = InclusiFundAuth.checkSession() || {};
             currentUser.email = emailParam;
             if (nameParam) currentUser.name = nameParam;
-            currentUser.tier = 'premium';
             currentUser.loginTime = Date.now();
             InclusiFundAuth.setSession(currentUser);
-
-            // Sync with Convex
-            (async () => {
-                try {
-                    await convexClient.mutation("users:updateUserTier", {
-                        email: emailParam,
-                        name: nameParam || currentUser.name || "User",
-                        tier: "premium"
-                    });
-                    console.log("Convex user created/updated as premium:", emailParam);
-                } catch (err) {
-                    console.error("Failed to update Convex user tier:", err);
-                }
-            })();
         }
 
         // Optional: Require auth on page load

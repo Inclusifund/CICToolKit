@@ -178,6 +178,7 @@
     </style>
 
     <!-- Access Support Data (removed: access-support.js does not exist) -->
+    <script src="assets/config.js"></script>
 </head>
 
 <body>
@@ -187,7 +188,7 @@
         const { useState, useEffect, useMemo, useCallback } = React;
         const { Search, Filter, X, ExternalLink, ChevronDown, ArrowLeft, Award, Briefcase, Heart, Rocket, TrendingUp, Trophy, ShoppingCart, LayoutGrid, List, Bookmark, BookmarkCheck, Shield, Clock, Star } = lucide;
 
-        const CONVEX_URL = "https://terrific-bloodhound-927.convex.cloud";
+        const CONVEX_URL = (window.CIC_CONFIG?.CONVEX_URL ?? "https://terrific-bloodhound-927.convex.cloud");
         const convexClient = new Convex.ConvexHttpClient(CONVEX_URL);
 
         // Opportunity type config
@@ -303,6 +304,18 @@
                     )}
                 </div>
             );
+        };
+
+        // Hub status (set by the Oct 2026 clean-up): Closed is filtered out at fetch; these two stay visible with a label
+        const StatusBadge = ({ status }) => {
+            if (status === 'Check') return (
+                <span className="inline-flex items-center text-xs px-2.5 py-1 rounded-md font-medium bg-amber-100 text-amber-800"
+                      title="We couldn't confirm this is open right now. Check the funder's website before applying.">
+                    Check funder site
+                </span>);
+            if (status === 'Paused') return (
+                <span className="inline-flex items-center text-xs px-2.5 py-1 rounded-md font-medium bg-slate-200 text-slate-700">Opens later</span>);
+            return null;
         };
 
         const AccessSupportBadge = ({ funder, opportunityType }) => {
@@ -435,7 +448,7 @@
                                     {amount}
                                 </span>
                             )}
-                            <DeadlineBadge deadline={opp.deadline} />
+                            <DeadlineBadge deadline={opp.deadline} /> <StatusBadge status={opp.status} />
                         </div>
 
                         {/* Description */}
@@ -536,11 +549,12 @@
                             eligibility: g.eligibility || null,
                         }));
 
-                        // Merge: add local opportunities that aren't already in Convex (by name)
+                        // Merge: add local opportunities that aren't already in Convex (by name). Names come from ALL
+                        // Convex rows, closed included - otherwise a closed entry would let its hard-coded copy back in.
                         const convexNames = new Set(convexGrants.map(g => g.name));
                         const uniqueLocal = LOCAL_OPPORTUNITIES.filter(o => !convexNames.has(o.name));
 
-                        setGrants([...convexGrants, ...uniqueLocal]);
+                        setGrants([...convexGrants.filter(g => g.status !== 'Closed'), ...uniqueLocal]);
                     } catch (error) {
                         console.error("Error fetching grants:", error);
                         setGrants(LOCAL_OPPORTUNITIES);
@@ -946,7 +960,7 @@
                                                     </div>
                                                     <div className="hidden sm:flex items-center gap-4 shrink-0 text-sm">
                                                         {amount && <span className="font-medium text-hub-text">{amount}</span>}
-                                                        <DeadlineBadge deadline={opp.deadline} />
+                                                        <DeadlineBadge deadline={opp.deadline} /> <StatusBadge status={opp.status} />
                                                     </div>
                                                     <BookmarkButton saved={isSaved} onClick={() => toggleSave(oppId)} />
                                                     {opp.website && opp.website !== '#' && (
