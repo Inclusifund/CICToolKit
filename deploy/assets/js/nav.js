@@ -35,7 +35,7 @@ const InclusiFundNav = (function () {
             { label: 'Deadlines', icon: '📅', href: 'compliance-calendar.html', match: ['/compliance-calendar', '/compliance-calendar.html'] },
             { label: 'CIC34 Report', icon: '📄', href: 'cic34-generator.html', match: ['/cic34-generator', '/cic34-generator.html'] },
             { type: 'section', label: 'FUNDING' },
-            { label: 'Find Grants', icon: '🔍', href: 'grants-list.html', match: ['/grants-list', '/grant-filters'] },
+            { label: 'Find Grants', icon: '🔍', href: 'opportunities-hub.html', match: ['/opportunities-hub', '/grants-list', '/grant-filters'] },
             { type: 'spacer' },
             { label: 'Account Overview', icon: '👤', href: 'user-account-dashboard.html', match: ['/user-account-dashboard', '/user-account-dashboard.html'] },
             { label: 'Settings', icon: '⚙️', href: 'settings.html', match: ['/settings', '/settings.html'] },

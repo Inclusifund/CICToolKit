@@ -220,7 +220,7 @@
                         How would you like to<br />explore grants?
                     </h1>
                     <p className="text-brand-slate text-xl">
-                        We have 40+ opportunities waiting for you
+                        We have 100+ opportunities waiting for you
                     </p>
                 </div>
 
@@ -244,24 +244,25 @@
                         </div>
                     </button>
 
-                    {/* Full List Card - RECOMMENDED */}
-                    <button
-                        onClick={() => window.location.href = 'grants-list.html'}
-                        className="bg-brand-card border-2 border-brand-gold rounded-3xl p-8 hover:border-brand-gold transition-all duration-300 transform hover:-translate-y-1 text-left group shadow-lg shadow-brand-gold/10 relative overflow-hidden"
+                    {/* Full List Card - RECOMMENDED: two destinations (Hub = what's open, grant-match = who funds you) */}
+                    <div
+                        className="bg-brand-card border-2 border-brand-gold rounded-3xl p-8 hover:border-brand-gold transition-all duration-300 text-left group shadow-lg shadow-brand-gold/10 relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 bg-brand-gold text-brand-dark text-xs font-bold px-3 py-1 rounded-bl-xl">
                             RECOMMENDED
                         </div>
                         <div className="text-4xl mb-6">📋</div>
                         <h3 className="font-serif text-2xl text-brand-white mb-2 group-hover:text-brand-gold transition-colors">See Full List</h3>
-                        <p className="text-brand-slate mb-6 h-12">Browse all 40+ grants with standard filters and search.</p>
-                        <div className="flex items-center justify-between mt-auto">
-                            <span className="text-sm text-brand-slate">You can filter later</span>
-                            <span className="text-brand-gold font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                                Show All <ArrowRight size={18} />
-                            </span>
+                        <p className="text-brand-slate mb-6">Browse 100+ opportunities with filters and search, or see the funders who back work like yours.</p>
+                        <div className="flex flex-col gap-3 mt-auto">
+                            <a href="opportunities-hub.html" className="text-brand-gold font-bold flex items-center gap-1 hover:translate-x-1 transition-transform">
+                                Browse 100+ opportunities <ArrowRight size={18} />
+                            </a>
+                            <a href="grant-match.html" className="text-brand-accent font-semibold flex items-center gap-1 hover:translate-x-1 transition-transform">
+                                Find funders matched to you <ArrowRight size={18} />
+                            </a>
                         </div>
-                    </button>
+                    </div>
                 </div>
             </div>
         );
@@ -676,9 +677,9 @@
                         {/* Show More / Empty State */}
                         <div className="md:col-span-2 lg:col-span-3 text-center py-8">
                             <p className="text-brand-slate mb-4">Didn't find what you need?</p>
-                            <button onClick={() => window.location.reload()} className="text-brand-light hover:text-brand-primary font-medium transition-colors">
-                                Show all 40+ grants &rarr;
-                            </button>
+                            <a href="opportunities-hub.html" className="text-brand-light hover:text-brand-primary font-medium transition-colors">
+                                Browse 100+ opportunities &rarr;
+                            </a>
                         </div>
                     </div>
                 </div>
