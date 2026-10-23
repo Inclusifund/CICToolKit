@@ -286,15 +286,20 @@
             if (!deadline || deadline === 'Rolling' || deadline.toLowerCase() === 'rolling') {
                 return { level: 'rolling', color: '#94A3B8', bgColor: '#F1F5F9', textColor: '#64748B', label: 'Rolling', daysText: null, pulse: false };
             }
+            // Only a strict YYYY-MM-DD is a date. Free text ("Quarterly", "Opens March 2027") is shown as-is:
+            // new Date() turned it into "NaNd left" or misread it ("Opens again 1 September" -> 2001).
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(deadline)) {
+                return { level: 'text', color: '#94A3B8', bgColor: '#F1F5F9', textColor: '#475569', label: deadline, daysText: null, pulse: false };
+            }
             const now = new Date();
             now.setHours(0, 0, 0, 0);
-            const dl = new Date(deadline);
-            dl.setHours(0, 0, 0, 0);
+            const dl = new Date(deadline + 'T00:00:00');
             const diffMs = dl - now;
             const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
             if (days < 0) {
-                return { level: 'overdue', color: '#DC2626', bgColor: '#FEF2F2', textColor: '#DC2626', label: deadline, daysText: 'Overdue', pulse: true };
+                // data goes stale between checks: say so calmly instead of a pulsing red "Overdue"
+                return { level: 'past', color: '#94A3B8', bgColor: '#F1F5F9', textColor: '#475569', label: 'Past round – check funder site', daysText: null, pulse: false };
             }
             if (days <= 7) {
                 return { level: 'urgent', color: '#DC2626', bgColor: '#FEF2F2', textColor: '#DC2626', label: deadline, daysText: `${days}d left`, pulse: true };
