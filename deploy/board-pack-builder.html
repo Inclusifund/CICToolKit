@@ -73,10 +73,9 @@
 
     <script type="text/babel">
         // Auth Check
-        const user = InclusiFundAuth.requireAuth();
-        if (!user) {
-            console.log("Redirecting to login...");
-        }
+        // Accounts moved to the secure app (/app) on 10 Nov 2026; the old browser-session gate sent every visitor
+        // to /log-in and, with the relative redirect stubs, into an endless /log-in/app/app/... loop. Optional now.
+        const user = InclusiFundAuth.checkSession();
 
         const { useState, useEffect, useRef } = React;
 

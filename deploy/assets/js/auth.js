@@ -16,7 +16,7 @@ const InclusiFundAuth = (function () {
     const CONFIG = {
         SESSION_KEY: 'inclusifund_user',
         SESSION_TIMEOUT: 24 * 60 * 60 * 1000, // 24 hours
-        LOGIN_URL: 'https://tools.inclusifund.co.uk/log-in/user-account'
+        LOGIN_URL: '/app/index.html#/login'  // new secure login (10 Nov 2026); old /log-in route looped
     };
 
     /**
