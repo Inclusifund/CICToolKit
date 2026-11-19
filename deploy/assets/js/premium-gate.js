@@ -44,9 +44,27 @@
     document.body.appendChild(overlay);
   }
 
-  var token = null;
-  try { token = window.localStorage.getItem(JWT_KEY); } catch (e) { token = null; }
-  if (!token) { document.addEventListener("DOMContentLoaded", function () { lock(false); }); return; }
+  // Session bounce (19 Nov 2026): the JWT lasts 1 hour and only the app renews it. If it has expired but the member
+  // has a renewal token (signed in within 30 days), go through the app's /go/<tool> route once: it renews the
+  // session and sends them straight back with ?bounced=1. The marker means we never bounce twice (no loops).
+  var TOOL = { "/board-pack-builder.html": "board-pack", "/board-pack-builder": "board-pack",
+               "/business-model.html": "business-model", "/business-model": "business-model" }[location.pathname];
+  var REFRESH_KEY = "__convexAuthRefreshToken_" + CONVEX_URL.replace(/[^a-zA-Z0-9]/g, "");
+  var bounced = /[?&]bounced=1/.test(location.search);
+  function store(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function expired(jwt) {
+    try { var p = JSON.parse(atob(jwt.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))); return !p.exp || p.exp * 1000 < Date.now() + 30000; }
+    catch (e) { return true; }
+  }
+  function bounce() { location.replace("/app/index.html#/go/" + TOOL); }
+  var canBounce = !!(TOOL && !bounced && store(REFRESH_KEY));
+  if (bounced && history.replaceState) history.replaceState(null, "", location.pathname + location.hash);
+
+  var token = store(JWT_KEY);
+  if (!token || expired(token)) {
+    if (canBounce) { bounce(); return; }
+    document.addEventListener("DOMContentLoaded", function () { lock(false); }); return;
+  }
 
   fetch(CONVEX_URL + "/api/query", {
     method: "POST",
@@ -56,6 +74,7 @@
     .then(function (r) { return r.json(); })
     .then(function (res) {
       var v = res && res.status === "success" ? res.value : null;
+      if ((!v || !v.authenticated) && canBounce) { bounce(); return; }  // token rejected server-side: renew once
       var go = function () { if (v && v.premium === true) reveal(); else lock(!!(v && v.authenticated)); };
       if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
     })
